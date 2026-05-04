@@ -7,7 +7,7 @@ public sealed class ArduinoUnoPortMap
     private readonly Dictionary<string, PortRegister> _registers = new();
     private readonly Dictionary<int, ArduinoPinMapping> _pins = new();
 
-    public IReadOnlyDictionary<string, PortRegister> Registers => _registers;
+    public IReadOnlyDictionary<string, PortRegister> Registers { get; }
 
     public ArduinoUnoPortMap()
     {
@@ -35,6 +35,8 @@ public sealed class ArduinoUnoPortMap
         AddPin(11, "PORTB", 3);
         AddPin(12, "PORTB", 4);
         AddPin(13, "PORTB", 5);
+
+        Registers = _registers.ToImmutableDictionary();
     }
 
     private void AddRegister(string name, ushort address)

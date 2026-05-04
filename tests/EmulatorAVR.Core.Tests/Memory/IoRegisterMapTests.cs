@@ -101,6 +101,21 @@ public class IoRegisterMapTests
     }
 
     [TestMethod]
+    public void ContainsAddress_ReducedIoOffsetsAreRejected()
+    {
+        var map = CreateMap();
+        for (ushort addr = 0x03; addr <= 0x0B; addr++)
+            map.ContainsAddress(addr).Should().BeFalse($"address 0x{addr:X2} is a reduced I/O offset, not data memory");
+    }
+
+    [TestMethod]
+    public void GetRegisters_ReturnsStableList()
+    {
+        var map = CreateMap();
+        map.Registers.Should().HaveCount(9);
+    }
+
+    [TestMethod]
     public void ReadingUnknownAddressIsRejected()
     {
         var map = CreateMap();

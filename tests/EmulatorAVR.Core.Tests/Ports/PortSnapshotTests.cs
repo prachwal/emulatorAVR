@@ -58,8 +58,13 @@ public class PortSnapshotTests
         var map = new ArduinoUnoPortMap();
         var snapshot = map.CreateSnapshot();
         var allValues = snapshot.GetAllValues();
+
         allValues.Should().NotBeNull();
         allValues.Count.Should().Be(9);
+
+        var copy = new Dictionary<string, byte>(allValues);
+        copy["PINB"] = 0xFF;
+        snapshot.GetValue("PINB").Should().Be(0, "mutating a copy must not affect the snapshot");
     }
 
     [TestMethod]

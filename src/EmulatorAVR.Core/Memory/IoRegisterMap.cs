@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using EmulatorAVR.Core.Ports;
 
 namespace EmulatorAVR.Core.Memory;
@@ -7,14 +8,19 @@ public class IoRegisterMap
     private readonly Dictionary<ushort, PortRegister> _byAddress = new();
     private readonly Dictionary<string, PortRegister> _byName = new();
 
+    public IReadOnlyCollection<PortRegister> Registers { get; }
+
     public IoRegisterMap(ArduinoUnoPortMap portMap)
     {
+        var list = new List<PortRegister>();
         foreach (var kvp in portMap.Registers)
         {
             var reg = kvp.Value;
             _byAddress[reg.Address] = reg;
             _byName[reg.Name] = reg;
+            list.Add(reg);
         }
+        Registers = list.ToImmutableArray();
     }
 
     public byte Read(ushort address)

@@ -84,4 +84,41 @@ public class ArduinoUnoPortMapTests
         Action act = () => map.GetPin(14);
         act.Should().Throw<KeyNotFoundException>();
     }
+
+    [TestMethod]
+    public void AnalogPinA0IsNotExposed()
+    {
+        var map = new ArduinoUnoPortMap();
+        Action act = () => map.GetPin(14);
+        act.Should().Throw<KeyNotFoundException>("Arduino A0 would be pin 14, but it is not mapped");
+    }
+
+    [TestMethod]
+    public void RegistersPropertyIsImmutable()
+    {
+        var map = new ArduinoUnoPortMap();
+        var regs = map.Registers;
+        regs.Should().BeOfType<System.Collections.Immutable.ImmutableDictionary<string, PortRegister>>();
+    }
+
+    [TestMethod]
+    public void PortRegisterConstructorRejectsNullName()
+    {
+        Action act = () => new PortRegister(null!, 0x23);
+        act.Should().Throw<ArgumentException>();
+    }
+
+    [TestMethod]
+    public void PortRegisterConstructorRejectsEmptyName()
+    {
+        Action act = () => new PortRegister("", 0x23);
+        act.Should().Throw<ArgumentException>();
+    }
+
+    [TestMethod]
+    public void PortRegisterConstructorRejectsWhitespaceName()
+    {
+        Action act = () => new PortRegister("   ", 0x23);
+        act.Should().Throw<ArgumentException>();
+    }
 }
