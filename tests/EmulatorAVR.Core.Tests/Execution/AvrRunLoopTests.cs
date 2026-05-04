@@ -88,13 +88,18 @@ public class AvrRunLoopTests
     [TestMethod]
     public void OddFirmwareByteCountIsPadded()
     {
-        var bytes = new byte[] { 0x00, 0x00, 0x01 };
+        var bytes = new byte[] { 0x02, 0xE4, 0x00 };
         var firmware = new FirmwareImage(0, bytes);
-        var options = new RunOptions("atmega328p", 1, false, false, firmware);
+        var options = new RunOptions("atmega328p", 2, true, false, firmware);
         var loop = new AvrRunLoop();
         var result = loop.Run(options);
         result.Reason.Should().Be(StopReason.MaxCycles);
-        result.FinalCycleCount.Should().Be(1);
+        result.FinalCycleCount.Should().Be(2);
+        result.FinalPC.Should().Be(2u);
+        result.TraceFrames.Should().HaveCount(2);
+        result.TraceFrames[0].OpcodeWord.Should().Be(0xE402);
+        result.TraceFrames[1].OpcodeWord.Should().Be(0x0000);
+        result.TraceFrames[1].ChangedRegisters.Should().BeEmpty();
     }
 
     [TestMethod]
