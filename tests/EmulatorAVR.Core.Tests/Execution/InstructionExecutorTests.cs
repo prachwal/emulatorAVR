@@ -111,6 +111,30 @@ public class InstructionExecutorTests
     }
 
     [TestMethod]
+    public void Add_SetsHFlag()
+    {
+        var state = CreateState();
+        state.Registers[1] = 0x0F;
+        state.Registers[2] = 0x01;
+        var instruction = _decoder.Decode(0x0C12);
+        _executor.Execute(state, instruction);
+        state.SREG.H.Should().BeTrue();
+        state.Registers[1].Should().Be(0x10);
+    }
+
+    [TestMethod]
+    public void Add_SetsSFlag()
+    {
+        var state = CreateState();
+        state.Registers[1] = 0x80;
+        state.Registers[2] = 0x80;
+        var instruction = _decoder.Decode(0x0C12);
+        _executor.Execute(state, instruction);
+        state.SREG.S.Should().BeTrue();
+        state.Registers[1].Should().Be(0x00);
+    }
+
+    [TestMethod]
     public void UnsupportedInstruction_DoesNotMutateState()
     {
         var state = CreateState();

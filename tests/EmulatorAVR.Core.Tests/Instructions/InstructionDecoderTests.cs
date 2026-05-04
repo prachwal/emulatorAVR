@@ -35,7 +35,7 @@ public class InstructionDecoderTests
     }
 
     [TestMethod]
-    public void MovOpcode_DecodesDestinationAndSourceRegisters()
+    public void MovOpcode_DecodesR1R2()
     {
         var instruction = _decoder.Decode(0x2C12);
         instruction.Kind.Should().Be(InstructionKind.Mov);
@@ -44,12 +44,66 @@ public class InstructionDecoderTests
     }
 
     [TestMethod]
-    public void AddOpcode_DecodesDestinationAndSourceRegisters()
+    public void MovOpcode_DecodesR17R2()
+    {
+        var instruction = _decoder.Decode(0x2D12);
+        instruction.Kind.Should().Be(InstructionKind.Mov);
+        instruction.Rd.Should().Be(17);
+        instruction.Rr.Should().Be(2);
+    }
+
+    [TestMethod]
+    public void MovOpcode_DecodesR1R18()
+    {
+        var instruction = _decoder.Decode(0x2E12);
+        instruction.Kind.Should().Be(InstructionKind.Mov);
+        instruction.Rd.Should().Be(1);
+        instruction.Rr.Should().Be(18);
+    }
+
+    [TestMethod]
+    public void MovOpcode_DecodesR17R18()
+    {
+        var instruction = _decoder.Decode(0x2F12);
+        instruction.Kind.Should().Be(InstructionKind.Mov);
+        instruction.Rd.Should().Be(17);
+        instruction.Rr.Should().Be(18);
+    }
+
+    [TestMethod]
+    public void AddOpcode_DecodesR1R2()
     {
         var instruction = _decoder.Decode(0x0C12);
         instruction.Kind.Should().Be(InstructionKind.Add);
         instruction.Rd.Should().Be(1);
         instruction.Rr.Should().Be(2);
+    }
+
+    [TestMethod]
+    public void AddOpcode_DecodesR17R2()
+    {
+        var instruction = _decoder.Decode(0x0D12);
+        instruction.Kind.Should().Be(InstructionKind.Add);
+        instruction.Rd.Should().Be(17);
+        instruction.Rr.Should().Be(2);
+    }
+
+    [TestMethod]
+    public void AddOpcode_DecodesR1R18()
+    {
+        var instruction = _decoder.Decode(0x0E12);
+        instruction.Kind.Should().Be(InstructionKind.Add);
+        instruction.Rd.Should().Be(1);
+        instruction.Rr.Should().Be(18);
+    }
+
+    [TestMethod]
+    public void AddOpcode_DecodesR17R18()
+    {
+        var instruction = _decoder.Decode(0x0F12);
+        instruction.Kind.Should().Be(InstructionKind.Add);
+        instruction.Rd.Should().Be(17);
+        instruction.Rr.Should().Be(18);
     }
 
     [TestMethod]

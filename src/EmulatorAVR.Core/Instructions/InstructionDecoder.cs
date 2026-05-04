@@ -17,16 +17,16 @@ public class InstructionDecoder
 
         if ((opcode & 0xFC00) == 0x2C00)
         {
-            int d = ((opcode >> 4) & 0x0F) | ((opcode >> 5) & 0x10);
-            int r = (opcode & 0x0F) | ((opcode >> 4) & 0x10);
-            return new Instruction(opcode, InstructionKind.Mov, rd: d, rr: r);
+            int rd = ((opcode >> 4) & 0x1F);
+            int rr = (opcode & 0x0F) | ((opcode >> 5) & 0x10);
+            return new Instruction(opcode, InstructionKind.Mov, rd: rd, rr: rr);
         }
 
         if ((opcode & 0xFC00) == 0x0C00)
         {
-            int d = ((opcode >> 4) & 0x0F) | ((opcode >> 5) & 0x10);
-            int r = (opcode & 0x0F) | ((opcode >> 4) & 0x10);
-            return new Instruction(opcode, InstructionKind.Add, rd: d, rr: r);
+            int rd = ((opcode >> 4) & 0x1F);
+            int rr = (opcode & 0x0F) | ((opcode >> 5) & 0x10);
+            return new Instruction(opcode, InstructionKind.Add, rd: rd, rr: rr);
         }
 
         return new Instruction(opcode, InstructionKind.Unsupported);
