@@ -1,9 +1,12 @@
-using Microsoft.Extensions.Logging;
-using NLog.Extensions.Logging;
+using EmulatorAVR.Cli;
 
-var loggerFactory = LoggerFactory.Create(builder =>
-{
-    builder.AddNLog();
-});
+var (exitCode, stdout, stderr) = CliRunner.Run(args);
 
-Console.WriteLine("EmulatorAVR CLI");
+if (stdout.Length > 0)
+    Console.WriteLine(stdout);
+
+if (stderr.Length > 0)
+    Console.Error.WriteLine(stderr);
+
+if (exitCode != 0)
+    Environment.Exit(exitCode);
