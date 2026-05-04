@@ -25,6 +25,7 @@ First milestone: CLI runner for externally compiled firmware with tracing of AVR
 - Use `byte` for 8-bit registers and memory values.
 - Unsupported opcodes must fail deterministically until implemented.
 - All work must be tracked in GitHub Issues.
+- Avoid infinite loops when running tests. If a command appears to be stuck or repeating, abort and analyze the output before retrying.
 
 ## Target CLI
 
