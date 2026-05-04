@@ -26,10 +26,10 @@ public class AvrRunLoop
         while (true)
         {
             if (state.CycleCount >= options.MaxCycles)
-                return new RunResult(StopReason.MaxCycles, state.ProgramCounter, state.CycleCount, traces);
+                return new RunResult(StopReason.MaxCycles, state.ProgramCounter, state.CycleCount, traces, state: state);
 
             if (state.ProgramCounter >= (uint)(startWordAddress + loadedWordCount))
-                return new RunResult(StopReason.ProgramEnd, state.ProgramCounter, state.CycleCount, traces);
+                return new RunResult(StopReason.ProgramEnd, state.ProgramCounter, state.CycleCount, traces, state: state);
 
             ushort opcode;
             try
@@ -38,13 +38,13 @@ public class AvrRunLoop
             }
             catch (ArgumentOutOfRangeException)
             {
-                return new RunResult(StopReason.ProgramEnd, state.ProgramCounter, state.CycleCount, traces);
+                return new RunResult(StopReason.ProgramEnd, state.ProgramCounter, state.CycleCount, traces, state: state);
             }
 
             var instruction = _decoder.Decode(opcode);
 
             if (instruction.Kind == InstructionKind.Unsupported)
-                return new RunResult(StopReason.UnsupportedInstruction, state.ProgramCounter, state.CycleCount, traces);
+                return new RunResult(StopReason.UnsupportedInstruction, state.ProgramCounter, state.CycleCount, traces, state: state);
 
             _executor.Execute(state, instruction);
 

@@ -55,6 +55,10 @@ public class AvrRunLoopTests
         result.Reason.Should().Be(StopReason.UnsupportedInstruction);
         result.FinalPC.Should().Be(0u);
         result.FinalCycleCount.Should().Be(0u);
+        result.State.Should().NotBeNull();
+        result.State!.Registers[0].Should().Be(0);
+        result.State.Registers[31].Should().Be(0);
+        result.State.SREG.Value.Should().Be(0);
     }
 
     [TestMethod]

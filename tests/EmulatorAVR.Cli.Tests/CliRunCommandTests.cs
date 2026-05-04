@@ -18,9 +18,9 @@ public class CliRunCommandTests
     [TestMethod]
     public void NonExistingFirmwareIsRejected()
     {
-        var (options, _) = CliOptions.Parse(new[] { "run", "--mcu", "atmega328p", "--firmware", "nonexistent.hex", "--max-cycles", "1000" });
-        options.Should().NotBeNull();
-        options!.FirmwarePath.Should().Be("nonexistent.hex");
+        var (exitCode, _, stderr) = CliRunner.Run(new[] { "run", "--mcu", "atmega328p", "--firmware", "nonexistent.hex", "--max-cycles", "1000" });
+        exitCode.Should().Be(1);
+        stderr.Should().Contain("File not found");
     }
 
     [TestMethod]
@@ -74,5 +74,75 @@ public class CliRunCommandTests
         var (options, error) = CliOptions.Parse(new[] { "run", "--mcu", "atmega328p", "--firmware", "test.hex", "--max-cycles", "1000", "--trace", "abc" });
         options.Should().BeNull();
         error.Should().Contain("abc");
+    }
+
+    [TestMethod]
+    public void UnsupportedExtensionIsRejected()
+    {
+        var path = Path.GetTempFileName() + ".xyz";
+        try
+        {
+            File.WriteAllBytes(path, new byte[] { 0x00 });
+            var (exitCode, _, stderr) = CliRunner.Run(new[] { "run", "--mcu", "atmega328p", "--firmware", path, "--max-cycles", "1000" });
+            exitCode.Should().Be(1);
+            stderr.Should().Contain("Unsupported firmware format");
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [TestMethod]
+    public void HexLoaderIsSelectedByHexExtension()
+    {
+        var path = Path.GetTempFileName() + ".hex";
+        try
+        {
+            var hex = ":03000000010203F7\n:00000001FF\n";
+            File.WriteAllText(path, hex);
+            var (exitCode, stdout, _) = CliRunner.Run(new[] { "run", "--mcu", "atmega328p", "--firmware", path, "--max-cycles", "10" });
+            exitCode.Should().Be(0);
+            stdout.Should().Contain("Stop:");
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [TestMethod]
+    public void BinLoaderIsSelectedByBinExtension()
+    {
+        var path = Path.GetTempFileName() + ".bin";
+        try
+        {
+            var bytes = new byte[] { 0x00, 0x00 };
+            File.WriteAllBytes(path, bytes);
+            var (exitCode, stdout, _) = CliRunner.Run(new[] { "run", "--mcu", "atmega328p", "--firmware", path, "--max-cycles", "10" });
+            exitCode.Should().Be(0);
+            stdout.Should().Contain("Stop:");
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [TestMethod]
+    public void InvalidHexLoaderErrorIsHandled()
+    {
+        var path = Path.GetTempFileName() + ".hex";
+        try
+        {
+            File.WriteAllBytes(path, new byte[] { 0xFF, 0xFF, 0xFF });
+            var (exitCode, _, stderr) = CliRunner.Run(new[] { "run", "--mcu", "atmega328p", "--firmware", path, "--max-cycles", "10" });
+            exitCode.Should().Be(1);
+            stderr.Should().Contain("Loader error");
+        }
+        finally
+        {
+            File.Delete(path);
+        }
     }
 }
