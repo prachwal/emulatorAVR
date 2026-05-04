@@ -53,7 +53,7 @@ Every task for DeepSeek V4 Flash must include:
 - exact issue number;
 - files allowed to edit;
 - files or areas explicitly forbidden;
-- commands to run;
+- exact commands to run;
 - exact acceptance checklist;
 - failure stop condition;
 - required final report format.
@@ -66,6 +66,29 @@ Recommended execution settings for Kilo Code when using DeepSeek V4 Flash models
 - at most one retry after a failed command;
 - stop and report if the second attempt fails;
 - prefer existing project conventions over generating a new layout.
+
+## Known DeepSeek V4 Flash failure mode: shortened validation commands
+
+Observed failure mode:
+
+- the issue requires `dotnet test --no-build --logger "trx;LogFileName=test-results.trx"`;
+- the model reports only `dotnet test --no-build`;
+- the model still claims `PASS` and `Can close issue: YES`.
+
+Project rule:
+
+- Shortened validation commands do not satisfy an issue that gives exact commands.
+- If a command is shortened, the result is `UNKNOWN`, not `PASS`.
+- A final report may say `Can close issue: YES` only if the exact issue-required commands are shown and passed.
+- If the exact validation command was not run, the executor must report `Can close issue: NO`.
+
+Default exact validation sequence for implementation issues:
+
+```powershell
+dotnet sln list
+dotnet build --no-restore
+dotnet test --no-build --logger "trx;LogFileName=test-results.trx"
+```
 
 ## Known DeepSeek V4 Flash failure mode: test-output diagnostic loop
 
@@ -82,14 +105,6 @@ Project rule:
 - User-aborted commands are not successful test runs.
 - Suspiciously short test output is `UNKNOWN`, not `PASS`, unless the exit code is clearly `0` and the solution contains the expected test projects.
 - If test status is unclear after one structured diagnostic command, the executor must stop and report `Can close issue: NO`.
-
-Preferred validation sequence:
-
-```powershell
-dotnet sln list
-dotnet build --no-restore
-dotnet test --no-build --logger "trx;LogFileName=test-results.trx"
-```
 
 One allowed hang diagnostic:
 

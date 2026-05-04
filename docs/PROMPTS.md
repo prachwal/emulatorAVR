@@ -36,7 +36,8 @@ Hard constraints:
 - CPU logic must live only in EmulatorAVR.Core.
 - CLI and optional Avalonia UI must consume the same Core API.
 - Every implementation task must add or update tests.
-- Run dotnet build and dotnet test before claiming completion.
+- Run the exact validation commands required by the issue.
+- Do not shorten validation commands.
 - Do not implement broad behavior outside the assigned task.
 - Do not invent AVR semantics. Use docs/references.md and authoritative manuals.
 - Unsupported opcodes must fail deterministically until implemented.
@@ -51,7 +52,7 @@ Work style:
 - Do not refactor unrelated files.
 - Do not move files unless the issue explicitly requires it.
 - Stop after one failed retry.
-- At the end, report commands run and whether they passed.
+- At the end, report exact commands run and whether they passed.
 ```
 
 ## DeepSeek V4 Flash task template
@@ -77,9 +78,12 @@ Forbidden areas:
 Non-goals:
 - <things not to implement>
 
-Commands to run:
-- dotnet build
-- dotnet test
+Commands to run exactly:
+- dotnet sln list
+- dotnet build --no-restore
+- dotnet test --no-build --logger "trx;LogFileName=test-results.trx"
+
+Do not replace these commands with shorter variants.
 
 Stop condition:
 If a command fails, fix only the issue-related cause and retry once. If it fails again, stop and report the error.
@@ -87,9 +91,32 @@ If a command fails, fix only the issue-related cause and retry once. If it fails
 Final report:
 - Issue number
 - Files changed
-- Commands run with PASS/FAIL
+- Exact commands run with PASS/FAIL/UNKNOWN
 - Checklist PASS/FAIL
 - Can close issue: YES/NO
+```
+
+## Validation command rule
+
+If an issue specifies exact commands, the executor must run and report those exact commands.
+
+Invalid shortcut example:
+
+```powershell
+dotnet test --no-build
+```
+
+Valid command when requested:
+
+```powershell
+dotnet test --no-build --logger "trx;LogFileName=test-results.trx"
+```
+
+If the exact command was not run, the correct report is:
+
+```text
+dotnet test --no-build --logger "trx;LogFileName=test-results.trx": UNKNOWN
+Can close issue: NO
 ```
 
 ## Phase 00 prompt
@@ -100,11 +127,11 @@ Initialize the .NET solution, test projects, root context files, and docs.
 Do not implement CPU behavior.
 Do not place test projects under src/.
 Test projects must be under tests/.
-After changes run:
+After changes run exactly:
 
 dotnet sln list
-dotnet build
-dotnet test
+dotnet build --no-restore
+dotnet test --no-build --logger "trx;LogFileName=test-results.trx"
 ```
 
 ## Phase 01 prompt
@@ -113,11 +140,15 @@ dotnet test
 Execute GitHub Issue #2 only.
 Create deterministic core CPU state and memory skeleton.
 Add tests for registers, SREG, PC, cycle counter, and memory bounds.
-Do not implement instruction execution yet.
-After changes run:
+Do not implement instruction execution.
+Do not implement firmware loaders.
+Do not implement CLI behavior.
+Do not edit CLI files.
+After changes run exactly:
 
-dotnet build
-dotnet test
+dotnet sln list
+dotnet build --no-restore
+dotnet test --no-build --logger "trx;LogFileName=test-results.trx"
 ```
 
 ## Phase 02 prompt
@@ -128,8 +159,9 @@ Implement Intel HEX loader first, then raw binary loader.
 Add tests for valid HEX, EOF, invalid checksum, malformed record, and raw binary base address.
 Do not parse ELF.
 Do not execute CPU instructions.
-After changes run:
+After changes run exactly:
 
-dotnet build
-dotnet test
+dotnet sln list
+dotnet build --no-restore
+dotnet test --no-build --logger "trx;LogFileName=test-results.trx"
 ```
