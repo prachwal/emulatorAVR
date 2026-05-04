@@ -1,26 +1,62 @@
-# Workflow Guidelines
+# AGENTS.md — emulatorAVR
 
-## Issue Tracking
-All work must be tracked using GitHub Issues. This ensures transparency and accountability in the development process.
+## Goal
 
-### Creating Issues
-- Use GitHub Issues to track bugs, features, and tasks.
-- Provide clear and concise descriptions.
-- Label issues appropriately (e.g., `bug`, `enhancement`, `documentation`).
+Build a binary-compatible AVR emulator for the ATmega328P-class processor used by Arduino Uno.
 
-### Working on Issues
-- Assign issues to yourself or team members.
-- Reference issues in commits and pull requests (e.g., `Fixes #123`).
-- Update issue status regularly.
+First milestone: CLI runner for externally compiled firmware with tracing of AVR registers and Arduino Uno ports.
 
-## Pull Requests
-- Link pull requests to relevant issues.
-- Ensure all tests pass before submitting a pull request.
-- Request reviews from team members.
+## Stack
 
-## Wiki
-- Use the wiki for documentation and guidelines.
-- Keep the wiki updated with relevant information.
+- C# / .NET
+- MSTest
+- Moq
+- FluentAssertions
+- NLog
+- Optional UI: Avalonia
 
-## Compliance
-Failure to adhere to these guidelines may result in delays or rejection of contributions.
+## Rules
+
+- Put CPU logic only in `src/EmulatorAVR.Core`.
+- CLI and UI must call the same core API.
+- Every implementation task must add or update tests.
+- Use deterministic execution. Do not bind CPU tests to wall-clock time.
+- Use `ushort` for AVR opcode words.
+- Use `byte` for 8-bit registers and memory values.
+- Unsupported opcodes must fail deterministically until implemented.
+- All work must be tracked in GitHub Issues.
+
+## Target CLI
+
+```powershell
+dotnet run --project src/EmulatorAVR.Cli -- run --mcu atmega328p --firmware samples/firmware/blink.hex --max-cycles 100000 --trace registers,ports
+```
+
+## First milestone scope
+
+Model:
+
+- `R0..R31`
+- `SREG`: `I T H S V N Z C`
+- word-addressed program counter
+- cycle counter
+- flash memory
+- data memory
+- Intel HEX loader
+- Arduino Uno port registers: `PORTB`, `PORTC`, `PORTD`, `DDRB`, `DDRC`, `DDRD`, `PINB`, `PINC`, `PIND`
+
+Do not implement in milestone 1 unless explicitly requested:
+
+- ADC accuracy
+- full timer waveform behavior
+- USART electrical timing
+- bootloader protocol
+
+## Required checks
+
+```powershell
+dotnet build
+dotnet test
+```
+
+Completion requires passing tests, updated docs for changed behavior, and no unrelated formatting churn.
