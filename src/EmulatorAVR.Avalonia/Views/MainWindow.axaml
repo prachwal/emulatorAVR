@@ -1,0 +1,50 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="EmulatorAVR.Avalonia.Views.MainWindow"
+        Title="EmulatorAVR State Viewer"
+        Width="800" Height="600">
+  <ScrollViewer>
+    <StackPanel Margin="10" Spacing="8">
+      <TextBlock Text="Program Counter" FontWeight="Bold" />
+      <TextBlock Text="{Binding PcText}" />
+
+      <TextBlock Text="Cycle Count" FontWeight="Bold" />
+      <TextBlock Text="{Binding CycleCountText}" />
+
+      <TextBlock Text="SREG" FontWeight="Bold" />
+      <TextBlock Text="{Binding SregRawText}" />
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <TextBlock Text="{Binding FlagI, StringFormat='I={0}'}" />
+        <TextBlock Text="{Binding FlagT, StringFormat='T={0}'}" />
+        <TextBlock Text="{Binding FlagH, StringFormat='H={0}'}" />
+        <TextBlock Text="{Binding FlagS, StringFormat='S={0}'}" />
+        <TextBlock Text="{Binding FlagV, StringFormat='V={0}'}" />
+        <TextBlock Text="{Binding FlagN, StringFormat='N={0}'}" />
+        <TextBlock Text="{Binding FlagZ, StringFormat='Z={0}'}" />
+        <TextBlock Text="{Binding FlagC, StringFormat='C={0}'}" />
+      </StackPanel>
+
+      <TextBlock Text="Registers" FontWeight="Bold" />
+      <ItemsControl ItemsSource="{Binding Registers}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <StackPanel Orientation="Horizontal" Spacing="4">
+              <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+              <TextBlock Text="{Binding ValueText}" />
+            </StackPanel>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+
+      <TextBlock Text="Ports" FontWeight="Bold" />
+      <TextBlock Text="{Binding PortPlaceholderText}" FontStyle="Italic" />
+      <ItemsControl ItemsSource="{Binding Ports}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding Name}" />
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </StackPanel>
+  </ScrollViewer>
+</Window>
