@@ -1,50 +1,116 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="EmulatorAVR.Avalonia.Views.MainWindow"
-        Title="EmulatorAVR State Viewer"
-        Width="800" Height="600">
+        Title="emulatorAVR — ATmega328P State Viewer"
+        Width="860" Height="680"
+        Background="{StaticResource AppBackground}"
+        Foreground="{StaticResource PrimaryText}">
   <ScrollViewer>
-    <StackPanel Margin="10" Spacing="8">
-      <TextBlock Text="Program Counter" FontWeight="Bold" />
-      <TextBlock Text="{Binding PcText}" />
+    <StackPanel Margin="16" Spacing="12">
 
-      <TextBlock Text="Cycle Count" FontWeight="Bold" />
-      <TextBlock Text="{Binding CycleCountText}" />
-
-      <TextBlock Text="SREG" FontWeight="Bold" />
-      <TextBlock Text="{Binding SregRawText}" />
-      <StackPanel Orientation="Horizontal" Spacing="8">
-        <TextBlock Text="{Binding FlagI, StringFormat='I={0}'}" />
-        <TextBlock Text="{Binding FlagT, StringFormat='T={0}'}" />
-        <TextBlock Text="{Binding FlagH, StringFormat='H={0}'}" />
-        <TextBlock Text="{Binding FlagS, StringFormat='S={0}'}" />
-        <TextBlock Text="{Binding FlagV, StringFormat='V={0}'}" />
-        <TextBlock Text="{Binding FlagN, StringFormat='N={0}'}" />
-        <TextBlock Text="{Binding FlagZ, StringFormat='Z={0}'}" />
-        <TextBlock Text="{Binding FlagC, StringFormat='C={0}'}" />
+      <!-- Header -->
+      <StackPanel Spacing="2">
+        <TextBlock Text="{Binding AppTitle}" Classes="title" />
+        <TextBlock Text="{Binding AppSubtitle}" Classes="subtitle" />
       </StackPanel>
 
-      <TextBlock Text="Registers" FontWeight="Bold" />
-      <ItemsControl ItemsSource="{Binding Registers}">
-        <ItemsControl.ItemTemplate>
-          <DataTemplate>
-            <StackPanel Orientation="Horizontal" Spacing="4">
-              <TextBlock Text="{Binding Name}" FontWeight="Bold" />
-              <TextBlock Text="{Binding ValueText}" />
+      <!-- CPU Summary Cards -->
+      <Border Classes="card">
+        <StackPanel Spacing="8">
+          <TextBlock Text="CPU Summary" Classes="sectionHeader" />
+          <StackPanel Orientation="Horizontal" Spacing="24">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Program Counter" Classes="label" />
+              <TextBlock Text="{Binding PcText}" Classes="cardValue" />
             </StackPanel>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
+            <StackPanel Spacing="2">
+              <TextBlock Text="Cycle Count" Classes="label" />
+              <TextBlock Text="{Binding CycleCountText}" Classes="cardValue" />
+            </StackPanel>
+            <StackPanel Spacing="2">
+              <TextBlock Text="SREG Raw" Classes="label" />
+              <TextBlock Text="{Binding SregRawText}" Classes="cardValue" />
+            </StackPanel>
+          </StackPanel>
+        </StackPanel>
+      </Border>
 
-      <TextBlock Text="Ports" FontWeight="Bold" />
-      <TextBlock Text="{Binding PortPlaceholderText}" FontStyle="Italic" />
-      <ItemsControl ItemsSource="{Binding Ports}">
-        <ItemsControl.ItemTemplate>
-          <DataTemplate>
-            <TextBlock Text="{Binding Name}" />
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
+      <!-- SREG Flags -->
+      <Border Classes="card">
+        <StackPanel Spacing="8">
+          <TextBlock Text="SREG Flags" Classes="sectionHeader" />
+          <ItemsControl ItemsSource="{Binding Flags}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <StackPanel>
+                  <Border Classes="flagActive" IsVisible="{Binding IsActive}" Margin="0,0,0,4">
+                    <TextBlock Text="{Binding Name}" />
+                  </Border>
+                  <Border Classes="flagInactive" IsVisible="{Binding IsInactive}" Margin="0,0,0,4">
+                    <TextBlock Text="{Binding Name}" />
+                  </Border>
+                </StackPanel>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+
+      <!-- Registers -->
+      <Border Classes="card">
+        <StackPanel Spacing="8">
+          <TextBlock Text="Registers (R0..R31)" Classes="sectionHeader" />
+          <ItemsControl ItemsSource="{Binding Registers}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Border Background="{StaticResource CardBorder}" CornerRadius="4" Padding="8,4" Margin="0,0,6,4">
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <TextBlock Text="{Binding Name}" Classes="label" />
+                    <TextBlock Text="{Binding ValueText}" Classes="value" />
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+
+      <!-- Ports -->
+      <Border Classes="card">
+        <StackPanel Spacing="8">
+          <TextBlock Text="Port Registers" Classes="sectionHeader" />
+          <TextBlock Text="{Binding PortPlaceholderText}" Foreground="{StaticResource MutedText}" FontStyle="Italic" FontSize="12" />
+          <ItemsControl ItemsSource="{Binding Ports}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Border Background="{StaticResource CardBorder}" CornerRadius="4" Padding="8,4" Margin="0,0,10,6">
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <TextBlock Text="{Binding Name}" Classes="label" />
+                    <TextBlock Text="{Binding ValueText}" Classes="value" />
+                    <TextBlock Text="{Binding AddressText, StringFormat='({0})'}" Foreground="{StaticResource MutedText}" FontSize="11" />
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+
     </StackPanel>
   </ScrollViewer>
 </Window>

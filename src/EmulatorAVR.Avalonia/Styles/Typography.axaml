@@ -1,0 +1,29 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sys="clr-namespace:System;assembly=netstandard">
+  <Styles.Resources>
+    <!-- Title -->
+    <FontWeight x:Key="TitleWeight">Bold</FontWeight>
+    <sys:Double x:Key="TitleSize">18</sys:Double>
+
+    <!-- Subtitle -->
+    <FontWeight x:Key="SubtitleWeight">Normal</FontWeight>
+    <sys:Double x:Key="SubtitleSize">13</sys:Double>
+
+    <!-- Section header -->
+    <FontWeight x:Key="SectionHeaderWeight">Bold</FontWeight>
+    <sys:Double x:Key="SectionHeaderSize">14</sys:Double>
+
+    <!-- Value text -->
+    <FontWeight x:Key="ValueWeight">Normal</FontWeight>
+    <sys:Double x:Key="ValueSize">13</sys:Double>
+
+    <!-- Label text -->
+    <FontWeight x:Key="LabelWeight">Normal</FontWeight>
+    <sys:Double x:Key="LabelSize">12</sys:Double>
+
+    <!-- Card value (PC, cycle count etc.) -->
+    <FontWeight x:Key="CardValueWeight">Bold</FontWeight>
+    <sys:Double x:Key="CardValueSize">16</sys:Double>
+  </Styles.Resources>
+</Styles>

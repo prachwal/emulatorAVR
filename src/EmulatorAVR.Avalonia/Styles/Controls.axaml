@@ -1,0 +1,76 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!-- Section card -->
+  <Style Selector="Border.card">
+    <Setter Property="Background" Value="{StaticResource CardBackground}" />
+    <Setter Property="BorderBrush" Value="{StaticResource CardBorder}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="Padding" Value="12" />
+  </Style>
+
+  <!-- Section header text -->
+  <Style Selector="TextBlock.sectionHeader">
+    <Setter Property="Foreground" Value="{StaticResource SectionAccent}" />
+    <Setter Property="FontSize" Value="{StaticResource SectionHeaderSize}" />
+    <Setter Property="FontWeight" Value="{StaticResource SectionHeaderWeight}" />
+  </Style>
+
+  <!-- Label text -->
+  <Style Selector="TextBlock.label">
+    <Setter Property="Foreground" Value="{StaticResource SecondaryText}" />
+    <Setter Property="FontSize" Value="{StaticResource LabelSize}" />
+    <Setter Property="FontWeight" Value="{StaticResource LabelWeight}" />
+  </Style>
+
+  <!-- Value text -->
+  <Style Selector="TextBlock.value">
+    <Setter Property="Foreground" Value="{StaticResource ValueText}" />
+    <Setter Property="FontSize" Value="{StaticResource ValueSize}" />
+    <Setter Property="FontWeight" Value="{StaticResource ValueWeight}" />
+  </Style>
+
+  <!-- Card value text (PC / cycle count) -->
+  <Style Selector="TextBlock.cardValue">
+    <Setter Property="Foreground" Value="{StaticResource ValueText}" />
+    <Setter Property="FontSize" Value="{StaticResource CardValueSize}" />
+    <Setter Property="FontWeight" Value="{StaticResource CardValueWeight}" />
+  </Style>
+
+  <!-- Active flag chip -->
+  <Style Selector="Border.flagActive">
+    <Setter Property="Background" Value="{StaticResource ActiveFlagBackground}" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="6,2" />
+  </Style>
+  <Style Selector="Border.flagActive TextBlock">
+    <Setter Property="Foreground" Value="{StaticResource ActiveFlagText}" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="FontSize" Value="12" />
+  </Style>
+
+  <!-- Inactive flag chip -->
+  <Style Selector="Border.flagInactive">
+    <Setter Property="Background" Value="{StaticResource InactiveFlagBackground}" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="6,2" />
+  </Style>
+  <Style Selector="Border.flagInactive TextBlock">
+    <Setter Property="Foreground" Value="{StaticResource InactiveFlagText}" />
+    <Setter Property="FontSize" Value="12" />
+  </Style>
+
+  <!-- Title text -->
+  <Style Selector="TextBlock.title">
+    <Setter Property="Foreground" Value="{StaticResource PrimaryText}" />
+    <Setter Property="FontSize" Value="{StaticResource TitleSize}" />
+    <Setter Property="FontWeight" Value="{StaticResource TitleWeight}" />
+  </Style>
+
+  <!-- Subtitle text -->
+  <Style Selector="TextBlock.subtitle">
+    <Setter Property="Foreground" Value="{StaticResource SecondaryText}" />
+    <Setter Property="FontSize" Value="{StaticResource SubtitleSize}" />
+    <Setter Property="FontWeight" Value="{StaticResource SubtitleWeight}" />
+  </Style>
+</Styles>

@@ -4,5 +4,8 @@
   <Application.DataTemplates />
   <Application.Styles>
     <FluentTheme />
+    <StyleInclude Source="/Styles/Colors.axaml" />
+    <StyleInclude Source="/Styles/Typography.axaml" />
+    <StyleInclude Source="/Styles/Controls.axaml" />
   </Application.Styles>
 </Application>
