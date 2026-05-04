@@ -15,6 +15,47 @@ First milestone: CLI runner for externally compiled firmware with tracing of AVR
 - NLog
 - Optional UI: Avalonia
 
+## Kilo Code model profile
+
+Use this repository with a weak executor model by default.
+
+Recommended executor profile:
+
+- model: Devstral-class coding model
+- temperature: `0.0` to `0.1`
+- mode: one-issue execution
+- planning depth: shallow and explicit
+- retry policy: at most one retry after a failed command
+- command policy: run only the commands required by the current issue
+- context policy: read `AGENTS.md`, `CONTEXT.md`, `docs/TASKS.md`, and the assigned GitHub Issue before editing files
+
+Do not use the weak executor model for broad architecture decisions. Use it only for narrow implementation tasks with explicit files, commands, and acceptance criteria.
+
+When Devstral or a similar weak model executes a task, it must:
+
+1. State the issue number being executed.
+2. List the exact files it intends to touch.
+3. Check whether those files already exist before creating replacements.
+4. Add or update tests before production code where practical.
+5. Run `dotnet build` and `dotnet test` once after changes.
+6. Stop on repeated failures instead of looping.
+7. Report the failing command and relevant error output.
+
+## Repository layout rule
+
+Use this layout for Phase 00 and all later work:
+
+```text
+src/EmulatorAVR.Core/
+src/EmulatorAVR.Cli/
+tests/EmulatorAVR.Core.Tests/
+tests/EmulatorAVR.Cli.Tests/
+samples/firmware/
+docs/
+```
+
+Do not place test projects under `src/`. If a generated project appears under `src/EmulatorAVR.*.Tests`, treat that as a layout defect and move it to `tests/` before claiming the issue is complete.
+
 ## Rules
 
 - Put CPU logic only in `src/EmulatorAVR.Core`.
