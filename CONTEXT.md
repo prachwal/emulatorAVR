@@ -67,6 +67,38 @@ Recommended execution settings for Kilo Code when using Devstral-class models:
 - stop and report if the second attempt fails;
 - prefer existing project conventions over generating a new layout.
 
+## Known Devstral failure mode: test-output diagnostic loop
+
+Observed failure mode:
+
+- `dotnet test` prints only restore lines or unexpectedly short output;
+- the model repeatedly pipes the same command through `tail`, `grep`, `cat`, `wc`, `od`, `head`, or similar tools;
+- the user interrupts the loop;
+- the model then incorrectly claims that tests passed.
+
+Project rule:
+
+- Repeating output-inspection pipelines is forbidden.
+- User-aborted commands are not successful test runs.
+- Suspiciously short test output is `UNKNOWN`, not `PASS`, unless the exit code is clearly `0` and the solution contains the expected test projects.
+- If test status is unclear after one structured diagnostic command, the executor must stop and report `Can close issue: NO`.
+
+Preferred validation sequence:
+
+```powershell
+dotnet sln list
+dotnet build --no-restore
+dotnet test --no-build --logger "trx;LogFileName=test-results.trx"
+```
+
+One allowed hang diagnostic:
+
+```powershell
+dotnet test --no-restore --blame-hang --blame-hang-timeout 60s --logger "trx;LogFileName=test-results.trx"
+```
+
+After the hang diagnostic, stop and report the result. Do not run `cat`, `od`, `wc`, `grep`, `tail`, or repeated variants against the same output.
+
 Operational rule:
 
 ```text
