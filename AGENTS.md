@@ -78,6 +78,55 @@ Required task shape for Devstral:
 8. Report PASS/FAIL for every checklist item.
 ```
 
+## Test command anti-loop policy
+
+Devstral-class models have a known tendency to enter diagnostic loops when `dotnet test` prints only restore messages or unexpectedly short output.
+
+This pattern is forbidden:
+
+```bash
+dotnet test --logger "console;verbosity=detailed" 2>&1 | tail -50
+dotnet test --logger "console;verbosity=detailed" 2>&1 | grep -i "test"
+dotnet test --logger "console;verbosity=detailed" 2>&1 | cat
+dotnet test --logger "console;verbosity=detailed" 2>&1 | wc -l
+dotnet test --logger "console;verbosity=detailed" 2>&1 | cat -A
+dotnet test --logger "console;verbosity=detailed" 2>&1 | od -c
+```
+
+Do not inspect test output by repeatedly piping it through `tail`, `grep`, `cat`, `wc`, `od`, `head`, or similar tools. That is considered a loop, not debugging.
+
+Required behavior when `dotnet test` output is suspiciously short:
+
+1. Do not claim success from output text alone.
+2. Check the process exit code if available.
+3. Run at most one structured diagnostic command.
+4. If still unclear, stop and report `Can close issue: NO` with the exact command output.
+
+Allowed validation sequence:
+
+```powershell
+dotnet sln list
+dotnet build --no-restore
+dotnet test --no-build --logger "trx;LogFileName=test-results.trx"
+```
+
+If tests appear to hang or emit only restore output, use one diagnostic command only:
+
+```powershell
+dotnet test --no-restore --blame-hang --blame-hang-timeout 60s --logger "trx;LogFileName=test-results.trx"
+```
+
+After that, stop. Do not run another output-inspection pipeline.
+
+Interpretation rule:
+
+- `dotnet test` with normal test summary and exit code `0` = PASS.
+- `dotnet test` with exit code non-zero = FAIL.
+- `dotnet test` with no summary and unclear exit status = UNKNOWN, not PASS.
+- user interruption or aborted command = UNKNOWN/FAIL, not PASS.
+
+A final report may say `dotnet test: PASS` only if the command completed normally with exit code `0` and the solution contains the expected test projects.
+
 ## Repository layout rule
 
 Use this layout for Phase 00 and all later work:
