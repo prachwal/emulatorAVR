@@ -14,6 +14,7 @@ public class CliOptions
             return (null, "Expected 'run' command.");
 
         var options = new CliOptions();
+        bool maxCyclesProvided = false;
 
         for (int i = 1; i < args.Length; i++)
         {
@@ -39,6 +40,7 @@ public class CliOptions
                     if (!ulong.TryParse(args[i], out ulong cycles) || cycles == 0)
                         return (null, $"Invalid --max-cycles: {args[i]}");
                     options.MaxCycles = cycles;
+                    maxCyclesProvided = true;
                     break;
 
                 case "--trace":
@@ -49,6 +51,7 @@ public class CliOptions
                     {
                         if (flag == "registers") options.TraceRegisters = true;
                         else if (flag == "ports") options.TracePorts = true;
+                        else return (null, $"Unknown trace flag: {flag}");
                     }
                     break;
 
@@ -56,6 +59,9 @@ public class CliOptions
                     return (null, $"Unknown argument: {args[i]}");
             }
         }
+
+        if (!maxCyclesProvided)
+            return (null, "--max-cycles is required.");
 
         if (string.IsNullOrEmpty(options.FirmwarePath))
             return (null, "--firmware is required.");

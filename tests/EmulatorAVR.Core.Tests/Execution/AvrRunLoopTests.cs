@@ -4,36 +4,28 @@ using EmulatorAVR.Core.Cpu;
 using EmulatorAVR.Core.Execution;
 using EmulatorAVR.Core.Firmware;
 using EmulatorAVR.Core.Memory;
-using EmulatorAVR.Core.Tracing;
 
 namespace EmulatorAVR.Core.Tests.Execution;
 
 [TestClass]
 public class AvrRunLoopTests
 {
-    private static ProgramMemory CreateProgramMemory(params ushort[] opcodes)
+    private static FirmwareImage FirmwareFromOpcodes(ushort baseAddressWords, params ushort[] opcodes)
     {
-        var mem = new ProgramMemory(32768);
-        for (int i = 0; i < opcodes.Length; i++)
-            mem[i] = opcodes[i];
-        return mem;
-    }
-
-    private static FirmwareImage FirmwareFromOpcodes(params ushort[] opcodes)
-    {
+        uint baseAddress = (uint)(baseAddressWords * 2);
         var bytes = new byte[opcodes.Length * 2];
         for (int i = 0; i < opcodes.Length; i++)
         {
             bytes[i * 2] = (byte)(opcodes[i] & 0xFF);
             bytes[i * 2 + 1] = (byte)((opcodes[i] >> 8) & 0xFF);
         }
-        return new FirmwareImage(0, bytes);
+        return new FirmwareImage(baseAddress, bytes);
     }
 
     [TestMethod]
     public void StopsAtMaxCycles()
     {
-        var firmware = FirmwareFromOpcodes(0x0000, 0x0000, 0x0000, 0x0000, 0x0000);
+        var firmware = FirmwareFromOpcodes(0, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000);
         var options = new RunOptions("atmega328p", 3, false, false, firmware);
         var loop = new AvrRunLoop();
         var result = loop.Run(options);
@@ -44,7 +36,7 @@ public class AvrRunLoopTests
     [TestMethod]
     public void StopsOnUnsupportedOpcode()
     {
-        var firmware = FirmwareFromOpcodes(0xFFFF);
+        var firmware = FirmwareFromOpcodes(0, 0xFFFF);
         var options = new RunOptions("atmega328p", 100, false, false, firmware);
         var loop = new AvrRunLoop();
         var result = loop.Run(options);
@@ -53,9 +45,22 @@ public class AvrRunLoopTests
     }
 
     [TestMethod]
+    public void UnsupportedOpcodeDoesNotMutateState()
+    {
+        var firmware = FirmwareFromOpcodes(0, 0xFFFF);
+        var options = new RunOptions("atmega328p", 100, false, false, firmware);
+        var loop = new AvrRunLoop();
+        var result = loop.Run(options);
+
+        result.Reason.Should().Be(StopReason.UnsupportedInstruction);
+        result.FinalPC.Should().Be(0u);
+        result.FinalCycleCount.Should().Be(0u);
+    }
+
+    [TestMethod]
     public void StopsAtProgramEnd()
     {
-        var firmware = FirmwareFromOpcodes(0x0000, 0x0000);
+        var firmware = FirmwareFromOpcodes(0, 0x0000, 0x0000);
         var options = new RunOptions("atmega328p", 100, false, false, firmware);
         var loop = new AvrRunLoop();
         var result = loop.Run(options);
@@ -65,9 +70,33 @@ public class AvrRunLoopTests
     }
 
     [TestMethod]
+    public void NonZeroFirmwareBaseAddressLoadsCorrectly()
+    {
+        var firmware = FirmwareFromOpcodes(4, 0x0000, 0x0000);
+        var options = new RunOptions("atmega328p", 100, false, false, firmware);
+        var loop = new AvrRunLoop();
+        var result = loop.Run(options);
+        result.Reason.Should().Be(StopReason.ProgramEnd);
+        result.FinalCycleCount.Should().Be(2);
+        result.FinalPC.Should().Be(6u);
+    }
+
+    [TestMethod]
+    public void OddFirmwareByteCountIsPadded()
+    {
+        var bytes = new byte[] { 0x00, 0x00, 0x01 };
+        var firmware = new FirmwareImage(0, bytes);
+        var options = new RunOptions("atmega328p", 1, false, false, firmware);
+        var loop = new AvrRunLoop();
+        var result = loop.Run(options);
+        result.Reason.Should().Be(StopReason.MaxCycles);
+        result.FinalCycleCount.Should().Be(1);
+    }
+
+    [TestMethod]
     public void RegisterDiffTraceAfterLdi()
     {
-        var firmware = FirmwareFromOpcodes(0xE402);
+        var firmware = FirmwareFromOpcodes(0, 0xE402);
         var options = new RunOptions("atmega328p", 10, true, false, firmware);
         var loop = new AvrRunLoop();
         var result = loop.Run(options);
@@ -79,9 +108,19 @@ public class AvrRunLoopTests
     }
 
     [TestMethod]
+    public void RegisterTraceDisabled_ProducesNoRegisterEntries()
+    {
+        var firmware = FirmwareFromOpcodes(0, 0xE402);
+        var options = new RunOptions("atmega328p", 10, false, false, firmware);
+        var loop = new AvrRunLoop();
+        var result = loop.Run(options);
+        result.TraceFrames.Should().BeEmpty();
+    }
+
+    [TestMethod]
     public void PortTraceIsEmptyPlaceholder()
     {
-        var firmware = FirmwareFromOpcodes(0x0000);
+        var firmware = FirmwareFromOpcodes(0, 0x0000);
         var options = new RunOptions("atmega328p", 1, true, true, firmware);
         var loop = new AvrRunLoop();
         var result = loop.Run(options);
@@ -93,12 +132,10 @@ public class AvrRunLoopTests
     [TestMethod]
     public void NoWallClockDependency()
     {
-        var firmware = FirmwareFromOpcodes(0x0000, 0x0000, 0x0000, 0x0000);
+        var firmware = FirmwareFromOpcodes(0, 0x0000, 0x0000, 0x0000, 0x0000);
         var options = new RunOptions("atmega328p", 4, false, false, firmware);
         var loop = new AvrRunLoop();
-        var sw = System.Diagnostics.Stopwatch.StartNew();
         var result = loop.Run(options);
-        sw.Stop();
         result.Reason.Should().Be(StopReason.MaxCycles);
         result.FinalCycleCount.Should().Be(4);
     }

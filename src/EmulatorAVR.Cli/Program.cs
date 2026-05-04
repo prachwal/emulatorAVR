@@ -1,6 +1,5 @@
 using EmulatorAVR.Core.Execution;
 using EmulatorAVR.Core.Firmware;
-using EmulatorAVR.Core.Tracing;
 
 using EmulatorAVR.Cli;
 
@@ -14,18 +13,30 @@ if (parseResult.options == null)
 
 var cliOptions = parseResult.options;
 
-var firmwareBytes = File.ReadAllBytes(cliOptions.FirmwarePath!);
-var hexLoader = new IntelHexLoader();
+if (!File.Exists(cliOptions.FirmwarePath))
+{
+    Console.Error.WriteLine($"File not found: {cliOptions.FirmwarePath}");
+    Environment.Exit(1);
+    return;
+}
+
 FirmwareImage firmware;
 
-try
-{
-    firmware = hexLoader.Load(firmwareBytes);
-}
-catch (FormatException)
+if (cliOptions.FirmwarePath.EndsWith(".bin", StringComparison.OrdinalIgnoreCase))
 {
     var rawLoader = new RawBinaryLoader();
-    firmware = rawLoader.Load(firmwareBytes);
+    firmware = rawLoader.Load(File.ReadAllBytes(cliOptions.FirmwarePath));
+}
+else if (cliOptions.FirmwarePath.EndsWith(".hex", StringComparison.OrdinalIgnoreCase))
+{
+    var hexLoader = new IntelHexLoader();
+    firmware = hexLoader.Load(File.ReadAllBytes(cliOptions.FirmwarePath));
+}
+else
+{
+    Console.Error.WriteLine($"Unsupported firmware format: {Path.GetExtension(cliOptions.FirmwarePath)}");
+    Environment.Exit(1);
+    return;
 }
 
 var runOptions = new RunOptions(

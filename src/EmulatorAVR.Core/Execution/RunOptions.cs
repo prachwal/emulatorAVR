@@ -12,6 +12,11 @@ public class RunOptions
 
     public RunOptions(string mcu, ulong maxCycles, bool traceRegisters, bool tracePorts, FirmwareImage? firmware)
     {
+        if (mcu != "atmega328p")
+            throw new ArgumentException($"Unsupported MCU: {mcu}", nameof(mcu));
+        if (maxCycles == 0)
+            throw new ArgumentException("MaxCycles must be greater than zero.", nameof(maxCycles));
+
         MCU = mcu;
         MaxCycles = maxCycles;
         TraceRegisters = traceRegisters;
