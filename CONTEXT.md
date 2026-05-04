@@ -17,10 +17,63 @@ Primary milestone for the current phase:
 Execution environment and workflow:
 
 - The user will use Kilo Code.
-- The likely executor model is weak: Devstral.
+- The likely executor model is weak: Devstral / Devstral 2 class.
 - Tasks must be precise, small, file-oriented, command-oriented, and include explicit acceptance criteria.
 - Do not rely on broad implicit reasoning by the executor model.
 - The user has WSL with working X desktop output, so Avalonia UI can be used and visually checked.
+
+## Devstral executor limitations
+
+Treat Devstral-class models as weak executors, not architects.
+
+Use Devstral only for:
+
+- one GitHub Issue at a time;
+- explicit file edits;
+- small implementation steps;
+- command-based validation;
+- mechanical layout fixes;
+- adding tests from precise acceptance criteria;
+- implementing one narrow class or one narrow instruction group at a time.
+
+Do not rely on Devstral for:
+
+- architecture decisions;
+- deciding milestone scope;
+- interpreting AVR semantics without explicit references;
+- broad refactoring;
+- moving files unless the issue explicitly requires it;
+- guessing repository layout;
+- deciding whether an issue can be closed without a checklist;
+- inventing peripheral or instruction behavior.
+
+Every task for Devstral must include:
+
+- files to read first;
+- exact issue number;
+- files allowed to edit;
+- files or areas explicitly forbidden;
+- commands to run;
+- exact acceptance checklist;
+- failure stop condition;
+- required final report format.
+
+Recommended execution settings for Kilo Code when using Devstral-class models:
+
+- temperature: `0.0` to `0.1`;
+- one issue per session;
+- no autonomous task expansion;
+- at most one retry after a failed command;
+- stop and report if the second attempt fails;
+- prefer existing project conventions over generating a new layout.
+
+Operational rule:
+
+```text
+repo = durable project memory
+GitHub Issues = current executable work items
+chat = planning, review, and correction loop
+```
 
 Implementation preferences:
 
