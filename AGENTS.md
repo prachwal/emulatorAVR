@@ -21,7 +21,7 @@ Use this repository with a weak executor model by default.
 
 Recommended executor profile:
 
-- model: Devstral-class coding model
+- model: Devstral-class coding model, including Devstral 2 class models
 - temperature: `0.0` to `0.1`
 - mode: one-issue execution
 - planning depth: shallow and explicit
@@ -40,6 +40,43 @@ When Devstral or a similar weak model executes a task, it must:
 5. Run `dotnet build` and `dotnet test` once after changes.
 6. Stop on repeated failures instead of looping.
 7. Report the failing command and relevant error output.
+
+## Devstral limitations and safeguards
+
+Treat Devstral-class models as weak executors, not architects.
+
+Allowed use:
+
+- execute one GitHub Issue at a time;
+- edit explicitly named files;
+- apply mechanical layout corrections;
+- add tests from explicit criteria;
+- implement a narrow class or a narrow instruction group;
+- run validation commands and report results.
+
+Forbidden use unless a human-designed issue explicitly permits it:
+
+- decide emulator architecture;
+- expand milestone scope;
+- infer AVR instruction semantics without references;
+- perform broad refactoring;
+- move files outside the requested correction;
+- guess project layout;
+- implement CPU, memory, ports, firmware loaders, or UI in a documentation/setup issue;
+- claim completion without checking the issue checklist.
+
+Required task shape for Devstral:
+
+```text
+1. Read AGENTS.md, CONTEXT.md, docs/TASKS.md, and the assigned issue.
+2. Restate the issue number.
+3. List files to edit.
+4. List files or areas that must not be changed.
+5. Make the smallest change that satisfies the issue.
+6. Run the required commands.
+7. Stop after one failed retry.
+8. Report PASS/FAIL for every checklist item.
+```
 
 ## Repository layout rule
 
