@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using EmulatorAVR.Core.Cpu;
 
 namespace EmulatorAVR.Core.Tracing;
@@ -15,7 +16,7 @@ public sealed class EmulatorStateSnapshot
     public bool N { get; }
     public bool Z { get; }
     public bool C { get; }
-    public IReadOnlyList<byte> Registers { get; }
+    public ImmutableArray<byte> Registers { get; }
 
     public EmulatorStateSnapshot(AvrCpuState state)
     {
@@ -34,6 +35,6 @@ public sealed class EmulatorStateSnapshot
         var regs = new byte[32];
         for (int i = 0; i < 32; i++)
             regs[i] = state.Registers[i];
-        Registers = regs;
+        Registers = ImmutableArray.Create(regs);
     }
 }

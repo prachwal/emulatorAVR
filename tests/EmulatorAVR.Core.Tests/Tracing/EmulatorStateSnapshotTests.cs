@@ -87,4 +87,19 @@ public class EmulatorStateSnapshotTests
         state.SREG.Value = 0xFF;
         snapshot.SregRawValue.Should().Be(0x00);
     }
+
+    [TestMethod]
+    public void CallerCannotMutateSnapshotRegisterData()
+    {
+        var state = new AvrCpuState();
+        state.Registers[0] = 0xAB;
+        var snapshot = new EmulatorStateSnapshot(state);
+        var regs = snapshot.Registers;
+
+        regs.Should().BeOfType<System.Collections.Immutable.ImmutableArray<byte>>();
+        regs[0].Should().Be(0xAB);
+
+        Action act = () => ((byte[])(object)regs)[0] = 0xFF;
+        act.Should().Throw<InvalidCastException>();
+    }
 }
