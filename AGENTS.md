@@ -21,7 +21,7 @@ Use this repository with a weak executor model by default.
 
 Recommended executor profile:
 
-- model: DeepSeek V4 Flash-class coding model, including DeepSeek V4 Flash 2 class models
+- model: DeepSeek V4 Flash coding model, including DeepSeek V4 Flash 2 models
 - temperature: `0.0` to `0.1`
 - mode: one-issue execution
 - planning depth: shallow and explicit
@@ -43,7 +43,7 @@ When DeepSeek V4 Flash or a similar weak model executes a task, it must:
 
 ## DeepSeek V4 Flash limitations and safeguards
 
-Treat DeepSeek V4 Flash-class models as weak executors, not architects.
+Treat DeepSeek V4 Flash models as weak executors, not architects.
 
 Allowed use:
 
@@ -80,7 +80,7 @@ Required task shape for DeepSeek V4 Flash:
 
 ## Test command anti-loop policy
 
-DeepSeek V4 Flash-class models have a known tendency to enter diagnostic loops when `dotnet test` prints only restore messages or unexpectedly short output.
+DeepSeek V4 Flash models have a known tendency to enter diagnostic loops when `dotnet test` prints only restore messages or unexpectedly short output.
 
 This pattern is forbidden:
 

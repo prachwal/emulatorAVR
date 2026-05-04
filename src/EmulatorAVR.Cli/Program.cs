@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
-using EmulatorAVR.Core;
 
 var loggerFactory = LoggerFactory.Create(builder =>
 {
@@ -8,4 +7,3 @@ var loggerFactory = LoggerFactory.Create(builder =>
 });
 
 Console.WriteLine("EmulatorAVR CLI");
-Console.WriteLine(DummyLibrary.GetMessage());

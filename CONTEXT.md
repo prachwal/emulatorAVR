@@ -17,14 +17,14 @@ Primary milestone for the current phase:
 Execution environment and workflow:
 
 - The user will use Kilo Code.
-- The likely executor model is weak: DeepSeek V4 Flash / DeepSeek V4 Flash 2 class.
+- The likely executor model is weak: DeepSeek V4 Flash / DeepSeek V4 Flash 2.
 - Tasks must be precise, small, file-oriented, command-oriented, and include explicit acceptance criteria.
 - Do not rely on broad implicit reasoning by the executor model.
 - The user has WSL with working X desktop output, so Avalonia UI can be used and visually checked.
 
 ## DeepSeek V4 Flash executor limitations
 
-Treat DeepSeek V4 Flash-class models as weak executors, not architects.
+Treat DeepSeek V4 Flash models as weak executors, not architects.
 
 Use DeepSeek V4 Flash only for:
 
@@ -58,7 +58,7 @@ Every task for DeepSeek V4 Flash must include:
 - failure stop condition;
 - required final report format.
 
-Recommended execution settings for Kilo Code when using DeepSeek V4 Flash-class models:
+Recommended execution settings for Kilo Code when using DeepSeek V4 Flash models:
 
 - temperature: `0.0` to `0.1`;
 - one issue per session;

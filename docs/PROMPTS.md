@@ -2,7 +2,7 @@
 
 ## Master execution prompt
 
-Use this prompt when starting work in Kilo Code with a weak executor model such as DeepSeek V4 Flash or DeepSeek V4 Flash 2 class models.
+Use this prompt when starting work in Kilo Code with a weak executor model such as DeepSeek V4 Flash or DeepSeek V4 Flash 2 models.
 
 ```text
 You are working in repository https://github.com/prachwal/emulatorAVR.
