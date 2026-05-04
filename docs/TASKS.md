@@ -9,10 +9,10 @@ Backlog is tracked in GitHub Issues. Execute issues in numerical order unless ex
 | 00 | #1 | Project initialization, solution, tests, `AGENTS.md`, `CONTEXT.md` |
 | 01 | #2 | Core CPU state and memory skeleton |
 | 02 | #3 | Intel HEX and raw binary firmware loaders |
-| 03 | TBD | Instruction decode baseline |
-| 04 | TBD | Execution loop, tracing, CLI |
-| 05 | TBD | Arduino Uno port model |
-| 06 | TBD | Optional Avalonia viewer |
+| 03 | #4 | Instruction decode baseline |
+| 04 | #5 | Execution loop, tracing, CLI |
+| 05 | #6 | Arduino Uno port model |
+| 06 | #7 | Optional Avalonia viewer |
 
 ## Execution rule for weak models
 
