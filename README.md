@@ -45,5 +45,9 @@ To run tests, use the following command:
 - **tests/**: Contains the test projects.
 - **README.md**: This file.
 
+## Links
+- [GitHub Issues](https://github.com/prachwal/emulatorAVR/issues)
+- [GitHub Wiki](https://github.com/prachwal/emulatorAVR/wiki)
+
 ## License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
