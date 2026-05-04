@@ -26,7 +26,7 @@ Recommended executor profile:
 - mode: one-issue execution
 - planning depth: shallow and explicit
 - retry policy: at most one retry after a failed command
-- command policy: run only the commands required by the current issue
+- command policy: run only the exact commands required by the current issue
 - context policy: read `AGENTS.md`, `CONTEXT.md`, `docs/TASKS.md`, and the assigned GitHub Issue before editing files
 
 Do not use the weak executor model for broad architecture decisions. Use it only for narrow implementation tasks with explicit files, commands, and acceptance criteria.
@@ -37,7 +37,7 @@ When DeepSeek V4 Flash or a similar weak model executes a task, it must:
 2. List the exact files it intends to touch.
 3. Check whether those files already exist before creating replacements.
 4. Add or update tests before production code where practical.
-5. Run `dotnet build` and `dotnet test` once after changes.
+5. Run the exact validation commands from the issue, not shortened variants.
 6. Stop on repeated failures instead of looping.
 7. Report the failing command and relevant error output.
 
@@ -63,7 +63,8 @@ Forbidden use unless a human-designed issue explicitly permits it:
 - move files outside the requested correction;
 - guess project layout;
 - implement CPU, memory, ports, firmware loaders, or UI in a documentation/setup issue;
-- claim completion without checking the issue checklist.
+- claim completion without checking the issue checklist;
+- replace an exact validation command with a shorter equivalent-looking command.
 
 Required task shape for DeepSeek V4 Flash:
 
@@ -73,9 +74,42 @@ Required task shape for DeepSeek V4 Flash:
 3. List files to edit.
 4. List files or areas that must not be changed.
 5. Make the smallest change that satisfies the issue.
-6. Run the required commands.
+6. Run the exact commands required by the issue.
 7. Stop after one failed retry.
-8. Report PASS/FAIL for every checklist item.
+8. Report PASS/FAIL/UNKNOWN for every checklist item.
+```
+
+## Validation command strictness
+
+DeepSeek V4 Flash has shown a tendency to report shortened commands such as:
+
+```powershell
+dotnet test --no-build
+```
+
+when the issue explicitly required:
+
+```powershell
+dotnet test --no-build --logger "trx;LogFileName=test-results.trx"
+```
+
+This is not acceptable.
+
+Rules:
+
+- If an issue gives exact commands, run and report those exact commands.
+- Do not omit logger arguments.
+- Do not replace `dotnet build --no-restore` with `dotnet build`.
+- Do not replace `dotnet test --no-build --logger "trx;LogFileName=test-results.trx"` with `dotnet test` or `dotnet test --no-build`.
+- If only a shortened command was run, final status is `UNKNOWN`, not `PASS`.
+- If the report does not show the exact command required by the issue, answer `Can close issue: NO`.
+
+Required default validation sequence for implementation issues:
+
+```powershell
+dotnet sln list
+dotnet build --no-restore
+dotnet test --no-build --logger "trx;LogFileName=test-results.trx"
 ```
 
 ## Test command anti-loop policy
@@ -102,14 +136,6 @@ Required behavior when `dotnet test` output is suspiciously short:
 3. Run at most one structured diagnostic command.
 4. If still unclear, stop and report `Can close issue: NO` with the exact command output.
 
-Allowed validation sequence:
-
-```powershell
-dotnet sln list
-dotnet build --no-restore
-dotnet test --no-build --logger "trx;LogFileName=test-results.trx"
-```
-
 If tests appear to hang or emit only restore output, use one diagnostic command only:
 
 ```powershell
@@ -120,12 +146,13 @@ After that, stop. Do not run another output-inspection pipeline.
 
 Interpretation rule:
 
-- `dotnet test` with normal test summary and exit code `0` = PASS.
+- `dotnet test` with the exact issue-required command, normal completion, and exit code `0` = PASS.
 - `dotnet test` with exit code non-zero = FAIL.
+- shortened test command where exact command was required = UNKNOWN, not PASS.
 - `dotnet test` with no summary and unclear exit status = UNKNOWN, not PASS.
 - user interruption or aborted command = UNKNOWN/FAIL, not PASS.
 
-A final report may say `dotnet test: PASS` only if the command completed normally with exit code `0` and the solution contains the expected test projects.
+A final report may say `dotnet test: PASS` only if the exact issue-required test command completed normally with exit code `0` and the solution contains the expected test projects.
 
 ## Repository layout rule
 
@@ -182,9 +209,12 @@ Do not implement in milestone 1 unless explicitly requested:
 
 ## Required checks
 
+Use the exact validation commands from the active issue. If no issue-specific command is given, use:
+
 ```powershell
-dotnet build
-dotnet test
+dotnet sln list
+dotnet build --no-restore
+dotnet test --no-build --logger "trx;LogFileName=test-results.trx"
 ```
 
 Completion requires passing tests, updated docs for changed behavior, and no unrelated formatting churn.
