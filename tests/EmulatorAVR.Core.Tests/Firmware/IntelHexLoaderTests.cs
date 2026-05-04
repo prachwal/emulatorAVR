@@ -91,4 +91,13 @@ public class IntelHexLoaderTests
         Action act = () => _loader.LoadText(hex);
         act.Should().Throw<FormatException>();
     }
+
+    [TestMethod]
+    public void InvalidEOFLn()
+    {
+        var hex = ":03000000010203F7\n"
+                + ":0000000100\n";
+        Action act = () => _loader.LoadText(hex);
+        act.Should().Throw<FormatException>();
+    }
 }

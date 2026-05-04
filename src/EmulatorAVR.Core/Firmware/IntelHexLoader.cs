@@ -39,6 +39,12 @@ public class IntelHexLoader : IFirmwareLoader
 
             if (recordType == 0x01)
             {
+                int eofSum = byteCount + (address >> 8) + (address & 0xFF) + recordType;
+                int eofChecksum = ParseHexByte(line, 9 + dataLength);
+                eofSum = (eofSum + eofChecksum) & 0xFF;
+                if (eofSum != 0)
+                    throw new FormatException($"Invalid checksum at line: {line}");
+
                 eofFound = true;
                 continue;
             }
