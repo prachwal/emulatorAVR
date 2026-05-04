@@ -1,8 +1,8 @@
-# PROMPTS — Kilo Code / Devstral
+# PROMPTS — Kilo Code / DeepSeek V4 Flash
 
 ## Master execution prompt
 
-Use this prompt when starting work in Kilo Code with a weak executor model such as Devstral or Devstral 2 class models.
+Use this prompt when starting work in Kilo Code with a weak executor model such as DeepSeek V4 Flash or DeepSeek V4 Flash 2 class models.
 
 ```text
 You are working in repository https://github.com/prachwal/emulatorAVR.
@@ -54,9 +54,9 @@ Work style:
 - At the end, report commands run and whether they passed.
 ```
 
-## Devstral task template
+## DeepSeek V4 Flash task template
 
-Use this shape for all future Devstral tasks:
+Use this shape for all future DeepSeek V4 Flash tasks:
 
 ```text
 Execute only GitHub Issue #<number>.

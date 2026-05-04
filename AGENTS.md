@@ -21,7 +21,7 @@ Use this repository with a weak executor model by default.
 
 Recommended executor profile:
 
-- model: Devstral-class coding model, including Devstral 2 class models
+- model: DeepSeek V4 Flash-class coding model, including DeepSeek V4 Flash 2 class models
 - temperature: `0.0` to `0.1`
 - mode: one-issue execution
 - planning depth: shallow and explicit
@@ -31,7 +31,7 @@ Recommended executor profile:
 
 Do not use the weak executor model for broad architecture decisions. Use it only for narrow implementation tasks with explicit files, commands, and acceptance criteria.
 
-When Devstral or a similar weak model executes a task, it must:
+When DeepSeek V4 Flash or a similar weak model executes a task, it must:
 
 1. State the issue number being executed.
 2. List the exact files it intends to touch.
@@ -41,9 +41,9 @@ When Devstral or a similar weak model executes a task, it must:
 6. Stop on repeated failures instead of looping.
 7. Report the failing command and relevant error output.
 
-## Devstral limitations and safeguards
+## DeepSeek V4 Flash limitations and safeguards
 
-Treat Devstral-class models as weak executors, not architects.
+Treat DeepSeek V4 Flash-class models as weak executors, not architects.
 
 Allowed use:
 
@@ -65,7 +65,7 @@ Forbidden use unless a human-designed issue explicitly permits it:
 - implement CPU, memory, ports, firmware loaders, or UI in a documentation/setup issue;
 - claim completion without checking the issue checklist.
 
-Required task shape for Devstral:
+Required task shape for DeepSeek V4 Flash:
 
 ```text
 1. Read AGENTS.md, CONTEXT.md, docs/TASKS.md, and the assigned issue.
@@ -80,7 +80,7 @@ Required task shape for Devstral:
 
 ## Test command anti-loop policy
 
-Devstral-class models have a known tendency to enter diagnostic loops when `dotnet test` prints only restore messages or unexpectedly short output.
+DeepSeek V4 Flash-class models have a known tendency to enter diagnostic loops when `dotnet test` prints only restore messages or unexpectedly short output.
 
 This pattern is forbidden:
 

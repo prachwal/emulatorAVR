@@ -17,16 +17,16 @@ Primary milestone for the current phase:
 Execution environment and workflow:
 
 - The user will use Kilo Code.
-- The likely executor model is weak: Devstral / Devstral 2 class.
+- The likely executor model is weak: DeepSeek V4 Flash / DeepSeek V4 Flash 2 class.
 - Tasks must be precise, small, file-oriented, command-oriented, and include explicit acceptance criteria.
 - Do not rely on broad implicit reasoning by the executor model.
 - The user has WSL with working X desktop output, so Avalonia UI can be used and visually checked.
 
-## Devstral executor limitations
+## DeepSeek V4 Flash executor limitations
 
-Treat Devstral-class models as weak executors, not architects.
+Treat DeepSeek V4 Flash-class models as weak executors, not architects.
 
-Use Devstral only for:
+Use DeepSeek V4 Flash only for:
 
 - one GitHub Issue at a time;
 - explicit file edits;
@@ -36,7 +36,7 @@ Use Devstral only for:
 - adding tests from precise acceptance criteria;
 - implementing one narrow class or one narrow instruction group at a time.
 
-Do not rely on Devstral for:
+Do not rely on DeepSeek V4 Flash for:
 
 - architecture decisions;
 - deciding milestone scope;
@@ -47,7 +47,7 @@ Do not rely on Devstral for:
 - deciding whether an issue can be closed without a checklist;
 - inventing peripheral or instruction behavior.
 
-Every task for Devstral must include:
+Every task for DeepSeek V4 Flash must include:
 
 - files to read first;
 - exact issue number;
@@ -58,7 +58,7 @@ Every task for Devstral must include:
 - failure stop condition;
 - required final report format.
 
-Recommended execution settings for Kilo Code when using Devstral-class models:
+Recommended execution settings for Kilo Code when using DeepSeek V4 Flash-class models:
 
 - temperature: `0.0` to `0.1`;
 - one issue per session;
@@ -67,7 +67,7 @@ Recommended execution settings for Kilo Code when using Devstral-class models:
 - stop and report if the second attempt fails;
 - prefer existing project conventions over generating a new layout.
 
-## Known Devstral failure mode: test-output diagnostic loop
+## Known DeepSeek V4 Flash failure mode: test-output diagnostic loop
 
 Observed failure mode:
 

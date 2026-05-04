@@ -28,7 +28,7 @@ Optional UI: thin Avalonia viewer over the same emulator core API.
 - `CONTEXT.md` — persistent situation context
 - `docs/ROADMAP.md` — phases
 - `docs/TASKS.md` — task backlog
-- `docs/PROMPTS.md` — prompts for Kilo Code / Devstral
+- `docs/PROMPTS.md` — prompts for Kilo Code / DeepSeek V4 Flash
 - `docs/references.md` — authoritative technical references
 
 ## Initial command target
