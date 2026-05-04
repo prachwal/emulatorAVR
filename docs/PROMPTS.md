@@ -1,8 +1,8 @@
-# PROMPTS — Kilo Code / Devstral
+# PROMPTS — Kilo Code / DeepSeek V4 Flash
 
 ## Master execution prompt
 
-Use this prompt when starting work in Kilo Code with a weak executor model such as Devstral.
+Use this prompt when starting work in Kilo Code with a weak executor model such as DeepSeek V4 Flash or DeepSeek V4 Flash 2 models.
 
 ```text
 You are working in repository https://github.com/prachwal/emulatorAVR.
@@ -14,12 +14,20 @@ Read these files first:
 3. docs/ROADMAP.md
 4. docs/TASKS.md
 5. docs/references.md
+6. The assigned GitHub Issue
 
 Project goal:
 Build a binary-compatible AVR emulator for the ATmega328P-class CPU used by Arduino Uno.
 
 Current milestone:
 Create a CLI tool that loads externally compiled AVR firmware and executes it with tracing of registers and Arduino Uno ports.
+
+Executor profile:
+Treat yourself as a weak executor, not an architect.
+Do not make architecture decisions.
+Do not expand scope.
+Do not infer missing AVR semantics.
+Do not decide that an issue is complete without checking every acceptance criterion.
 
 Hard constraints:
 - Use C# / .NET.
@@ -35,11 +43,53 @@ Hard constraints:
 
 Work style:
 - Execute exactly one GitHub Issue at a time.
-- Before editing, restate the issue number and files you will touch.
+- Before editing, restate the issue number.
+- Before editing, list files you will touch.
+- Before editing, list files or areas you will not touch.
 - Prefer tests first.
 - Keep changes small.
 - Do not refactor unrelated files.
+- Do not move files unless the issue explicitly requires it.
+- Stop after one failed retry.
 - At the end, report commands run and whether they passed.
+```
+
+## DeepSeek V4 Flash task template
+
+Use this shape for all future DeepSeek V4 Flash tasks:
+
+```text
+Execute only GitHub Issue #<number>.
+
+Read first:
+- AGENTS.md
+- CONTEXT.md
+- docs/TASKS.md
+- docs/references.md
+- GitHub Issue #<number>
+
+Allowed files:
+- <exact paths>
+
+Forbidden areas:
+- <exact paths or modules>
+
+Non-goals:
+- <things not to implement>
+
+Commands to run:
+- dotnet build
+- dotnet test
+
+Stop condition:
+If a command fails, fix only the issue-related cause and retry once. If it fails again, stop and report the error.
+
+Final report:
+- Issue number
+- Files changed
+- Commands run with PASS/FAIL
+- Checklist PASS/FAIL
+- Can close issue: YES/NO
 ```
 
 ## Phase 00 prompt
@@ -48,8 +98,11 @@ Work style:
 Execute GitHub Issue #1 only.
 Initialize the .NET solution, test projects, root context files, and docs.
 Do not implement CPU behavior.
+Do not place test projects under src/.
+Test projects must be under tests/.
 After changes run:
 
+dotnet sln list
 dotnet build
 dotnet test
 ```

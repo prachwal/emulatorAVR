@@ -16,7 +16,7 @@ Backlog is tracked in GitHub Issues. Execute issues in numerical order unless ex
 
 ## Execution rule for weak models
 
-For Devstral or similar weak executors:
+For DeepSeek V4 Flash or similar weak executors:
 
 1. Select one issue.
 2. Read `AGENTS.md`, `CONTEXT.md`, and this file.

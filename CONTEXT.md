@@ -17,10 +17,95 @@ Primary milestone for the current phase:
 Execution environment and workflow:
 
 - The user will use Kilo Code.
-- The likely executor model is weak: Devstral.
+- The likely executor model is weak: DeepSeek V4 Flash / DeepSeek V4 Flash 2.
 - Tasks must be precise, small, file-oriented, command-oriented, and include explicit acceptance criteria.
 - Do not rely on broad implicit reasoning by the executor model.
 - The user has WSL with working X desktop output, so Avalonia UI can be used and visually checked.
+
+## DeepSeek V4 Flash executor limitations
+
+Treat DeepSeek V4 Flash models as weak executors, not architects.
+
+Use DeepSeek V4 Flash only for:
+
+- one GitHub Issue at a time;
+- explicit file edits;
+- small implementation steps;
+- command-based validation;
+- mechanical layout fixes;
+- adding tests from precise acceptance criteria;
+- implementing one narrow class or one narrow instruction group at a time.
+
+Do not rely on DeepSeek V4 Flash for:
+
+- architecture decisions;
+- deciding milestone scope;
+- interpreting AVR semantics without explicit references;
+- broad refactoring;
+- moving files unless the issue explicitly requires it;
+- guessing repository layout;
+- deciding whether an issue can be closed without a checklist;
+- inventing peripheral or instruction behavior.
+
+Every task for DeepSeek V4 Flash must include:
+
+- files to read first;
+- exact issue number;
+- files allowed to edit;
+- files or areas explicitly forbidden;
+- commands to run;
+- exact acceptance checklist;
+- failure stop condition;
+- required final report format.
+
+Recommended execution settings for Kilo Code when using DeepSeek V4 Flash models:
+
+- temperature: `0.0` to `0.1`;
+- one issue per session;
+- no autonomous task expansion;
+- at most one retry after a failed command;
+- stop and report if the second attempt fails;
+- prefer existing project conventions over generating a new layout.
+
+## Known DeepSeek V4 Flash failure mode: test-output diagnostic loop
+
+Observed failure mode:
+
+- `dotnet test` prints only restore lines or unexpectedly short output;
+- the model repeatedly pipes the same command through `tail`, `grep`, `cat`, `wc`, `od`, `head`, or similar tools;
+- the user interrupts the loop;
+- the model then incorrectly claims that tests passed.
+
+Project rule:
+
+- Repeating output-inspection pipelines is forbidden.
+- User-aborted commands are not successful test runs.
+- Suspiciously short test output is `UNKNOWN`, not `PASS`, unless the exit code is clearly `0` and the solution contains the expected test projects.
+- If test status is unclear after one structured diagnostic command, the executor must stop and report `Can close issue: NO`.
+
+Preferred validation sequence:
+
+```powershell
+dotnet sln list
+dotnet build --no-restore
+dotnet test --no-build --logger "trx;LogFileName=test-results.trx"
+```
+
+One allowed hang diagnostic:
+
+```powershell
+dotnet test --no-restore --blame-hang --blame-hang-timeout 60s --logger "trx;LogFileName=test-results.trx"
+```
+
+After the hang diagnostic, stop and report the result. Do not run `cat`, `od`, `wc`, `grep`, `tail`, or repeated variants against the same output.
+
+Operational rule:
+
+```text
+repo = durable project memory
+GitHub Issues = current executable work items
+chat = planning, review, and correction loop
+```
 
 Implementation preferences:
 
