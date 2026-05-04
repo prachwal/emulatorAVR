@@ -37,9 +37,10 @@ When DeepSeek V4 Flash or a similar weak model executes a task, it must:
 2. List the exact files it intends to touch.
 3. Check whether those files already exist before creating replacements.
 4. Add or update tests before production code where practical.
-5. Run the exact validation commands from the issue, not shortened variants.
-6. Stop on repeated failures instead of looping.
-7. Report the failing command and relevant error output.
+5. Use clear test names that describe the behavior and expected result.
+6. Run the exact validation commands from the issue, not shortened variants.
+7. Stop on repeated failures instead of looping.
+8. Report the failing command and relevant error output.
 
 ## DeepSeek V4 Flash limitations and safeguards
 
@@ -64,7 +65,8 @@ Forbidden use unless a human-designed issue explicitly permits it:
 - guess project layout;
 - implement CPU, memory, ports, firmware loaders, or UI in a documentation/setup issue;
 - claim completion without checking the issue checklist;
-- replace an exact validation command with a shorter equivalent-looking command.
+- replace an exact validation command with a shorter equivalent-looking command;
+- use cryptic or abbreviated test names such as `InvalidEOFLn` when the intended behavior is `InvalidEOFChecksumIsRejected`.
 
 Required task shape for DeepSeek V4 Flash:
 
@@ -78,6 +80,34 @@ Required task shape for DeepSeek V4 Flash:
 7. Stop after one failed retry.
 8. Report PASS/FAIL/UNKNOWN for every checklist item.
 ```
+
+## Test naming policy
+
+Test method names must be descriptive enough to identify:
+
+- condition under test;
+- expected result;
+- important input variant, if relevant.
+
+Preferred naming examples:
+
+```csharp
+InvalidEOFChecksumIsRejected()
+MissingEOFIsRejected()
+UnsupportedRecordTypeIsRejected()
+SnapshotCannotMutateInternalStorage()
+```
+
+Avoid unclear abbreviations, temporary names, and typo-like names:
+
+```csharp
+InvalidEOFLn()
+Test1()
+Works()
+ValidCase()
+```
+
+A task may be functionally correct but still require a cleanup pass if test names obscure the behavior being validated.
 
 ## Validation command strictness
 
