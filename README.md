@@ -1,53 +1,44 @@
-# .NET Core Project
+# emulatorAVR
 
-## Description
-This is a .NET Core project.
+Binary-compatible AVR emulator targeting the ATmega328P-class CPU used by Arduino Uno.
 
-## Prerequisites
-- [.NET Core SDK](https://dotnet.microsoft.com/download)
+## Phase 1 objective
 
-## Getting Started
+Create a deterministic CLI tool that can load externally compiled firmware and execute it while tracing:
 
-### Installation
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   ```
-2. Navigate to the project directory:
-   ```bash
-   cd <project-directory>
-   ```
-3. Restore dependencies:
-   ```bash
-   dotnet restore
-   ```
+- AVR registers `R0..R31`
+- `SREG`
+- program counter
+- cycle count
+- Arduino Uno ports: `PORTB`, `PORTC`, `PORTD`, `DDRB`, `DDRC`, `DDRD`, `PINB`, `PINC`, `PIND`
 
-### Running the Application
-To run the application, use the following command:
-```bash
-   dotnet run
-   ```
+Optional UI: thin Avalonia viewer over the same emulator core API.
 
-### Building the Application
-To build the application, use the following command:
-```bash
-   dotnet build
-   ```
+## Technology baseline
 
-### Testing
-To run tests, use the following command:
-```bash
-   dotnet test
-   ```
+- C# / .NET
+- MSTest
+- Moq
+- FluentAssertions
+- NLog
 
-## Project Structure
-- **src/**: Contains the source code of the application.
-- **tests/**: Contains the test projects.
-- **README.md**: This file.
+## Documents
 
-## Links
-- [GitHub Issues](https://github.com/prachwal/emulatorAVR/issues)
-- [GitHub Wiki](https://github.com/prachwal/emulatorAVR/wiki)
+- `AGENTS.md` — AI-agent project rules
+- `CONTEXT.md` — persistent situation context
+- `docs/ROADMAP.md` — phases
+- `docs/TASKS.md` — task backlog
+- `docs/PROMPTS.md` — prompts for Kilo Code / Devstral
+- `docs/references.md` — authoritative technical references
 
-## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+## Initial command target
+
+```powershell
+dotnet run --project src/EmulatorAVR.Cli -- run --mcu atmega328p --firmware samples/firmware/blink.hex --max-cycles 100000 --trace registers,ports
+```
+
+## Test command
+
+```powershell
+dotnet test
+```
