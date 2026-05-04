@@ -73,4 +73,22 @@
     <Setter Property="FontSize" Value="{StaticResource SubtitleSize}" />
     <Setter Property="FontWeight" Value="{StaticResource SubtitleWeight}" />
   </Style>
+
+  <!-- Monospace value text -->
+  <Style Selector="TextBlock.monoValue">
+    <Setter Property="Foreground" Value="{StaticResource ValueText}" />
+    <Setter Property="FontSize" Value="{StaticResource ValueSize}" />
+    <Setter Property="FontWeight" Value="{StaticResource ValueWeight}" />
+    <Setter Property="FontFamily" Value="Consolas, Courier New, monospace" />
+  </Style>
+
+  <!-- Summary card (smaller variant for individual CPU values) -->
+  <Style Selector="Border.summaryCard">
+    <Setter Property="Background" Value="{StaticResource CardBackground}" />
+    <Setter Property="BorderBrush" Value="{StaticResource CardBorder}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="Padding" Value="14,10" />
+    <Setter Property="MinWidth" Value="120" />
+  </Style>
 </Styles>
