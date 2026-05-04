@@ -1,0 +1,29 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Styles.Resources>
+    <!-- App background -->
+    <Color x:Key="AppBackground">#1E1E2E</Color>
+    <!-- Card background -->
+    <Color x:Key="CardBackground">#2B2B3D</Color>
+    <!-- Border color -->
+    <Color x:Key="CardBorder">#3B3B4D</Color>
+    <!-- Primary text -->
+    <Color x:Key="PrimaryText">#CDD6F4</Color>
+    <!-- Secondary text -->
+    <Color x:Key="SecondaryText">#A6ADC8</Color>
+    <!-- Muted text -->
+    <Color x:Key="MutedText">#6C7086</Color>
+    <!-- Value text (monospace-friendly, used for hex values) -->
+    <Color x:Key="ValueText">#89B4FA</Color>
+    <!-- Active flag background -->
+    <Color x:Key="ActiveFlagBackground">#A6E3A1</Color>
+    <!-- Active flag text -->
+    <Color x:Key="ActiveFlagText">#1E1E2E</Color>
+    <!-- Inactive flag background -->
+    <Color x:Key="InactiveFlagBackground">#45475A</Color>
+    <!-- Inactive flag text -->
+    <Color x:Key="InactiveFlagText">#6C7086</Color>
+    <!-- Section header accent -->
+    <Color x:Key="SectionAccent">#CBA6F7</Color>
+  </Styles.Resources>
+</Styles>
