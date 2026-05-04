@@ -145,4 +145,22 @@ public class CliRunCommandTests
             File.Delete(path);
         }
     }
+
+    [TestMethod]
+    public void UnsupportedHexRecordTypeIsHandled()
+    {
+        var path = Path.GetTempFileName() + ".hex";
+        try
+        {
+            var hex = ":00000004FC\n:00000001FF\n";
+            File.WriteAllText(path, hex);
+            var (exitCode, _, stderr) = CliRunner.Run(new[] { "run", "--mcu", "atmega328p", "--firmware", path, "--max-cycles", "10" });
+            exitCode.Should().Be(1);
+            stderr.Should().Contain("Loader error");
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
 }

@@ -48,7 +48,7 @@ public class CliRunner
                     return 1;
                 }
             }
-            catch (Exception ex) when (ex is FormatException or InvalidOperationException or IOException)
+            catch (Exception ex) when (ex is FormatException or InvalidOperationException or IOException or NotSupportedException)
             {
                 stderr.AppendLine($"Loader error: {ex.Message}");
                 return 1;
