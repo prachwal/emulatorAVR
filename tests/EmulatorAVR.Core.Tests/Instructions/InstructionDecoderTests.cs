@@ -626,10 +626,10 @@ public class InstructionDecoderTests
     }
 
     [TestMethod]
-    public void LpmRdOpcode_DecodesR16()
+    public void LpmRdZPlusOpcode_DecodesR0()
     {
         var instruction = _decoder.Decode(0x9005);
-        instruction.Kind.Should().Be(InstructionKind.Lpm);
+        instruction.Kind.Should().Be(InstructionKind.LpmZPlus);
         instruction.Rd.Should().Be(0);
     }
 
@@ -656,5 +656,38 @@ public class InstructionDecoderTests
         var instruction = _decoder.Decode(0x031B);
         instruction.Kind.Should().Be(InstructionKind.Fmulsu);
         instruction.Rd.Should().Be(17);
+    }
+
+    [TestMethod]
+    public void LdXOpcode_DecodesR0()
+    {
+        var instruction = _decoder.Decode(0x900C);
+        instruction.Kind.Should().Be(InstructionKind.LdX);
+        instruction.Rd.Should().Be(0);
+    }
+
+
+    [TestMethod]
+    public void StXPlusOpcode_DecodesR16()
+    {
+        var instruction = _decoder.Decode(0x930D);
+        instruction.Kind.Should().Be(InstructionKind.StXPlus);
+        instruction.Rd.Should().Be(16);
+    }
+
+    [TestMethod]
+    public void LdZPlusOpcode_DecodesR0()
+    {
+        var instruction = _decoder.Decode(0x8001);
+        instruction.Kind.Should().Be(InstructionKind.LdZPlus);
+        instruction.Rd.Should().Be(0);
+    }
+
+    [TestMethod]
+    public void StYOpcode_DecodesR16()
+    {
+        var instruction = _decoder.Decode(0x8308);
+        instruction.Kind.Should().Be(InstructionKind.StY);
+        instruction.Rd.Should().Be(16);
     }
 }

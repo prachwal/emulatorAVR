@@ -53,7 +53,133 @@ public class InstructionDecoder
         if ((opcode & 0xFE0F) == 0x9005)
         {
             int rd = (opcode >> 4) & 0x1F;
-            return new Instruction(opcode, InstructionKind.Lpm, rd: rd);
+            return new Instruction(opcode, InstructionKind.LpmZPlus, rd: rd);
+        }
+
+        // LD Rd, X 1001 000d dddd 1100
+        if ((opcode & 0xFE0F) == 0x900C)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.LdX, rd: rd);
+        }
+
+        // LD Rd, X+ 1001 000d dddd 1101
+        if ((opcode & 0xFE0F) == 0x900D)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.LdXPlus, rd: rd);
+        }
+
+        // LD Rd, -X 1001 000d dddd 1110
+        if ((opcode & 0xFE0F) == 0x900E)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.LdMinusX, rd: rd);
+        }
+
+        // ST X, Rr 1001 001r rrrr 1100
+        if ((opcode & 0xFE0F) == 0x920C)
+        {
+            int rr = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.StX, rd: rr);
+        }
+
+        // ST X+, Rr 1001 001r rrrr 1101
+        if ((opcode & 0xFE0F) == 0x920D)
+        {
+            int rr = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.StXPlus, rd: rr);
+        }
+
+        // ST -X, Rr 1001 001r rrrr 1110
+        if ((opcode & 0xFE0F) == 0x920E)
+        {
+            int rr = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.StMinusX, rd: rr);
+        }
+
+        // LD Rd, Y 1000 000d dddd 1000
+        if ((opcode & 0xFE0F) == 0x8008)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.LdY, rd: rd);
+        }
+
+        // LD Rd, Y+ 1000 000d dddd 1001
+        if ((opcode & 0xFE0F) == 0x8009)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.LdYPlus, rd: rd);
+        }
+
+        // LD Rd, -Y 1000 000d dddd 1010
+        if ((opcode & 0xFE0F) == 0x800A)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.LdMinusY, rd: rd);
+        }
+
+        // ST Y, Rr 1000 001r rrrr 1000
+        if ((opcode & 0xFE0F) == 0x8208)
+        {
+            int rr = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.StY, rd: rr);
+        }
+
+        // ST Y+, Rr 1000 001r rrrr 1001
+        if ((opcode & 0xFE0F) == 0x8209)
+        {
+            int rr = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.StYPlus, rd: rr);
+        }
+
+        // ST -Y, Rr 1000 001r rrrr 1010
+        if ((opcode & 0xFE0F) == 0x820A)
+        {
+            int rr = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.StMinusY, rd: rr);
+        }
+
+        // LD Rd, Z 1000 000d dddd 0000
+        if ((opcode & 0xFE0F) == 0x8000)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.LdZ, rd: rd);
+        }
+
+        // LD Rd, Z+ 1000 000d dddd 0001
+        if ((opcode & 0xFE0F) == 0x8001)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.LdZPlus, rd: rd);
+        }
+
+        // LD Rd, -Z 1000 000d dddd 0010
+        if ((opcode & 0xFE0F) == 0x8002)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.LdMinusZ, rd: rd);
+        }
+
+        // ST Z, Rr 1000 001r rrrr 0000
+        if ((opcode & 0xFE0F) == 0x8200)
+        {
+            int rr = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.StZ, rd: rr);
+        }
+
+        // ST Z+, Rr 1000 001r rrrr 0001
+        if ((opcode & 0xFE0F) == 0x8201)
+        {
+            int rr = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.StZPlus, rd: rr);
+        }
+
+        // ST -Z, Rr 1000 001r rrrr 0010
+        if ((opcode & 0xFE0F) == 0x8202)
+        {
+            int rr = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.StMinusZ, rd: rr);
         }
 
         // MUL 1001 11rd dddd rrrr

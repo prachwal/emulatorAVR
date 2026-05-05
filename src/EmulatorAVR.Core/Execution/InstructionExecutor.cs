@@ -251,6 +251,95 @@ public class InstructionExecutor
                 ExecuteLpm(state, instruction);
                 break;
 
+            case InstructionKind.LpmZPlus:
+                ExecuteLpm(state, instruction);
+                IncrementZ(state);
+                break;
+
+            case InstructionKind.LdX:
+                ExecuteLdReg(state, instruction, 26);
+                break;
+
+            case InstructionKind.LdXPlus:
+                ExecuteLdReg(state, instruction, 26);
+                IncrementPair(state, 26);
+                break;
+
+            case InstructionKind.LdMinusX:
+                DecrementPair(state, 26);
+                ExecuteLdReg(state, instruction, 26);
+                break;
+
+            case InstructionKind.StX:
+                ExecuteStReg(state, instruction, 26);
+                break;
+
+            case InstructionKind.StXPlus:
+                ExecuteStReg(state, instruction, 26);
+                IncrementPair(state, 26);
+                break;
+
+            case InstructionKind.StMinusX:
+                DecrementPair(state, 26);
+                ExecuteStReg(state, instruction, 26);
+                break;
+
+            case InstructionKind.LdY:
+                ExecuteLdReg(state, instruction, 28);
+                break;
+
+            case InstructionKind.LdYPlus:
+                ExecuteLdReg(state, instruction, 28);
+                IncrementPair(state, 28);
+                break;
+
+            case InstructionKind.LdMinusY:
+                DecrementPair(state, 28);
+                ExecuteLdReg(state, instruction, 28);
+                break;
+
+            case InstructionKind.StY:
+                ExecuteStReg(state, instruction, 28);
+                break;
+
+            case InstructionKind.StYPlus:
+                ExecuteStReg(state, instruction, 28);
+                IncrementPair(state, 28);
+                break;
+
+            case InstructionKind.StMinusY:
+                DecrementPair(state, 28);
+                ExecuteStReg(state, instruction, 28);
+                break;
+
+            case InstructionKind.LdZ:
+                ExecuteLdReg(state, instruction, 30);
+                break;
+
+            case InstructionKind.LdZPlus:
+                ExecuteLdReg(state, instruction, 30);
+                IncrementPair(state, 30);
+                break;
+
+            case InstructionKind.LdMinusZ:
+                DecrementPair(state, 30);
+                ExecuteLdReg(state, instruction, 30);
+                break;
+
+            case InstructionKind.StZ:
+                ExecuteStReg(state, instruction, 30);
+                break;
+
+            case InstructionKind.StZPlus:
+                ExecuteStReg(state, instruction, 30);
+                IncrementPair(state, 30);
+                break;
+
+            case InstructionKind.StMinusZ:
+                DecrementPair(state, 30);
+                ExecuteStReg(state, instruction, 30);
+                break;
+
             case InstructionKind.Ijmp:
                 ExecuteIjmp(state, instruction);
                 break;
@@ -961,5 +1050,53 @@ public class InstructionExecutor
         state.Registers[1] = (byte)((result >> 8) & 0xFF);
         state.SREG.C = (result & 0x10000) != 0;
         state.SREG.Z = (result & 0xFFFF) == 0;
+    }
+
+    private static int ReadPair(AvrCpuState state, int lowReg)
+    {
+        return (state.Registers[lowReg + 1] << 8) | state.Registers[lowReg];
+    }
+
+    private static void WritePair(AvrCpuState state, int lowReg, int value)
+    {
+        state.Registers[lowReg] = (byte)(value & 0xFF);
+        state.Registers[lowReg + 1] = (byte)((value >> 8) & 0xFF);
+    }
+
+    private void IncrementZ(AvrCpuState state)
+    {
+        int z = (state.Registers[31] << 8) | state.Registers[30];
+        z++;
+        state.Registers[30] = (byte)(z & 0xFF);
+        state.Registers[31] = (byte)((z >> 8) & 0xFF);
+    }
+
+    private void IncrementPair(AvrCpuState state, int lowReg)
+    {
+        int val = (state.Registers[lowReg + 1] << 8) | state.Registers[lowReg];
+        val++;
+        state.Registers[lowReg] = (byte)(val & 0xFF);
+        state.Registers[lowReg + 1] = (byte)((val >> 8) & 0xFF);
+    }
+
+    private void DecrementPair(AvrCpuState state, int lowReg)
+    {
+        int val = (state.Registers[lowReg + 1] << 8) | state.Registers[lowReg];
+        val--;
+        state.Registers[lowReg] = (byte)(val & 0xFF);
+        state.Registers[lowReg + 1] = (byte)((val >> 8) & 0xFF);
+    }
+
+    private void ExecuteLdReg(AvrCpuState state, Instruction instruction, int lowReg)
+    {
+        int addr = (state.Registers[lowReg + 1] << 8) | state.Registers[lowReg];
+        state.Registers[instruction.Rd] = addr >= 0x0100 ? state.DataMemory[addr] : (byte)0;
+    }
+
+    private void ExecuteStReg(AvrCpuState state, Instruction instruction, int lowReg)
+    {
+        int addr = (state.Registers[lowReg + 1] << 8) | state.Registers[lowReg];
+        if (addr >= 0x0100)
+            state.DataMemory[addr] = state.Registers[instruction.Rd];
     }
 }

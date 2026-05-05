@@ -93,6 +93,7 @@ public enum InstructionKind
     Pop,
     // Group J — program memory access
     Lpm,
+    LpmZPlus,
     // Group K — multiply
     Mul,
     Muls,
@@ -103,5 +104,24 @@ public enum InstructionKind
     // Group L — MCU control
     Sleep,
     Wdr,
-    Break
+    Break,
+    // Group H — data memory load/store
+    LdX,
+    LdXPlus,
+    LdMinusX,
+    StX,
+    StXPlus,
+    StMinusX,
+    LdY,
+    LdYPlus,
+    LdMinusY,
+    StY,
+    StYPlus,
+    StMinusY,
+    LdZ,
+    LdZPlus,
+    LdMinusZ,
+    StZ,
+    StZPlus,
+    StMinusZ,
 }
