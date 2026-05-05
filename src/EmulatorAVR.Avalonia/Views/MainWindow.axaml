@@ -52,7 +52,7 @@
                 <StackPanel>
                   <Border Classes="flagActive" IsVisible="{Binding IsActive}" Margin="0,0,6,4"
                           ToolTip.Tip="Active flag">
-                    <TextBlock Text="{Binding Name}" Classes="flagLabel" FontWeight="Bold" />
+                    <TextBlock Text="{Binding Name}" Classes="flagLabel" />
                   </Border>
                   <Border Classes="flagInactive" IsVisible="{Binding IsInactive}" Margin="0,0,0,4"
                           ToolTip.Tip="Inactive flag">
