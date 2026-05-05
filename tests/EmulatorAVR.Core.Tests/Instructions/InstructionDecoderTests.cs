@@ -659,6 +659,24 @@ public class InstructionDecoderTests
     }
 
     [TestMethod]
+    public void Lds2WordOpcode_DecodesR16()
+    {
+        var instruction = _decoder.Decode(0x9000, 0x0100);
+        instruction.Kind.Should().Be(InstructionKind.Lds);
+        instruction.Rd.Should().Be(0);
+        instruction.Offset.Should().Be(0x0100);
+    }
+
+    [TestMethod]
+    public void Sts2WordOpcode_DecodesR16()
+    {
+        var instruction = _decoder.Decode(0x9200, 0x0100);
+        instruction.Kind.Should().Be(InstructionKind.Sts);
+        instruction.Rd.Should().Be(0);
+        instruction.Offset.Should().Be(0x0100);
+    }
+
+    [TestMethod]
     public void Jmp2WordOpcode_DecodesWithTarget()
     {
         var instruction = _decoder.Decode(0x940C, 0x0042);

@@ -124,4 +124,7 @@ public enum InstructionKind
     StZ,
     StZPlus,
     StMinusZ,
+    // 2-word load/store direct
+    Lds,
+    Sts,
 }

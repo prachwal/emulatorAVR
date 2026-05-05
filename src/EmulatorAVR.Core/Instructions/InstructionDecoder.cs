@@ -72,6 +72,20 @@ public class InstructionDecoder
             return new Instruction(opcode, InstructionKind.LpmZPlus, rd: rd);
         }
 
+        // LDS (2-word) 1001 000d dddd 0000 + 2nd word data address
+        if ((opcode & 0xFE0F) == 0x9000)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.Lds, rd: rd, offset: nextWord);
+        }
+
+        // STS (2-word) 1001 001r rrrr 0000 + 2nd word data address
+        if ((opcode & 0xFE0F) == 0x9200)
+        {
+            int rr = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.Sts, rd: rr, offset: nextWord);
+        }
+
         // LD Rd, X 1001 000d dddd 1100
         if ((opcode & 0xFE0F) == 0x900C)
         {

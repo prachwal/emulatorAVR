@@ -251,6 +251,14 @@ public class InstructionExecutor
                 ExecuteLpm(state, instruction);
                 break;
 
+            case InstructionKind.Lds:
+                ExecuteLds(state, instruction);
+                break;
+
+            case InstructionKind.Sts:
+                ExecuteSts(state, instruction);
+                break;
+
             case InstructionKind.Jmp:
                 ExecuteJmp(state, instruction);
                 break;
@@ -997,6 +1005,18 @@ public class InstructionExecutor
     private void ExecuteJmp(AvrCpuState state, Instruction instruction)
     {
         state.ProgramCounter = (uint)(instruction.Offset - 1);
+    }
+
+    private void ExecuteLds(AvrCpuState state, Instruction instruction)
+    {
+        int addr = instruction.Offset;
+        state.Registers[instruction.Rd] = state.DataMemory[addr];
+    }
+
+    private void ExecuteSts(AvrCpuState state, Instruction instruction)
+    {
+        int addr = instruction.Offset;
+        state.DataMemory[addr] = state.Registers[instruction.Rd];
     }
 
     private void ExecuteCall(AvrCpuState state, Instruction instruction)
