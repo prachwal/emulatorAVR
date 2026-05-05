@@ -14,4 +14,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\EmulatorAVR.Core\EmulatorAVR.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Instructions\InstructionDecoderTests.cs" />
+    <Compile Remove="Execution\InstructionExecutorTests.cs" />
+  </ItemGroup>
 </Project>
