@@ -91,4 +91,20 @@
     <Setter Property="Padding" Value="14,10" />
     <Setter Property="MinWidth" Value="120" />
   </Style>
+
+  <!-- Pin mapping card -->
+  <Style Selector="Border.pinMappingCard">
+    <Setter Property="Background" Value="{StaticResource CardBackground}" />
+    <Setter Property="BorderBrush" Value="{StaticResource CardBorder}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="8,4" />
+  </Style>
+
+  <!-- Pin label text -->
+  <Style Selector="TextBlock.pinLabel">
+    <Setter Property="Foreground" Value="{StaticResource SectionAccent}" />
+    <Setter Property="FontSize" Value="{StaticResource ValueSize}" />
+    <Setter Property="FontWeight" Value="Bold" />
+  </Style>
 </Styles>
