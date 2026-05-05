@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="EmulatorAVR.Avalonia.Views.MainWindow"
         Title="emulatorAVR — ATmega328P State Viewer"
+        MinWidth="640" MinHeight="480"
         Width="860" Height="680"
         Background="{StaticResource AppBackground}"
         Foreground="{StaticResource PrimaryText}">
@@ -19,19 +20,19 @@
         <Border Classes="summaryCard" Margin="0,0,10,0">
           <StackPanel Spacing="4">
             <TextBlock Text="Program Counter" Classes="label" />
-            <TextBlock Text="{Binding PcText}" Classes="monoValue" FontSize="20" FontWeight="Bold" />
+            <TextBlock Text="{Binding PcText}" Classes="cardValue" />
           </StackPanel>
         </Border>
         <Border Classes="summaryCard" Margin="0,0,10,0">
           <StackPanel Spacing="4">
             <TextBlock Text="Cycle Count" Classes="label" />
-            <TextBlock Text="{Binding CycleCountText}" Classes="monoValue" FontSize="20" FontWeight="Bold" />
+            <TextBlock Text="{Binding CycleCountText}" Classes="cardValue" />
           </StackPanel>
         </Border>
         <Border Classes="summaryCard">
           <StackPanel Spacing="4">
             <TextBlock Text="SREG Raw" Classes="label" />
-            <TextBlock Text="{Binding SregRawText}" Classes="monoValue" FontSize="20" FontWeight="Bold" />
+            <TextBlock Text="{Binding SregRawText}" Classes="cardValue" />
           </StackPanel>
         </Border>
       </WrapPanel>
@@ -49,11 +50,13 @@
             <ItemsControl.ItemTemplate>
               <DataTemplate>
                 <StackPanel>
-                  <Border Classes="flagActive" IsVisible="{Binding IsActive}" Margin="0,0,6,4">
-                    <TextBlock Text="{Binding Name}" FontSize="13" FontWeight="Bold" />
+                  <Border Classes="flagActive" IsVisible="{Binding IsActive}" Margin="0,0,6,4"
+                          ToolTip.Tip="Active flag">
+                    <TextBlock Text="{Binding Name}" Classes="flagLabel" FontWeight="Bold" />
                   </Border>
-                  <Border Classes="flagInactive" IsVisible="{Binding IsInactive}" Margin="0,0,0,4">
-                    <TextBlock Text="{Binding Name}" FontSize="13" />
+                  <Border Classes="flagInactive" IsVisible="{Binding IsInactive}" Margin="0,0,0,4"
+                          ToolTip.Tip="Inactive flag">
+                    <TextBlock Text="{Binding Name}" Classes="flagLabel" />
                   </Border>
                 </StackPanel>
               </DataTemplate>
@@ -74,9 +77,9 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate>
-                <Border Background="{StaticResource CardBorder}" CornerRadius="4" Padding="8,4" Margin="0,0,6,4">
+                <Border Classes="registerCell">
                   <StackPanel Orientation="Horizontal" Spacing="6">
-                    <TextBlock Text="{Binding Name}" Classes="label" Width="24" />
+                    <TextBlock Text="{Binding Name}" Classes="registerLabel" />
                     <TextBlock Text="{Binding ValueText}" Classes="monoValue" />
                   </StackPanel>
                 </Border>
@@ -90,7 +93,7 @@
       <Border Classes="card">
         <StackPanel Spacing="8">
           <TextBlock Text="Port Registers" Classes="sectionHeader" />
-          <TextBlock Text="{Binding PortStatusText}" Foreground="{StaticResource MutedText}" FontStyle="Italic" FontSize="11" />
+          <TextBlock Text="{Binding PortStatusText}" Classes="statusText" />
           <ItemsControl ItemsSource="{Binding Ports}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
@@ -99,11 +102,11 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate>
-                <Border Background="{StaticResource CardBorder}" CornerRadius="4" Padding="8,4" Margin="0,0,6,4">
+                <Border Classes="portCell">
                   <StackPanel Orientation="Horizontal" Spacing="6">
-                    <TextBlock Text="{Binding Name}" Classes="label" Width="48" />
+                    <TextBlock Text="{Binding Name}" Classes="portLabel" />
                     <TextBlock Text="{Binding ValueText}" Classes="monoValue" />
-                    <TextBlock Text="{Binding AddressText, StringFormat='({0})'}" Foreground="{StaticResource MutedText}" FontSize="11" />
+                    <TextBlock Text="{Binding AddressText, StringFormat='({0})'}" Classes="addressText" />
                   </StackPanel>
                 </Border>
               </DataTemplate>
@@ -116,7 +119,7 @@
       <Border Classes="card">
         <StackPanel Spacing="8">
           <TextBlock Text="Arduino Digital Pin Map" Classes="sectionHeader" />
-          <TextBlock Text="D0..D13 — static/demo mapping, no live execution" Foreground="{StaticResource MutedText}" FontStyle="Italic" FontSize="11" />
+          <TextBlock Text="D0..D13 — static/demo mapping, no live execution" Classes="statusText" />
           <ItemsControl ItemsSource="{Binding Pins}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
@@ -129,7 +132,7 @@
                   <StackPanel Orientation="Horizontal" Spacing="6">
                     <TextBlock Text="{Binding PinLabel}" Classes="pinLabel" />
                     <TextBlock Text="{Binding PortName}" Classes="label" />
-                    <TextBlock Text="{Binding BitLabel}" Foreground="{StaticResource MutedText}" FontSize="11" />
+                    <TextBlock Text="{Binding BitLabel}" Classes="bitLabel" />
                   </StackPanel>
                 </Border>
               </DataTemplate>
