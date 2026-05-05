@@ -880,4 +880,16 @@ public class InstructionExecutorTests
         _executor.Execute(state, instruction);
         state.Registers[0].Should().Be(0xAA);
     }
+
+    [TestMethod]
+    public void Fmul_FractionalMultiplyShiftsResult()
+    {
+        var state = CreateState();
+        state.Registers[16] = 0x80;
+        state.Registers[17] = 0x80;
+        var instruction = _decoder.Decode(0x0318);
+        _executor.Execute(state, instruction);
+        state.Registers[0].Should().Be(0x00);
+        state.Registers[1].Should().Be(0x80);
+    }
 }

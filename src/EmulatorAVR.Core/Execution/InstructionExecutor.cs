@@ -272,6 +272,18 @@ public class InstructionExecutor
                 ExecuteMulsu(state, instruction);
                 break;
 
+            case InstructionKind.Fmul:
+                ExecuteFmul(state, instruction);
+                break;
+
+            case InstructionKind.Fmuls:
+                ExecuteFmuls(state, instruction);
+                break;
+
+            case InstructionKind.Fmulsu:
+                ExecuteFmulsu(state, instruction);
+                break;
+
             // Group L — MCU control
             case InstructionKind.Sleep:
             case InstructionKind.Wdr:
@@ -915,6 +927,39 @@ public class InstructionExecutor
         state.Registers[0] = (byte)(result & 0xFF);
         state.Registers[1] = (byte)((result >> 8) & 0xFF);
         state.SREG.C = (result & 0x8000) != 0;
+        state.SREG.Z = (result & 0xFFFF) == 0;
+    }
+
+    private void ExecuteFmul(AvrCpuState state, Instruction instruction)
+    {
+        int rd = state.Registers[instruction.Rd];
+        int rr = state.Registers[instruction.Rr];
+        int result = (rd * rr) << 1;
+        state.Registers[0] = (byte)(result & 0xFF);
+        state.Registers[1] = (byte)((result >> 8) & 0xFF);
+        state.SREG.C = (result & 0x10000) != 0;
+        state.SREG.Z = (result & 0xFFFF) == 0;
+    }
+
+    private void ExecuteFmuls(AvrCpuState state, Instruction instruction)
+    {
+        int rd = (sbyte)state.Registers[instruction.Rd];
+        int rr = (sbyte)state.Registers[instruction.Rr];
+        int result = (rd * rr) << 1;
+        state.Registers[0] = (byte)(result & 0xFF);
+        state.Registers[1] = (byte)((result >> 8) & 0xFF);
+        state.SREG.C = (result & 0x10000) != 0;
+        state.SREG.Z = (result & 0xFFFF) == 0;
+    }
+
+    private void ExecuteFmulsu(AvrCpuState state, Instruction instruction)
+    {
+        int rd = (sbyte)state.Registers[instruction.Rd];
+        int rr = state.Registers[instruction.Rr];
+        int result = (rd * rr) << 1;
+        state.Registers[0] = (byte)(result & 0xFF);
+        state.Registers[1] = (byte)((result >> 8) & 0xFF);
+        state.SREG.C = (result & 0x10000) != 0;
         state.SREG.Z = (result & 0xFFFF) == 0;
     }
 }

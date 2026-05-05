@@ -97,6 +97,9 @@ public enum InstructionKind
     Mul,
     Muls,
     Mulsu,
+    Fmul,
+    Fmuls,
+    Fmulsu,
     // Group L — MCU control
     Sleep,
     Wdr,

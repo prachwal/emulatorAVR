@@ -72,6 +72,27 @@ public class InstructionDecoder
             return new Instruction(opcode, InstructionKind.Muls, rd: rd, rr: rr);
         }
 
+        // FMUL 0000 0011 0ddd 1000 (Rd in R16-R23, Rr=R16)
+        if ((opcode & 0xFF8F) == 0x0308)
+        {
+            int rd = ((opcode >> 4) & 0x07) + 16;
+            return new Instruction(opcode, InstructionKind.Fmul, rd: rd, rr: 16);
+        }
+
+        // FMULS 0000 0011 0ddd 1010 (signed)
+        if ((opcode & 0xFF8F) == 0x030A)
+        {
+            int rd = ((opcode >> 4) & 0x07) + 16;
+            return new Instruction(opcode, InstructionKind.Fmuls, rd: rd, rr: 16);
+        }
+
+        // FMULSU 0000 0011 0ddd 1011 (signed × unsigned)
+        if ((opcode & 0xFF8F) == 0x030B)
+        {
+            int rd = ((opcode >> 4) & 0x07) + 16;
+            return new Instruction(opcode, InstructionKind.Fmulsu, rd: rd, rr: 16);
+        }
+
         // MULSU 0000 0011 0ddd 0rrr (signed × unsigned)
         if ((opcode & 0xFF88) == 0x0300)
         {

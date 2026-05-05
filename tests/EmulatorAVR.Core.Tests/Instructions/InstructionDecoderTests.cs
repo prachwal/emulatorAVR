@@ -632,4 +632,29 @@ public class InstructionDecoderTests
         instruction.Kind.Should().Be(InstructionKind.Lpm);
         instruction.Rd.Should().Be(0);
     }
+
+    [TestMethod]
+    public void FmulOpcode_DecodesR17()
+    {
+        var instruction = _decoder.Decode(0x0318);
+        instruction.Kind.Should().Be(InstructionKind.Fmul);
+        instruction.Rd.Should().Be(17);
+        instruction.Rr.Should().Be(16);
+    }
+
+    [TestMethod]
+    public void FmulsOpcode_DecodesR17()
+    {
+        var instruction = _decoder.Decode(0x031A);
+        instruction.Kind.Should().Be(InstructionKind.Fmuls);
+        instruction.Rd.Should().Be(17);
+    }
+
+    [TestMethod]
+    public void FmulsuOpcode_DecodesR17()
+    {
+        var instruction = _decoder.Decode(0x031B);
+        instruction.Kind.Should().Be(InstructionKind.Fmulsu);
+        instruction.Rd.Should().Be(17);
+    }
 }
