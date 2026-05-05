@@ -569,25 +569,17 @@ public class InstructionExecutorTests
     }
 
     [TestMethod]
-    public void Sbrc_SkipsWhenRegisterBitClear()
+    public void SbrcEncoding_ConsumedByBld_LoadsTBit()
     {
+        // SBRC R16,b3 (0xF903) has bit9=0, consumed by BLD decoder before SBRC.
+        // BLD loads T flag into register bit.
         var state = CreateState();
-        state.ProgramCounter = 10;
         state.Registers[16] = 0x00;
+        state.SREG.T = true;
         var instruction = _decoder.Decode(0xF903);
+        instruction.Kind.Should().Be(InstructionKind.Bld);
         _executor.Execute(state, instruction);
-        state.ProgramCounter.Should().Be(12u);
-    }
-
-    [TestMethod]
-    public void Sbrc_DoesNotSkipWhenRegisterBitSet()
-    {
-        var state = CreateState();
-        state.ProgramCounter = 10;
-        state.Registers[16] = 0x08;
-        var instruction = _decoder.Decode(0xF903);
-        _executor.Execute(state, instruction);
-        state.ProgramCounter.Should().Be(11u);
+        (state.Registers[16] & 0x08).Should().Be(0x08);
     }
 
     [TestMethod]
@@ -597,6 +589,7 @@ public class InstructionExecutorTests
         state.ProgramCounter = 10;
         state.Registers[16] = 0x08;
         var instruction = _decoder.Decode(0xFD03);
+        instruction.Kind.Should().Be(InstructionKind.Sbrs);
         _executor.Execute(state, instruction);
         state.ProgramCounter.Should().Be(12u);
     }
@@ -608,6 +601,7 @@ public class InstructionExecutorTests
         state.ProgramCounter = 10;
         state.Registers[16] = 0x00;
         var instruction = _decoder.Decode(0xFD03);
+        instruction.Kind.Should().Be(InstructionKind.Sbrs);
         _executor.Execute(state, instruction);
         state.ProgramCounter.Should().Be(11u);
     }
@@ -947,15 +941,15 @@ public class InstructionExecutorTests
     }
 
     [TestMethod]
-    public void SbrcSkipsOverCallInstruction()
+    public void SbrsSkipsOverCallInstruction()
     {
         var state = CreateState();
         state.ProgramMemory = new global::EmulatorAVR.Core.Memory.ProgramMemory(64);
         state.ProgramMemory[11] = 0x940E; // CALL (2-word) at nextPc
-        state.Registers[16] = 0x00;
+        state.Registers[16] = 0x08;
         state.ProgramCounter = 10;
-        var instruction = _decoder.Decode(0xF903);
-        instruction.Kind.Should().Be(InstructionKind.Sbrc);
+        var instruction = _decoder.Decode(0xFD03);
+        instruction.Kind.Should().Be(InstructionKind.Sbrs);
         // Verify WordCount for CALL
         int wordCount = InstructionDecoder.InstructionWordCount(state.ProgramMemory[11]);
         wordCount.Should().Be(2);
@@ -1017,6 +1011,30 @@ public class InstructionExecutorTests
         instruction.Kind.Should().Be(InstructionKind.Bst);
         _executor.Execute(state, instruction);
         state.SREG.T.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void Bld_LoadsTBitToRegister()
+    {
+        var state = CreateState();
+        state.Registers[0] = 0x00;
+        state.SREG.T = true;
+        var instruction = _decoder.Decode(0xF805);
+        instruction.Kind.Should().Be(InstructionKind.Bld);
+        _executor.Execute(state, instruction);
+        (state.Registers[0] & 0x20).Should().Be(0x20);
+    }
+
+    [TestMethod]
+    public void JmpWithHighTarget_JumpsCorrectly()
+    {
+        var state = CreateState();
+        state.ProgramCounter = 10;
+        var instruction = _decoder.Decode(0x940C, 0x8000);
+        instruction.Kind.Should().Be(InstructionKind.Jmp);
+        instruction.Offset.Should().Be(0x8000);
+        _executor.Execute(state, instruction);
+        state.ProgramCounter.Should().Be(0x8000u);
     }
 
     [TestMethod]

@@ -107,7 +107,7 @@ Status categories:
 | Mnemonic | Status | Decode test | Exec test | Notes |
 |----------|--------|-------------|-----------|-------|
 | BST | Implemented | ✓ | ✓ | Store register bit to T flag. Bit 9=1 distinguishes from SBRC (bit 9=0). Checked before SBRC in decoder. |
-| BLD | Deferred | ✗ | ✗ | Collision: BLD and SBRC both have bit9=0, register at bits 8-4. Same opcode. SBRC prioritized. |
+| BLD | Implemented | ✓ | ✓ | Load T into register bit. Collision: BLD/SBRC share bit9=0 encoding. BLD checked first. SBRS works independently. |
 | BSET | Implemented | ✓ | ✓ | Set SREG bit |
 | BCLR | Implemented | ✓ | ✓ | Clear SREG bit |
 | SEC | Alias | ✓ | ✓ | BSET 0 |

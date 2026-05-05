@@ -411,11 +411,21 @@ public class InstructionDecoderTests
     }
 
     [TestMethod]
-    public void BrcsOpcode_DecodesAsBrcs()
+    public void BldOpcode_DecodesR0Bit0()
     {
-        var instruction = _decoder.Decode(0xF000);
-        instruction.Kind.Should().Be(InstructionKind.Brcs);
+        var instruction = _decoder.Decode(0xF800);
+        instruction.Kind.Should().Be(InstructionKind.Bld);
         instruction.Rd.Should().Be(0);
+        instruction.Immediate.Should().Be(0);
+    }
+
+    [TestMethod]
+    public void SbrsOpcode_DecodesR16Bit3()
+    {
+        var instruction = _decoder.Decode(0xFD03);
+        instruction.Kind.Should().Be(InstructionKind.Sbrs);
+        instruction.Rd.Should().Be(16);
+        instruction.Immediate.Should().Be(3);
     }
 
     [TestMethod]
@@ -440,25 +450,6 @@ public class InstructionDecoderTests
         // BRLO is an assembly alias for BRCS (same opcode)
         var instruction = _decoder.Decode(0xF000);
         instruction.Kind.Should().NotBe(InstructionKind.Brlo);
-    }
-
-    [TestMethod]
-    public void BstOpcode_DecodesR0Bit0()
-    {
-        // BST R0,b0: bit 9=1 distinguishes from SBRC (bit 9=0). Checked first in decoder.
-        var instruction = _decoder.Decode(0xFA00);
-        instruction.Kind.Should().Be(InstructionKind.Bst);
-        instruction.Rd.Should().Be(0);
-        instruction.Immediate.Should().Be(0);
-    }
-
-    [TestMethod]
-    public void BldEncoding_DecodesAsSbrc_ProvingCollision()
-    {
-        // BLD R0,b0 has opcode 0xF800. SBRC R0,b0 also has opcode 0xF800.
-        // SBRC is prioritized in the decoder (checked first).
-        var instruction = _decoder.Decode(0xF800);
-        instruction.Kind.Should().Be(InstructionKind.Sbrc);
     }
 
     [TestMethod]

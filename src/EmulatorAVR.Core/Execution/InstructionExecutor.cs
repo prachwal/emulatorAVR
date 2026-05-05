@@ -193,7 +193,7 @@ public class InstructionExecutor
                 break;
 
             case InstructionKind.Bld:
-                // BLD deferred — encoding collision with SBRC (both bit 9=0)
+                ExecuteBld(state, instruction);
                 break;
 
             case InstructionKind.Sec:

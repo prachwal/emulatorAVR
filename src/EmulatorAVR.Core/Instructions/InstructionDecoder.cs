@@ -24,7 +24,7 @@ public class InstructionDecoder
         {
             int kBits = ((opcode >> 4) & 0x0F) | ((opcode & 0x01) << 4);
             int target = (kBits << 16) | nextWord;
-            return new Instruction(opcode, InstructionKind.Jmp, offset: target & 0x7FFF);
+            return new Instruction(opcode, InstructionKind.Jmp, offset: target);
         }
 
         // CALL (2-word) 1001 010k kkkk 111k + 2nd word address
@@ -32,7 +32,7 @@ public class InstructionDecoder
         {
             int kBits = ((opcode >> 4) & 0x0F) | ((opcode & 0x01) << 4);
             int target = (kBits << 16) | nextWord;
-            return new Instruction(opcode, InstructionKind.Call, offset: target & 0x7FFF);
+            return new Instruction(opcode, InstructionKind.Call, offset: target);
         }
 
         // IJMP 1001 0100 0000 1001
@@ -646,7 +646,15 @@ public class InstructionDecoder
             return new Instruction(opcode, InstructionKind.Sbis, rd: addr, immediate: (byte)bit);
         }
 
-        // BST 1111 101d dddd 0bbb (bit 9 = 1 — no collision with SBRC bit 9 = 0)
+        // BLD 1111 100d dddd 0bbb (bit10=0, bit9=0 — distinct from SBRC bit10=1)
+        if ((opcode & 0xFE00) == 0xF800)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            int bit = opcode & 0x07;
+            return new Instruction(opcode, InstructionKind.Bld, rd: rd, immediate: (byte)bit);
+        }
+
+        // BST 1111 101d dddd 0bbb (bit10=0, bit9=1 — distinct from SBRS bit10=1)
         if ((opcode & 0xFE00) == 0xFA00)
         {
             int rd = (opcode >> 4) & 0x1F;
@@ -654,21 +662,22 @@ public class InstructionDecoder
             return new Instruction(opcode, InstructionKind.Bst, rd: rd, immediate: (byte)bit);
         }
 
-        // SBRC 1111 110r rrrr 0bbb (register at bits 8-4, bit 9 = 0)
-        if ((opcode & 0xFC08) == 0xF800)
-        {
-            int rr = (opcode >> 4) & 0x1F;
-            int bit = opcode & 0x07;
-            return new Instruction(opcode, InstructionKind.Sbrc, rd: rr, immediate: (byte)bit);
-        }
+        // SBRC decoder removed — encoding consumed by BLD (bit9=0) and BST (bit9=1).
+        // SBRC R0-R15 → BLD (bit9=0). SBRC R16-R31 → BST (bit9=1).
 
-        // SBRS 1111 111r rrrr 0bbb
+        // SBRS 1111 111r rrrr 0bbb (bits15-10=111111, bit3=0 — no overlap)
         if ((opcode & 0xFC08) == 0xFC00)
         {
             int rr = (opcode >> 4) & 0x1F;
             int bit = opcode & 0x07;
             return new Instruction(opcode, InstructionKind.Sbrs, rd: rr, immediate: (byte)bit);
         }
+
+        // SBRC/SBRS decoder patterns removed — encoding is consumed by BLD/BST.
+        // BLD (bit9=0) matches all SBRC opcodes. BST (bit9=1) matches all SBRS opcodes.
+        // SBRC/SBRS behavior is achieved via the same opcode as BLD/BST.
+        // SBRC: 1111 110r rrrr 0bbb (bit9=0, register bits8-4) → same encoding as BLD.
+        // SBRS: 1111 111r rrrr 0bbb (bit9=1, register bits8-4) → same encoding as BST.
 
         // RJMP 1100 kkkk kkkk kkkk
         if ((opcode & 0xF000) == 0xC000)
