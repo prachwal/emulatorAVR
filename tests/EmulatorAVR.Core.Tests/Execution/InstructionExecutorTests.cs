@@ -1032,4 +1032,15 @@ public class InstructionExecutorTests
         _executor.Execute(state, instruction);
         state.Registers[0].Should().Be(0xBB);
     }
+
+    [TestMethod]
+    public void Spm_StubDoesNotCrash()
+    {
+        var state = CreateState();
+        state.ProgramCounter = 10;
+        var instruction = _decoder.Decode(0x95E8);
+        instruction.Kind.Should().Be(InstructionKind.Spm);
+        _executor.Execute(state, instruction);
+        state.ProgramCounter.Should().Be(11u);
+    }
 }
