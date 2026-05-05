@@ -251,6 +251,14 @@ public class InstructionExecutor
                 ExecuteLpm(state, instruction);
                 break;
 
+            case InstructionKind.Jmp:
+                ExecuteJmp(state, instruction);
+                break;
+
+            case InstructionKind.Call:
+                ExecuteCall(state, instruction);
+                break;
+
             case InstructionKind.LpmZPlus:
                 ExecuteLpm(state, instruction);
                 IncrementZ(state);
@@ -984,6 +992,23 @@ public class InstructionExecutor
             state.Registers[instruction.Rd] = value;
         else
             state.Registers[0] = value;
+    }
+
+    private void ExecuteJmp(AvrCpuState state, Instruction instruction)
+    {
+        state.ProgramCounter = (uint)(instruction.Offset - 1);
+    }
+
+    private void ExecuteCall(AvrCpuState state, Instruction instruction)
+    {
+        uint ra = state.ProgramCounter + 2;
+        int sp = ReadSp(state);
+        sp = (sp - 1) & 0xFFFF;
+        if (sp >= 0x0100) state.DataMemory[sp] = (byte)((ra >> 8) & 0xFF);
+        sp = (sp - 1) & 0xFFFF;
+        if (sp >= 0x0100) state.DataMemory[sp] = (byte)(ra & 0xFF);
+        WriteSp(state, sp);
+        state.ProgramCounter = (uint)(instruction.Offset - 1);
     }
 
     private void ExecuteMul(AvrCpuState state, Instruction instruction)

@@ -33,16 +33,19 @@ public class AvrRunLoop
                 return new RunResult(StopReason.ProgramEnd, state.ProgramCounter, state.CycleCount, traces, state: state);
 
             ushort opcode;
+            ushort nextOpcode = 0;
             try
             {
                 opcode = programMemory[(int)state.ProgramCounter];
+                if (state.ProgramCounter + 1 < (uint)(startWordAddress + loadedWordCount))
+                    nextOpcode = programMemory[(int)state.ProgramCounter + 1];
             }
             catch (ArgumentOutOfRangeException)
             {
                 return new RunResult(StopReason.ProgramEnd, state.ProgramCounter, state.CycleCount, traces, state: state);
             }
 
-            var instruction = _decoder.Decode(opcode);
+            var instruction = _decoder.Decode(opcode, nextOpcode);
 
             if (instruction.Kind == InstructionKind.Unsupported)
                 return new RunResult(StopReason.UnsupportedInstruction, state.ProgramCounter, state.CycleCount, traces, state: state);

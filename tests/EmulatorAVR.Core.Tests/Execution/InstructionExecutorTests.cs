@@ -841,6 +841,21 @@ public class InstructionExecutorTests
     }
 
     [TestMethod]
+    public void Call_JumpsAndReturns()
+    {
+        var state = CreateState();
+        state.DataMemory[0x5D] = 0xFF;
+        state.DataMemory[0x5E] = 0x08;
+        state.ProgramCounter = 10;
+        var call = _decoder.Decode(0x940E, 0x0050);
+        _executor.Execute(state, call);
+        state.ProgramCounter.Should().Be(0x0050u);
+        var ret = _decoder.Decode(0x9508);
+        _executor.Execute(state, ret);
+        state.ProgramCounter.Should().Be(0x000Cu);
+    }
+
+    [TestMethod]
     public void Rcall_CallsAndReturns()
     {
         var state = CreateState();

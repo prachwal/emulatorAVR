@@ -2,7 +2,7 @@ namespace EmulatorAVR.Core.Instructions;
 
 public class InstructionDecoder
 {
-    public Instruction Decode(ushort opcode)
+    public Instruction Decode(ushort opcode, ushort nextWord = 0)
     {
         if (opcode == 0x0000)
             return new Instruction(opcode, InstructionKind.Nop);
@@ -18,6 +18,22 @@ public class InstructionDecoder
         // BREAK 1001 0101 0110 1000
         if (opcode == 0x9578)
             return new Instruction(opcode, InstructionKind.Break);
+
+        // JMP (2-word) 1001 010k kkkk 110k + 2nd word address
+        if ((opcode & 0xFE0E) == 0x940C)
+        {
+            int kBits = ((opcode >> 4) & 0x0F) | ((opcode & 0x01) << 4);
+            int target = (kBits << 16) | nextWord;
+            return new Instruction(opcode, InstructionKind.Jmp, offset: target & 0x7FFF);
+        }
+
+        // CALL (2-word) 1001 010k kkkk 111k + 2nd word address
+        if ((opcode & 0xFE0E) == 0x940E)
+        {
+            int kBits = ((opcode >> 4) & 0x0F) | ((opcode & 0x01) << 4);
+            int target = (kBits << 16) | nextWord;
+            return new Instruction(opcode, InstructionKind.Call, offset: target & 0x7FFF);
+        }
 
         // IJMP 1001 0100 0000 1001
         if (opcode == 0x9409)
