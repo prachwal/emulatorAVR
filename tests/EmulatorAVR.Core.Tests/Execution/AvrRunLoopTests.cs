@@ -139,6 +139,22 @@ public class AvrRunLoopTests
     }
 
     [TestMethod]
+    public void BlinkLikeFirmware_SetsDdrbAndTogglesPortb()
+    {
+        // LDI R16,0x20 | OUT DDRB,R16 | SBI PORTB,5 | CBI PORTB,5 | RJMP -3
+        var firmware = FirmwareFromOpcodes(0, 0xE200, 0xB904, 0x9A2D, 0x982D, 0xCFFD);
+        var options = new RunOptions("atmega328p", 15, false, false, firmware);
+        var loop = new AvrRunLoop();
+        var result = loop.Run(options);
+        result.Reason.Should().Be(StopReason.MaxCycles);
+        // After execution, R16 should be 0x20 (LDI), DDRB (0x24) should be 0x20
+        result.State.Should().NotBeNull();
+        result.State!.DataMemory[0x24].Should().Be(0x20);
+        // After SBI then CBI, PORTB bit 5 is set (SBI was last at cycle 15)
+        result.State.DataMemory[0x25].Should().Be(0x20);
+    }
+
+    [TestMethod]
     public void NoWallClockDependency()
     {
         var firmware = FirmwareFromOpcodes(0, 0x0000, 0x0000, 0x0000, 0x0000);
