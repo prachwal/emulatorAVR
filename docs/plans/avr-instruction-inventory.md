@@ -106,8 +106,8 @@ Status categories:
 
 | Mnemonic | Status | Decode test | Exec test | Notes |
 |----------|--------|-------------|-----------|-------|
-| BST | Deferred | — | — | Encoding collision with SBRC in flat opcode table. Requires context-aware decoder. |
-| BLD | Deferred | — | — | Same as BST |
+| BST | Deferred | ✗ | ✗ | Encoding collision: opcode 0xFA00 overlaps with SBRC R16+ (both use bit-9=1). SBRC takes priority. Decoder test BstEncoding_DecodesAsSbrc_ProvingCollision proves opcode returns Sbrc, not Bst. |
+| BLD | Deferred | ✗ | ✗ | Encoding collision: opcode 0xF800 overlaps with SBRC R0+ (both use bit-9=0). SBRC takes priority. Decoder test BldEncoding_DecodesAsSbrc_ProvingCollision proves opcode returns Sbrc, not Bld. |
 | BSET | Implemented | ✓ | ✓ | Set SREG bit |
 | BCLR | Implemented | ✓ | ✓ | Clear SREG bit |
 | SEC | Alias | ✓ | ✓ | BSET 0 |

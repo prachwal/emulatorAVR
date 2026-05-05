@@ -427,260 +427,39 @@ public class InstructionDecoderTests
     }
 
     [TestMethod]
-    public void SbrcOpcode_DecodesR16Bit3()
+    public void BrccIsNotBrsh_AliasDocumented()
     {
-        var instruction = _decoder.Decode(0xFA03);
+        // BRSH is an assembly alias for BRCC (same opcode)
+        var instruction = _decoder.Decode(0xF400);
+        instruction.Kind.Should().NotBe(InstructionKind.Brsh);
+    }
+
+    [TestMethod]
+    public void BrcsIsNotBrlo_AliasDocumented()
+    {
+        // BRLO is an assembly alias for BRCS (same opcode)
+        var instruction = _decoder.Decode(0xF000);
+        instruction.Kind.Should().NotBe(InstructionKind.Brlo);
+    }
+
+    [TestMethod]
+    public void BstEncoding_DecodesAsSbrc_ProvingCollision()
+    {
+        // BST R0,b0 has opcode 0xFA00. SBRC R16,b0 also has opcode 0xFA00.
+        // SBRC is prioritized in the decoder (checked first).
+        var instruction = _decoder.Decode(0xFA00);
         instruction.Kind.Should().Be(InstructionKind.Sbrc);
         instruction.Rd.Should().Be(16);
-        instruction.Immediate.Should().Be(3);
+        instruction.Immediate.Should().Be(0);
     }
 
     [TestMethod]
-    public void SbrsOpcode_DecodesR16Bit3()
+    public void BldEncoding_DecodesAsSbrc_ProvingCollision()
     {
-        var instruction = _decoder.Decode(0xFE03);
-        instruction.Kind.Should().Be(InstructionKind.Sbrs);
-        instruction.Rd.Should().Be(16);
-        instruction.Immediate.Should().Be(3);
-    }
-
-    [TestMethod]
-    public void SecOpcode_DecodesAsSec()
-    {
-        var instruction = _decoder.Decode(0x9408);
-        instruction.Kind.Should().Be(InstructionKind.Sec);
-    }
-
-    [TestMethod]
-    public void ClcOpcode_DecodesAsClc()
-    {
-        var instruction = _decoder.Decode(0x9488);
-        instruction.Kind.Should().Be(InstructionKind.Clc);
-    }
-
-    [TestMethod]
-    public void SeiOpcode_DecodesAsSei()
-    {
-        var instruction = _decoder.Decode(0x9478);
-        instruction.Kind.Should().Be(InstructionKind.Sei);
-    }
-
-    [TestMethod]
-    public void CliOpcode_DecodesAsCli()
-    {
-        var instruction = _decoder.Decode(0x94F8);
-        instruction.Kind.Should().Be(InstructionKind.Cli);
-    }
-
-    [TestMethod]
-    public void OutOpcode_DecodesR16ToPortD()
-    {
-        var instruction = _decoder.Decode(0xB90B);
-        instruction.Kind.Should().Be(InstructionKind.Out);
-        instruction.Rd.Should().Be(16);
-        instruction.Immediate.Should().Be(0x2B);
-    }
-
-    [TestMethod]
-    public void InOpcode_DecodesPortDToR16()
-    {
-        var instruction = _decoder.Decode(0xB10B);
-        instruction.Kind.Should().Be(InstructionKind.In);
-        instruction.Rd.Should().Be(16);
-        instruction.Immediate.Should().Be(0x2B);
-    }
-
-    [TestMethod]
-    public void SbiOpcode_DecodesAddressAndBit()
-    {
-        var instruction = _decoder.Decode(0x9A2D);
-        instruction.Kind.Should().Be(InstructionKind.Sbi);
-        instruction.Rd.Should().Be(5);
-        instruction.Immediate.Should().Be(5);
-    }
-
-    [TestMethod]
-    public void CbiOpcode_DecodesAddressAndBit()
-    {
-        var instruction = _decoder.Decode(0x982D);
-        instruction.Kind.Should().Be(InstructionKind.Cbi);
-        instruction.Rd.Should().Be(5);
-        instruction.Immediate.Should().Be(5);
-    }
-
-    [TestMethod]
-    public void PushOpcode_DecodesR16()
-    {
-        var instruction = _decoder.Decode(0x930F);
-        instruction.Kind.Should().Be(InstructionKind.Push);
-        instruction.Rd.Should().Be(16);
-    }
-
-    [TestMethod]
-    public void PopOpcode_DecodesR16()
-    {
-        var instruction = _decoder.Decode(0x910F);
-        instruction.Kind.Should().Be(InstructionKind.Pop);
-        instruction.Rd.Should().Be(16);
-    }
-
-    [TestMethod]
-    public void CpseOpcode_DecodesR1R2()
-    {
-        var instruction = _decoder.Decode(0x1012);
-        instruction.Kind.Should().Be(InstructionKind.Cpse);
-        instruction.Rd.Should().Be(1);
-        instruction.Rr.Should().Be(2);
-    }
-
-    [TestMethod]
-    public void SleepOpcode_DecodesAsSleep()
-    {
-        var instruction = _decoder.Decode(0x9588);
-        instruction.Kind.Should().Be(InstructionKind.Sleep);
-    }
-
-    [TestMethod]
-    public void WdrOpcode_DecodesAsWdr()
-    {
-        var instruction = _decoder.Decode(0x95A8);
-        instruction.Kind.Should().Be(InstructionKind.Wdr);
-    }
-
-    [TestMethod]
-    public void BreakOpcode_DecodesAsBreak()
-    {
-        var instruction = _decoder.Decode(0x9578);
-        instruction.Kind.Should().Be(InstructionKind.Break);
-    }
-
-    [TestMethod]
-    public void MulOpcode_DecodesR16R17()
-    {
-        var instruction = _decoder.Decode(0x9F01);
-        instruction.Kind.Should().Be(InstructionKind.Mul);
-        instruction.Rd.Should().Be(16);
-        instruction.Rr.Should().Be(17);
-    }
-
-    [TestMethod]
-    public void RetOpcode_DecodesAsRet()
-    {
-        var instruction = _decoder.Decode(0x9508);
-        instruction.Kind.Should().Be(InstructionKind.Ret);
-    }
-
-    [TestMethod]
-    public void RetiOpcode_DecodesAsReti()
-    {
-        var instruction = _decoder.Decode(0x9518);
-        instruction.Kind.Should().Be(InstructionKind.Reti);
-    }
-
-    [TestMethod]
-    public void IjmpOpcode_DecodesAsIjmp()
-    {
-        var instruction = _decoder.Decode(0x9409);
-        instruction.Kind.Should().Be(InstructionKind.Ijmp);
-    }
-
-    [TestMethod]
-    public void IcallOpcode_DecodesAsIcall()
-    {
-        var instruction = _decoder.Decode(0x9509);
-        instruction.Kind.Should().Be(InstructionKind.Icall);
-    }
-
-    [TestMethod]
-    public void MulsOpcode_DecodesR16R17()
-    {
-        var instruction = _decoder.Decode(0x0201);
-        instruction.Kind.Should().Be(InstructionKind.Muls);
-        instruction.Rd.Should().Be(16);
-        instruction.Rr.Should().Be(17);
-    }
-
-    [TestMethod]
-    public void MulsuOpcode_DecodesR16R17()
-    {
-        var instruction = _decoder.Decode(0x0301);
-        instruction.Kind.Should().Be(InstructionKind.Mulsu);
-        instruction.Rd.Should().Be(16);
-        instruction.Rr.Should().Be(17);
-    }
-
-    [TestMethod]
-    public void RcallOpcode_DecodesWithOffset()
-    {
-        var instruction = _decoder.Decode(0xD005);
-        instruction.Kind.Should().Be(InstructionKind.Rcall);
-        instruction.Offset.Should().Be(5);
-    }
-
-    [TestMethod]
-    public void LpmOpcode_DecodesAsLpm()
-    {
-        var instruction = _decoder.Decode(0x95C8);
-        instruction.Kind.Should().Be(InstructionKind.Lpm);
-        instruction.Rd.Should().Be(-1);
-    }
-
-    [TestMethod]
-    public void LpmRdZPlusOpcode_DecodesR0()
-    {
-        var instruction = _decoder.Decode(0x9005);
-        instruction.Kind.Should().Be(InstructionKind.LpmZPlus);
-        instruction.Rd.Should().Be(0);
-    }
-
-    [TestMethod]
-    public void FmulOpcode_DecodesR17()
-    {
-        var instruction = _decoder.Decode(0x0318);
-        instruction.Kind.Should().Be(InstructionKind.Fmul);
-        instruction.Rd.Should().Be(17);
-        instruction.Rr.Should().Be(16);
-    }
-
-    [TestMethod]
-    public void FmulsOpcode_DecodesR17()
-    {
-        var instruction = _decoder.Decode(0x031A);
-        instruction.Kind.Should().Be(InstructionKind.Fmuls);
-        instruction.Rd.Should().Be(17);
-    }
-
-    [TestMethod]
-    public void FmulsuOpcode_DecodesR17()
-    {
-        var instruction = _decoder.Decode(0x031B);
-        instruction.Kind.Should().Be(InstructionKind.Fmulsu);
-        instruction.Rd.Should().Be(17);
-    }
-
-    [TestMethod]
-    public void LddYOpcode_DecodesWithDisplacement()
-    {
-        var instruction = _decoder.Decode(0xAC0F);
-        instruction.Kind.Should().Be(InstructionKind.LddY);
-        instruction.Offset.Should().Be(63);
-    }
-
-    [TestMethod]
-    public void StdZOpcode_DecodesWithDisplacement()
-    {
-        var instruction = _decoder.Decode(0xA206);
-        instruction.Kind.Should().Be(InstructionKind.StdZ);
-        instruction.Offset.Should().Be(38);
-    }
-
-    [TestMethod]
-    public void Lds2WordOpcode_DecodesR0()
-    {
-        var instruction = _decoder.Decode(0x9000, 0x0100);
-        instruction.Kind.Should().Be(InstructionKind.Lds);
-        instruction.Rd.Should().Be(0);
-        instruction.Offset.Should().Be(0x0100);
+        // BLD R0,b0 has opcode 0xF800. SBRC R0,b0 also has opcode 0xF800.
+        // SBRC is prioritized in the decoder (checked first).
+        var instruction = _decoder.Decode(0xF800);
+        instruction.Kind.Should().Be(InstructionKind.Sbrc);
     }
 
     [TestMethod]

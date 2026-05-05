@@ -945,4 +945,66 @@ public class InstructionExecutorTests
         _executor.Execute(state, instruction);
         state.ProgramCounter.Should().Be(13u);
     }
+
+    [TestMethod]
+    public void SbrcSkipsOverCallInstruction()
+    {
+        var state = CreateState();
+        state.ProgramMemory = new global::EmulatorAVR.Core.Memory.ProgramMemory(64);
+        state.ProgramMemory[11] = 0x940E; // CALL (2-word) at nextPc
+        state.Registers[16] = 0x00;
+        state.ProgramCounter = 10;
+        var instruction = _decoder.Decode(0xFA03);
+        instruction.Kind.Should().Be(InstructionKind.Sbrc);
+        // Verify WordCount for CALL
+        int wordCount = InstructionDecoder.InstructionWordCount(state.ProgramMemory[11]);
+        wordCount.Should().Be(2);
+        state.ProgramMemory.Should().NotBeNull();
+        state.ProgramMemory[11].Should().Be(0x940E);
+        uint pcBefore = state.ProgramCounter;
+        _executor.Execute(state, instruction);
+        // PC should be: start(10) + skipWords(2 for CALL) + 1(global) = 13
+        uint pcAfter = state.ProgramCounter;
+        (pcAfter - pcBefore).Should().Be(2);
+        state.ProgramCounter.Should().Be(12u);
+    }
+
+    [TestMethod]
+    public void DefaultCycleCountIsOne()
+    {
+        var state = CreateState();
+        var instruction = _decoder.Decode(0x0000);
+        _executor.Execute(state, instruction);
+        state.CycleCount.Should().Be(1u);
+    }
+
+    [TestMethod]
+    public void CallPushesCorrectReturnAddress()
+    {
+        var state = CreateState();
+        state.DataMemory[0x5D] = 0xFF;
+        state.DataMemory[0x5E] = 0x08;
+        state.ProgramCounter = 10;
+        var call = _decoder.Decode(0x940E, 0x0050);
+        _executor.Execute(state, call);
+        state.ProgramCounter.Should().Be(0x0050u);
+        state.DataMemory[0x5D].Should().Be(0xFD);
+        state.DataMemory[0x08FD].Should().Be(0x0C);
+        state.DataMemory[0x08FE].Should().Be(0x00);
+    }
+
+    [TestMethod]
+    public void RetiSetsInterruptFlag()
+    {
+        var state = CreateState();
+        state.DataMemory[0x5D] = 0xFD;
+        state.DataMemory[0x5E] = 0x08;
+        state.DataMemory[0x08FD] = 0x20;
+        state.DataMemory[0x08FE] = 0x00;
+        state.SREG.I = false;
+        var reti = _decoder.Decode(0x9518);
+        _executor.Execute(state, reti);
+        state.SREG.I.Should().BeTrue();
+        state.ProgramCounter.Should().Be(0x0020u);
+    }
 }

@@ -190,9 +190,9 @@ public class InstructionExecutor
             // Group G — I/O and bit operations
             case InstructionKind.Bst:
             case InstructionKind.Bld:
-                // BST/BLD deferred — encoding collision with SBRC/SBRS
-                // Opcodes where bit 9=1 and bits 15-10=111110 match both SBRC and BST
-                // SBRC is prioritized (checked first in decoder) since it's more common
+                // BST/BLD: encoding collision with SBRC/SBRS (bit-9 overlap)
+                // SBRC/SBRS is prioritized in decoder (checked first)
+                // This opcode was consumed by SBRC/SBRS — do not reach here
                 break;
 
             case InstructionKind.Sec:
