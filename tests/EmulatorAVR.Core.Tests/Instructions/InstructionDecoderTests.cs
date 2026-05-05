@@ -590,4 +590,22 @@ public class InstructionDecoderTests
         var instruction = _decoder.Decode(0x9509);
         instruction.Kind.Should().Be(InstructionKind.Icall);
     }
+
+    [TestMethod]
+    public void MulsOpcode_DecodesR16R17()
+    {
+        var instruction = _decoder.Decode(0x0201);
+        instruction.Kind.Should().Be(InstructionKind.Muls);
+        instruction.Rd.Should().Be(16);
+        instruction.Rr.Should().Be(17);
+    }
+
+    [TestMethod]
+    public void MulsuOpcode_DecodesR16R17()
+    {
+        var instruction = _decoder.Decode(0x0301);
+        instruction.Kind.Should().Be(InstructionKind.Mulsu);
+        instruction.Rd.Should().Be(16);
+        instruction.Rr.Should().Be(17);
+    }
 }

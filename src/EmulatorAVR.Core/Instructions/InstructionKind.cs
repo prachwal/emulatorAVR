@@ -93,6 +93,8 @@ public enum InstructionKind
     Pop,
     // Group K — multiply
     Mul,
+    Muls,
+    Mulsu,
     // Group L — MCU control
     Sleep,
     Wdr,

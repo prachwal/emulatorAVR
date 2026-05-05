@@ -256,6 +256,14 @@ public class InstructionExecutor
                 ExecuteMul(state, instruction);
                 break;
 
+            case InstructionKind.Muls:
+                ExecuteMuls(state, instruction);
+                break;
+
+            case InstructionKind.Mulsu:
+                ExecuteMulsu(state, instruction);
+                break;
+
             // Group L — MCU control
             case InstructionKind.Sleep:
             case InstructionKind.Wdr:
@@ -844,6 +852,28 @@ public class InstructionExecutor
     private void ExecuteMul(AvrCpuState state, Instruction instruction)
     {
         byte rd = state.Registers[instruction.Rd];
+        byte rr = state.Registers[instruction.Rr];
+        int result = rd * rr;
+        state.Registers[0] = (byte)(result & 0xFF);
+        state.Registers[1] = (byte)((result >> 8) & 0xFF);
+        state.SREG.C = (result & 0x8000) != 0;
+        state.SREG.Z = (result & 0xFFFF) == 0;
+    }
+
+    private void ExecuteMuls(AvrCpuState state, Instruction instruction)
+    {
+        sbyte rd = (sbyte)state.Registers[instruction.Rd];
+        sbyte rr = (sbyte)state.Registers[instruction.Rr];
+        int result = rd * rr;
+        state.Registers[0] = (byte)(result & 0xFF);
+        state.Registers[1] = (byte)((result >> 8) & 0xFF);
+        state.SREG.C = (result & 0x8000) != 0;
+        state.SREG.Z = (result & 0xFFFF) == 0;
+    }
+
+    private void ExecuteMulsu(AvrCpuState state, Instruction instruction)
+    {
+        sbyte rd = (sbyte)state.Registers[instruction.Rd];
         byte rr = state.Registers[instruction.Rr];
         int result = rd * rr;
         state.Registers[0] = (byte)(result & 0xFF);

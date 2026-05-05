@@ -53,6 +53,22 @@ public class InstructionDecoder
             return new Instruction(opcode, InstructionKind.Mul, rd: rd, rr: rr);
         }
 
+        // MULS 0000 0010 dddd rrrr (signed multiply, R16-R23)
+        if ((opcode & 0xFF00) == 0x0200)
+        {
+            int rd = ((opcode >> 4) & 0x0F) + 16;
+            int rr = (opcode & 0x0F) + 16;
+            return new Instruction(opcode, InstructionKind.Muls, rd: rd, rr: rr);
+        }
+
+        // MULSU 0000 0011 0ddd 0rrr (signed × unsigned)
+        if ((opcode & 0xFF88) == 0x0300)
+        {
+            int rd = ((opcode >> 4) & 0x07) + 16;
+            int rr = (opcode & 0x07) + 16;
+            return new Instruction(opcode, InstructionKind.Mulsu, rd: rd, rr: rr);
+        }
+
         // MOV 0010 11rd dddd rrrr
         if ((opcode & 0xFC00) == 0x2C00)
         {
