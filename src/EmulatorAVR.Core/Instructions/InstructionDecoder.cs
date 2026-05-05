@@ -51,6 +51,14 @@ public class InstructionDecoder
             return new Instruction(opcode, InstructionKind.Or, rd: rd, rr: rr);
         }
 
+        // CPSE 0001 00rd dddd rrrr (compare skip if equal)
+        if ((opcode & 0xFC00) == 0x1000)
+        {
+            int rd = ((opcode >> 4) & 0x1F);
+            int rr = (opcode & 0x0F) | ((opcode >> 5) & 0x10);
+            return new Instruction(opcode, InstructionKind.Cpse, rd: rd, rr: rr);
+        }
+
         // ADD 0000 11rd dddd rrrr / LSL when Rr == Rd
         if ((opcode & 0xFC00) == 0x0C00)
         {

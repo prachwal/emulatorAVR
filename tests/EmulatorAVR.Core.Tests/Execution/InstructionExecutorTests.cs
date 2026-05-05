@@ -734,4 +734,28 @@ public class InstructionExecutorTests
         _executor.Execute(state, pop);
         state.Registers[16].Should().Be(0x42);
     }
+
+    [TestMethod]
+    public void Cpse_SkipsWhenRegistersEqual()
+    {
+        var state = CreateState();
+        state.ProgramCounter = 10;
+        state.Registers[1] = 0x05;
+        state.Registers[2] = 0x05;
+        var instruction = _decoder.Decode(0x1012);
+        _executor.Execute(state, instruction);
+        state.ProgramCounter.Should().Be(12u);
+    }
+
+    [TestMethod]
+    public void Cpse_DoesNotSkipWhenRegistersDiffer()
+    {
+        var state = CreateState();
+        state.ProgramCounter = 10;
+        state.Registers[1] = 0x05;
+        state.Registers[2] = 0x03;
+        var instruction = _decoder.Decode(0x1012);
+        _executor.Execute(state, instruction);
+        state.ProgramCounter.Should().Be(11u);
+    }
 }

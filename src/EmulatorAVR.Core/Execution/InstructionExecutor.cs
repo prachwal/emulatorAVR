@@ -171,6 +171,10 @@ public class InstructionExecutor
                 break;
 
             // Group F — skip instructions
+            case InstructionKind.Cpse:
+                ExecuteCpse(state, instruction);
+                break;
+
             case InstructionKind.Sbrc:
                 ExecuteSbrc(state, instruction);
                 break;
@@ -734,6 +738,14 @@ public class InstructionExecutor
         int dataAddr = ioAddr + 0x20;
         int bit = instruction.Immediate;
         state.DataMemory[dataAddr] &= (byte)~(1 << bit);
+    }
+
+    private void ExecuteCpse(AvrCpuState state, Instruction instruction)
+    {
+        byte rd = state.Registers[instruction.Rd];
+        byte rr = state.Registers[instruction.Rr];
+        if (rd == rr)
+            state.ProgramCounter++;
     }
 
     private void ExecutePush(AvrCpuState state, Instruction instruction)

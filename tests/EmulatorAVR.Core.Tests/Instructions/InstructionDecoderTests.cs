@@ -523,4 +523,13 @@ public class InstructionDecoderTests
         instruction.Kind.Should().Be(InstructionKind.Pop);
         instruction.Rd.Should().Be(16);
     }
+
+    [TestMethod]
+    public void CpseOpcode_DecodesR1R2()
+    {
+        var instruction = _decoder.Decode(0x1012);
+        instruction.Kind.Should().Be(InstructionKind.Cpse);
+        instruction.Rd.Should().Be(1);
+        instruction.Rr.Should().Be(2);
+    }
 }

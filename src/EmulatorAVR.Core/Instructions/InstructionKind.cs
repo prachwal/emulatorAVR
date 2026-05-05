@@ -70,6 +70,7 @@ public enum InstructionKind
     // Group F — skip instructions
     Sbrc,
     Sbrs,
+    Cpse,
     // Group G — I/O and bit operations
     In,
     Out,
