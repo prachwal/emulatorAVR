@@ -286,25 +286,18 @@ public class InstructionDecoder
             return new Instruction(opcode, InstructionKind.Muls, rd: rd, rr: rr);
         }
 
-        // FMUL 0000 0011 0ddd 1000 (Rd in R16-R23, Rr=R16)
-        if ((opcode & 0xFF8F) == 0x0308)
+        // FMUL/FMULS/FMULSU 0000 0011 0ddd 1rrr (Rd,Rr in R16-R23)
+        // bit 10: 1 distinguishes from MULSU (bit10=1), bit3=1 for FMUL variants
+        // bits 2-0 = rrr (Rr offset). Variant determined by bit 1:
+        //   bit1=0 → FMUL, bit1=1,bit0=0 → FMULS, bit1=1,bit0=1 → FMULSU
+        if ((opcode & 0xFF88) == 0x0308)
         {
             int rd = ((opcode >> 4) & 0x07) + 16;
-            return new Instruction(opcode, InstructionKind.Fmul, rd: rd, rr: 16);
-        }
-
-        // FMULS 0000 0011 0ddd 1010 (signed, Rr=R16)
-        if ((opcode & 0xFF8F) == 0x030A)
-        {
-            int rd = ((opcode >> 4) & 0x07) + 16;
-            return new Instruction(opcode, InstructionKind.Fmuls, rd: rd, rr: 16);
-        }
-
-        // FMULSU 0000 0011 0ddd 1011 (signed × unsigned, Rr=R16)
-        if ((opcode & 0xFF8F) == 0x030B)
-        {
-            int rd = ((opcode >> 4) & 0x07) + 16;
-            return new Instruction(opcode, InstructionKind.Fmulsu, rd: rd, rr: 16);
+            int rr = (opcode & 0x07) + 16;
+            InstructionKind kind = (opcode & 0x02) == 0 ? InstructionKind.Fmul
+                : (opcode & 0x01) == 0 ? InstructionKind.Fmuls
+                : InstructionKind.Fmulsu;
+            return new Instruction(opcode, kind, rd: rd, rr: rr);
         }
 
         // MULSU 0000 0011 0ddd 0rrr (signed × unsigned)

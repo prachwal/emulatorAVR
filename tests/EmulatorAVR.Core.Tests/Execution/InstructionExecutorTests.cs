@@ -891,6 +891,19 @@ public class InstructionExecutorTests
     }
 
     [TestMethod]
+    public void Fmul_MultipliesR17WithR16()
+    {
+        var state = CreateState();
+        state.Registers[17] = 0x10;
+        state.Registers[16] = 0x03;
+        var instruction = _decoder.Decode(0x0318);
+        instruction.Kind.Should().Be(InstructionKind.Fmul);
+        instruction.Rr.Should().Be(16);
+        _executor.Execute(state, instruction);
+        state.Registers[0].Should().Be(0x60); // (0x10*0x03)<<1 = 0x30<<1 = 0x60
+    }
+
+    [TestMethod]
     public void Fmul_FractionalMultiplyShiftsResult()
     {
         var state = CreateState();
@@ -900,6 +913,24 @@ public class InstructionExecutorTests
         _executor.Execute(state, instruction);
         state.Registers[0].Should().Be(0x00);
         state.Registers[1].Should().Be(0x80);
+    }
+
+    [TestMethod]
+    public void SbrsSkipsOverLdsInstruction()
+    {
+        var state = CreateState();
+        state.ProgramMemory = new global::EmulatorAVR.Core.Memory.ProgramMemory(64);
+        state.ProgramMemory[11] = 0x9000; // LDS (2-word) at nextPc
+        state.Registers[16] = 0x80;
+        state.ProgramCounter = 10;
+        var instruction = _decoder.Decode(0xFD07);
+        instruction.Kind.Should().Be(InstructionKind.Sbrs);
+        int wc = InstructionDecoder.InstructionWordCount(state.ProgramMemory[11]);
+        wc.Should().Be(2);
+        uint before = state.ProgramCounter;
+        _executor.Execute(state, instruction);
+        uint after = state.ProgramCounter;
+        (after - before).Should().Be(2);
     }
 
     [TestMethod]

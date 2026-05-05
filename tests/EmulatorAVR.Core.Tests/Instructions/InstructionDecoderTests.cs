@@ -471,6 +471,51 @@ public class InstructionDecoderTests
     }
 
     [TestMethod]
+    public void FmulOpcode_DecodesR17RrR16()
+    {
+        var instruction = _decoder.Decode(0x0318);
+        instruction.Kind.Should().Be(InstructionKind.Fmul);
+        instruction.Rd.Should().Be(17);
+        instruction.Rr.Should().Be(16);
+    }
+
+    [TestMethod]
+    public void FmulsOpcode_DecodesR17RrR18()
+    {
+        var instruction = _decoder.Decode(0x031A);
+        instruction.Kind.Should().Be(InstructionKind.Fmuls);
+        instruction.Rd.Should().Be(17);
+        instruction.Rr.Should().Be(18);
+    }
+
+    [TestMethod]
+    public void FmulsuOpcode_DecodesR17RrR19()
+    {
+        var instruction = _decoder.Decode(0x031B);
+        instruction.Kind.Should().Be(InstructionKind.Fmulsu);
+        instruction.Rd.Should().Be(17);
+        instruction.Rr.Should().Be(19);
+    }
+
+    [TestMethod]
+    public void FmulOpcode_DecodesR23RrR16()
+    {
+        var instruction = _decoder.Decode(0x0378);
+        instruction.Kind.Should().Be(InstructionKind.Fmul);
+        instruction.Rd.Should().Be(23);
+        instruction.Rr.Should().Be(16);
+    }
+
+    [TestMethod]
+    public void FmulsOpcode_DecodesR16RrR18()
+    {
+        var instruction = _decoder.Decode(0x030A);
+        instruction.Kind.Should().Be(InstructionKind.Fmuls);
+        instruction.Rd.Should().Be(16);
+        instruction.Rr.Should().Be(18);
+    }
+
+    [TestMethod]
     public void Jmp2WordOpcode_DecodesWithTarget()
     {
         var instruction = _decoder.Decode(0x940C, 0x0042);
