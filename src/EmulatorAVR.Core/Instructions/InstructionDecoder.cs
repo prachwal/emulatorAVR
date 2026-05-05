@@ -7,19 +7,48 @@ public class InstructionDecoder
         if (opcode == 0x0000)
             return new Instruction(opcode, InstructionKind.Nop);
 
+        // LDI 1110 KKKK dddd KKKK / SER when K=0xFF
         if ((opcode & 0xF000) == 0xE000)
         {
             int d = (opcode >> 4) & 0x0F;
             int rd = d + 16;
             byte k = (byte)(((opcode >> 4) & 0xF0) | (opcode & 0x0F));
-            return new Instruction(opcode, InstructionKind.Ldi, rd: rd, immediate: k);
+            var kind = k == 0xFF ? InstructionKind.Ser : InstructionKind.Ldi;
+            return new Instruction(opcode, kind, rd: rd, immediate: k);
         }
 
+        // MOV 0010 11rd dddd rrrr
         if ((opcode & 0xFC00) == 0x2C00)
         {
             int rd = ((opcode >> 4) & 0x1F);
             int rr = (opcode & 0x0F) | ((opcode >> 5) & 0x10);
             return new Instruction(opcode, InstructionKind.Mov, rd: rd, rr: rr);
+        }
+
+        // AND 0010 00rd dddd rrrr / TST when Rr == Rd
+        if ((opcode & 0xFC00) == 0x2000)
+        {
+            int rd = ((opcode >> 4) & 0x1F);
+            int rr = (opcode & 0x0F) | ((opcode >> 5) & 0x10);
+            var kind = rd == rr ? InstructionKind.Tst : InstructionKind.And;
+            return new Instruction(opcode, kind, rd: rd, rr: rr);
+        }
+
+        // EOR 0010 01rd dddd rrrr / CLR when Rr == Rd
+        if ((opcode & 0xFC00) == 0x2400)
+        {
+            int rd = ((opcode >> 4) & 0x1F);
+            int rr = (opcode & 0x0F) | ((opcode >> 5) & 0x10);
+            var kind = rd == rr ? InstructionKind.Clr : InstructionKind.Eor;
+            return new Instruction(opcode, kind, rd: rd, rr: rr);
+        }
+
+        // OR 0010 10rd dddd rrrr
+        if ((opcode & 0xFC00) == 0x2800)
+        {
+            int rd = ((opcode >> 4) & 0x1F);
+            int rr = (opcode & 0x0F) | ((opcode >> 5) & 0x10);
+            return new Instruction(opcode, InstructionKind.Or, rd: rd, rr: rr);
         }
 
         // ADD 0000 11rd dddd rrrr
@@ -70,6 +99,24 @@ public class InstructionDecoder
             return new Instruction(opcode, InstructionKind.Sbc, rd: rd, rr: rr);
         }
 
+        // ORI 0110 KKKK dddd KKKK (Rd 16..31)
+        if ((opcode & 0xF000) == 0x6000)
+        {
+            int d = (opcode >> 4) & 0x0F;
+            int rd = d + 16;
+            byte k = (byte)(((opcode >> 4) & 0xF0) | (opcode & 0x0F));
+            return new Instruction(opcode, InstructionKind.Ori, rd: rd, immediate: k);
+        }
+
+        // ANDI 0111 KKKK dddd KKKK (Rd 16..31)
+        if ((opcode & 0xF000) == 0x7000)
+        {
+            int d = (opcode >> 4) & 0x0F;
+            int rd = d + 16;
+            byte k = (byte)(((opcode >> 4) & 0xF0) | (opcode & 0x0F));
+            return new Instruction(opcode, InstructionKind.Andi, rd: rd, immediate: k);
+        }
+
         // SUBI 0101 KKKK dddd KKKK (Rd 16..31)
         if ((opcode & 0xF000) == 0x5000)
         {
@@ -95,6 +142,13 @@ public class InstructionDecoder
             int rd = d + 16;
             byte k = (byte)(((opcode >> 4) & 0xF0) | (opcode & 0x0F));
             return new Instruction(opcode, InstructionKind.Cpi, rd: rd, immediate: k);
+        }
+
+        // COM 1001 010d dddd 0000
+        if ((opcode & 0xFE0F) == 0x9400)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.Com, rd: rd);
         }
 
         // INC 1001 010d dddd 0011

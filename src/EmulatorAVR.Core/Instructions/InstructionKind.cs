@@ -20,5 +20,15 @@ public enum InstructionKind
     Cpi,
     Inc,
     Dec,
-    Neg
+    Neg,
+    // Group C — logical and bitwise
+    And,
+    Andi,
+    Or,
+    Ori,
+    Eor,
+    Com,
+    Tst,
+    Clr,
+    Ser
 }

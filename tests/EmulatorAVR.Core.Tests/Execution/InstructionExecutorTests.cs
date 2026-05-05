@@ -349,4 +349,103 @@ public class InstructionExecutorTests
         state.Registers[1].Should().Be(0x05);
         state.Registers[2].Should().Be(0x02);
     }
+
+    [TestMethod]
+    public void And_PerformsBitwiseAnd()
+    {
+        var state = CreateState();
+        state.Registers[1] = 0x0F;
+        state.Registers[2] = 0x03;
+        var instruction = _decoder.Decode(0x2012);
+        _executor.Execute(state, instruction);
+        state.Registers[1].Should().Be(0x03);
+        state.SREG.Z.Should().BeFalse();
+    }
+
+    [TestMethod]
+    public void Andi_PerformsBitwiseAndWithImmediate()
+    {
+        var state = CreateState();
+        state.Registers[16] = 0x0F;
+        var instruction = _decoder.Decode(0x7003);
+        _executor.Execute(state, instruction);
+        state.Registers[16].Should().Be(0x03);
+    }
+
+    [TestMethod]
+    public void Or_PerformsBitwiseOr()
+    {
+        var state = CreateState();
+        state.Registers[1] = 0x0F;
+        state.Registers[2] = 0xF0;
+        var instruction = _decoder.Decode(0x2812);
+        _executor.Execute(state, instruction);
+        state.Registers[1].Should().Be(0xFF);
+    }
+
+    [TestMethod]
+    public void Ori_PerformsBitwiseOrWithImmediate()
+    {
+        var state = CreateState();
+        state.Registers[16] = 0x0F;
+        var instruction = _decoder.Decode(0x6F00);
+        _executor.Execute(state, instruction);
+        state.Registers[16].Should().Be(0xFF);
+    }
+
+    [TestMethod]
+    public void Eor_PerformsBitwiseXor()
+    {
+        var state = CreateState();
+        state.Registers[1] = 0xFF;
+        state.Registers[2] = 0x0F;
+        var instruction = _decoder.Decode(0x2412);
+        _executor.Execute(state, instruction);
+        state.Registers[1].Should().Be(0xF0);
+    }
+
+    [TestMethod]
+    public void Com_PerformsOnesComplement()
+    {
+        var state = CreateState();
+        state.Registers[16] = 0xF0;
+        var instruction = _decoder.Decode(0x9500);
+        _executor.Execute(state, instruction);
+        state.Registers[16].Should().Be(0x0F);
+        state.SREG.C.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void Tst_SetsZeroFlagForZeroRegister()
+    {
+        var state = CreateState();
+        state.Registers[1] = 0x00;
+        state.Registers[0] = 0x00;
+        var instruction = _decoder.Decode(0x2011);
+        _executor.Execute(state, instruction);
+        instruction.Kind.Should().Be(InstructionKind.Tst);
+        state.SREG.Z.Should().BeTrue();
+        state.Registers[1].Should().Be(0x00);
+    }
+
+    [TestMethod]
+    public void Clr_ClearsRegister()
+    {
+        var state = CreateState();
+        state.Registers[1] = 0xFF;
+        var instruction = _decoder.Decode(0x2411);
+        _executor.Execute(state, instruction);
+        state.Registers[1].Should().Be(0x00);
+        state.SREG.Z.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void Ser_SetsRegisterToFF()
+    {
+        var state = CreateState();
+        state.Registers[31] = 0x00;
+        var instruction = _decoder.Decode(0xEFFF);
+        _executor.Execute(state, instruction);
+        state.Registers[31].Should().Be(0xFF);
+    }
 }

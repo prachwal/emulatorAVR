@@ -79,6 +79,43 @@ public class InstructionExecutor
                 ExecuteSbiw(state, instruction);
                 break;
 
+            // Group C — logical and bitwise
+            case InstructionKind.And:
+                ExecuteAnd(state, instruction);
+                break;
+
+            case InstructionKind.Andi:
+                ExecuteAndi(state, instruction);
+                break;
+
+            case InstructionKind.Or:
+                ExecuteOr(state, instruction);
+                break;
+
+            case InstructionKind.Ori:
+                ExecuteOri(state, instruction);
+                break;
+
+            case InstructionKind.Eor:
+                ExecuteEor(state, instruction);
+                break;
+
+            case InstructionKind.Com:
+                ExecuteCom(state, instruction);
+                break;
+
+            case InstructionKind.Tst:
+                ExecuteTst(state, instruction);
+                break;
+
+            case InstructionKind.Clr:
+                ExecuteClr(state, instruction);
+                break;
+
+            case InstructionKind.Ser:
+                ExecuteSer(state, instruction);
+                break;
+
             default:
                 return ExecutionResult.Unsupported;
         }
@@ -320,5 +357,117 @@ public class InstructionExecutor
         state.SREG.Z = (resultLow & 0xFFFF) == 0;
 
         StatusRegisterMath.SetWordRegisterValue(state.Registers, pairBase, resultLow);
+    }
+
+    private void ExecuteAnd(AvrCpuState state, Instruction instruction)
+    {
+        byte rd = state.Registers[instruction.Rd];
+        byte rr = state.Registers[instruction.Rr];
+        byte result = (byte)(rd & rr);
+
+        state.SREG.N = StatusRegisterMath.Negative(result);
+        state.SREG.V = false;
+        state.SREG.S = StatusRegisterMath.Sign(state.SREG.N, state.SREG.V);
+        state.SREG.Z = StatusRegisterMath.Zero(result);
+
+        state.Registers[instruction.Rd] = result;
+    }
+
+    private void ExecuteAndi(AvrCpuState state, Instruction instruction)
+    {
+        byte rd = state.Registers[instruction.Rd];
+        byte k = instruction.Immediate;
+        byte result = (byte)(rd & k);
+
+        state.SREG.N = StatusRegisterMath.Negative(result);
+        state.SREG.V = false;
+        state.SREG.S = StatusRegisterMath.Sign(state.SREG.N, state.SREG.V);
+        state.SREG.Z = StatusRegisterMath.Zero(result);
+
+        state.Registers[instruction.Rd] = result;
+    }
+
+    private void ExecuteOr(AvrCpuState state, Instruction instruction)
+    {
+        byte rd = state.Registers[instruction.Rd];
+        byte rr = state.Registers[instruction.Rr];
+        byte result = (byte)(rd | rr);
+
+        state.SREG.N = StatusRegisterMath.Negative(result);
+        state.SREG.V = false;
+        state.SREG.S = StatusRegisterMath.Sign(state.SREG.N, state.SREG.V);
+        state.SREG.Z = StatusRegisterMath.Zero(result);
+
+        state.Registers[instruction.Rd] = result;
+    }
+
+    private void ExecuteOri(AvrCpuState state, Instruction instruction)
+    {
+        byte rd = state.Registers[instruction.Rd];
+        byte k = instruction.Immediate;
+        byte result = (byte)(rd | k);
+
+        state.SREG.N = StatusRegisterMath.Negative(result);
+        state.SREG.V = false;
+        state.SREG.S = StatusRegisterMath.Sign(state.SREG.N, state.SREG.V);
+        state.SREG.Z = StatusRegisterMath.Zero(result);
+
+        state.Registers[instruction.Rd] = result;
+    }
+
+    private void ExecuteEor(AvrCpuState state, Instruction instruction)
+    {
+        byte rd = state.Registers[instruction.Rd];
+        byte rr = state.Registers[instruction.Rr];
+        byte result = (byte)(rd ^ rr);
+
+        state.SREG.N = StatusRegisterMath.Negative(result);
+        state.SREG.V = false;
+        state.SREG.S = StatusRegisterMath.Sign(state.SREG.N, state.SREG.V);
+        state.SREG.Z = StatusRegisterMath.Zero(result);
+
+        state.Registers[instruction.Rd] = result;
+    }
+
+    private void ExecuteCom(AvrCpuState state, Instruction instruction)
+    {
+        byte rd = state.Registers[instruction.Rd];
+        byte result = (byte)(~rd);
+
+        state.SREG.C = true;
+        state.SREG.N = StatusRegisterMath.Negative(result);
+        state.SREG.V = false;
+        state.SREG.S = StatusRegisterMath.Sign(state.SREG.N, state.SREG.V);
+        state.SREG.Z = StatusRegisterMath.Zero(result);
+
+        state.Registers[instruction.Rd] = result;
+    }
+
+    private void ExecuteTst(AvrCpuState state, Instruction instruction)
+    {
+        byte rd = state.Registers[instruction.Rd];
+        byte result = rd;
+
+        state.SREG.N = StatusRegisterMath.Negative(result);
+        state.SREG.V = false;
+        state.SREG.S = StatusRegisterMath.Sign(state.SREG.N, state.SREG.V);
+        state.SREG.Z = StatusRegisterMath.Zero(result);
+    }
+
+    private void ExecuteClr(AvrCpuState state, Instruction instruction)
+    {
+        byte result = 0;
+
+        state.SREG.N = false;
+        state.SREG.V = false;
+        state.SREG.S = false;
+        state.SREG.Z = true;
+
+        state.Registers[instruction.Rd] = result;
+    }
+
+    private void ExecuteSer(AvrCpuState state, Instruction instruction)
+    {
+        state.Registers[instruction.Rd] = 0xFF;
     }
 }

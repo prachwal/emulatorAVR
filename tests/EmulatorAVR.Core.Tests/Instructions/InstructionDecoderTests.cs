@@ -29,7 +29,7 @@ public class InstructionDecoderTests
     public void LdiOpcode_R31DecodesCorrectly()
     {
         var instruction = _decoder.Decode(0xEFFF);
-        instruction.Kind.Should().Be(InstructionKind.Ldi);
+        instruction.Kind.Should().Be(InstructionKind.Ser);
         instruction.Rd.Should().Be(31);
         instruction.Immediate.Should().Be(0xFF);
     }
@@ -236,5 +236,85 @@ public class InstructionDecoderTests
         instruction.Kind.Should().Be(InstructionKind.Sbiw);
         instruction.WordRegisterPair.Should().Be(24);
         instruction.Immediate.Should().Be(0);
+    }
+
+    [TestMethod]
+    public void AndOpcode_DecodesR1R2()
+    {
+        var instruction = _decoder.Decode(0x2012);
+        instruction.Kind.Should().Be(InstructionKind.And);
+        instruction.Rd.Should().Be(1);
+        instruction.Rr.Should().Be(2);
+    }
+
+    [TestMethod]
+    public void TstOpcode_DecodesAsTstWhenRdEqualsRr()
+    {
+        var instruction = _decoder.Decode(0x2011);
+        instruction.Kind.Should().Be(InstructionKind.Tst);
+        instruction.Rd.Should().Be(1);
+        instruction.Rr.Should().Be(1);
+    }
+
+    [TestMethod]
+    public void EorOpcode_DecodesR1R2()
+    {
+        var instruction = _decoder.Decode(0x2412);
+        instruction.Kind.Should().Be(InstructionKind.Eor);
+        instruction.Rd.Should().Be(1);
+        instruction.Rr.Should().Be(2);
+    }
+
+    [TestMethod]
+    public void ClrOpcode_DecodesAsClrWhenRdEqualsRr()
+    {
+        var instruction = _decoder.Decode(0x2411);
+        instruction.Kind.Should().Be(InstructionKind.Clr);
+        instruction.Rd.Should().Be(1);
+        instruction.Rr.Should().Be(1);
+    }
+
+    [TestMethod]
+    public void OrOpcode_DecodesR1R2()
+    {
+        var instruction = _decoder.Decode(0x2812);
+        instruction.Kind.Should().Be(InstructionKind.Or);
+        instruction.Rd.Should().Be(1);
+        instruction.Rr.Should().Be(2);
+    }
+
+    [TestMethod]
+    public void AndiOpcode_DecodesR16Immediate()
+    {
+        var instruction = _decoder.Decode(0x7402);
+        instruction.Kind.Should().Be(InstructionKind.Andi);
+        instruction.Rd.Should().Be(16);
+        instruction.Immediate.Should().Be(0x42);
+    }
+
+    [TestMethod]
+    public void OriOpcode_DecodesR16Immediate()
+    {
+        var instruction = _decoder.Decode(0x6402);
+        instruction.Kind.Should().Be(InstructionKind.Ori);
+        instruction.Rd.Should().Be(16);
+        instruction.Immediate.Should().Be(0x42);
+    }
+
+    [TestMethod]
+    public void ComOpcode_DecodesR16()
+    {
+        var instruction = _decoder.Decode(0x9500);
+        instruction.Kind.Should().Be(InstructionKind.Com);
+        instruction.Rd.Should().Be(16);
+    }
+
+    [TestMethod]
+    public void SerOpcode_DecodesAsSerForLdiWithFF()
+    {
+        var instruction = _decoder.Decode(0xEFFF);
+        instruction.Kind.Should().Be(InstructionKind.Ser);
+        instruction.Rd.Should().Be(31);
+        instruction.Immediate.Should().Be(0xFF);
     }
 }
