@@ -72,6 +72,28 @@ public class InstructionDecoder
             return new Instruction(opcode, InstructionKind.LpmZPlus, rd: rd);
         }
 
+        // ELPM 1001 0101 1101 1000 (implicit R0, extended)
+        if (opcode == 0x95D8)
+            return new Instruction(opcode, InstructionKind.Elpm);
+
+        // ELPM Rd, Z 1001 000d dddd 0110
+        if ((opcode & 0xFE0F) == 0x9006)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.Elpm, rd: rd);
+        }
+
+        // ELPM Rd, Z+ 1001 000d dddd 0111
+        if ((opcode & 0xFE0F) == 0x9007)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.Elpm, rd: rd);
+        }
+
+        // SPM 1001 0101 1110 1000 / SPM Z+ 1001 0101 1111 1000
+        if (opcode == 0x95E8 || opcode == 0x95F8)
+            return new Instruction(opcode, InstructionKind.Spm);
+
         // LDS (2-word) 1001 000d dddd 0000 + 2nd word data address
         if ((opcode & 0xFE0F) == 0x9000)
         {
@@ -593,7 +615,7 @@ public class InstructionDecoder
         }
 
         // SBI 1001 1010 AAAA Abbb
-        if ((opcode & 0xFE00) == 0x9A00)
+        if ((opcode & 0xFF00) == 0x9A00)
         {
             int addr = (opcode >> 3) & 0x1F;
             int bit = opcode & 0x07;
@@ -601,11 +623,27 @@ public class InstructionDecoder
         }
 
         // CBI 1001 1000 AAAA Abbb
-        if ((opcode & 0xFE00) == 0x9800)
+        if ((opcode & 0xFF00) == 0x9800)
         {
             int addr = (opcode >> 3) & 0x1F;
             int bit = opcode & 0x07;
             return new Instruction(opcode, InstructionKind.Cbi, rd: addr, immediate: (byte)bit);
+        }
+
+        // SBIC 1001 1001 AAAA Abbb (skip if I/O bit cleared)
+        if ((opcode & 0xFF00) == 0x9900)
+        {
+            int addr = (opcode >> 3) & 0x1F;
+            int bit = opcode & 0x07;
+            return new Instruction(opcode, InstructionKind.Sbic, rd: addr, immediate: (byte)bit);
+        }
+
+        // SBIS 1001 1011 AAAA Abbb (skip if I/O bit set)
+        if ((opcode & 0xFF00) == 0x9B00)
+        {
+            int addr = (opcode >> 3) & 0x1F;
+            int bit = opcode & 0x07;
+            return new Instruction(opcode, InstructionKind.Sbis, rd: addr, immediate: (byte)bit);
         }
 
         // SBRC 1111 110r rrrr 0bbb
@@ -687,5 +725,18 @@ public class InstructionDecoder
         }
 
         return new Instruction(opcode, InstructionKind.Unsupported);
+    }
+
+    public static int InstructionWordCount(ushort opcode)
+    {
+        // JMP: (opcode & 0xFE0E) == 0x940C
+        // CALL: (opcode & 0xFE0E) == 0x940E
+        // LDS: (opcode & 0xFE0F) == 0x9000
+        // STS: (opcode & 0xFE0F) == 0x9200
+        if ((opcode & 0xFE0E) == 0x940C || (opcode & 0xFE0E) == 0x940E)
+            return 2;
+        if ((opcode & 0xFE0F) == 0x9000 || (opcode & 0xFE0F) == 0x9200)
+            return 2;
+        return 1;
     }
 }

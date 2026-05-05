@@ -76,6 +76,8 @@ public enum InstructionKind
     Out,
     Sbi,
     Cbi,
+    Sbic,
+    Sbis,
     Bst,
     Bld,
     Bset,
@@ -94,6 +96,8 @@ public enum InstructionKind
     // Group J — program memory access
     Lpm,
     LpmZPlus,
+    Elpm,
+    Spm,
     // Group K — multiply
     Mul,
     Muls,

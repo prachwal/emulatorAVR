@@ -907,4 +907,42 @@ public class InstructionExecutorTests
         state.Registers[0].Should().Be(0x00);
         state.Registers[1].Should().Be(0x80);
     }
+
+    [TestMethod]
+    public void Sbic_SkipsWhenIoBitClear()
+    {
+        var state = CreateState();
+        state.DataMemory[0x25] = 0x00;
+        state.ProgramMemory = new global::EmulatorAVR.Core.Memory.ProgramMemory(64);
+        state.ProgramCounter = 10;
+        var instruction = _decoder.Decode(0x992D);
+        _executor.Execute(state, instruction);
+        state.ProgramCounter.Should().Be(12u);
+    }
+
+    [TestMethod]
+    public void Sbis_SkipsWhenIoBitSet()
+    {
+        var state = CreateState();
+        state.DataMemory[0x25] = 0x20;
+        state.ProgramMemory = new global::EmulatorAVR.Core.Memory.ProgramMemory(64);
+        state.ProgramCounter = 10;
+        var instruction = _decoder.Decode(0x9B2D);
+        _executor.Execute(state, instruction);
+        state.ProgramCounter.Should().Be(12u);
+    }
+
+    [TestMethod]
+    public void CpseSkipsOverTwoWordInstruction()
+    {
+        var state = CreateState();
+        state.ProgramMemory = new global::EmulatorAVR.Core.Memory.ProgramMemory(64);
+        state.ProgramMemory[11] = 0x940C; // JMP (2-word) at nextPc
+        state.ProgramCounter = 10;
+        state.Registers[1] = 0x05;
+        state.Registers[2] = 0x05;
+        var instruction = _decoder.Decode(0x1012);
+        _executor.Execute(state, instruction);
+        state.ProgramCounter.Should().Be(13u);
+    }
 }

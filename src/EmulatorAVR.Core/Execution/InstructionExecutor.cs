@@ -191,6 +191,8 @@ public class InstructionExecutor
             case InstructionKind.Bst:
             case InstructionKind.Bld:
                 // BST/BLD deferred — encoding collision with SBRC/SBRS
+                // Opcodes where bit 9=1 and bits 15-10=111110 match both SBRC and BST
+                // SBRC is prioritized (checked first in decoder) since it's more common
                 break;
 
             case InstructionKind.Sec:
@@ -231,6 +233,14 @@ public class InstructionExecutor
 
             case InstructionKind.Cbi:
                 ExecuteCbi(state, instruction);
+                break;
+
+            case InstructionKind.Sbic:
+                ExecuteSbic(state, instruction);
+                break;
+
+            case InstructionKind.Sbis:
+                ExecuteSbis(state, instruction);
                 break;
 
             // Group I — stack operations
@@ -286,6 +296,13 @@ public class InstructionExecutor
             case InstructionKind.LpmZPlus:
                 ExecuteLpm(state, instruction);
                 IncrementZ(state);
+                break;
+
+            case InstructionKind.Elpm:
+                ExecuteLpm(state, instruction);
+                break;
+
+            case InstructionKind.Spm:
                 break;
 
             case InstructionKind.LdX:
@@ -913,12 +930,42 @@ public class InstructionExecutor
         state.DataMemory[dataAddr] &= (byte)~(1 << bit);
     }
 
+    private void ExecuteSbic(AvrCpuState state, Instruction instruction)
+    {
+        int ioAddr = instruction.Rd;
+        int dataAddr = ioAddr + 0x20;
+        int bit = instruction.Immediate;
+        if ((state.DataMemory[dataAddr] & (1 << bit)) == 0)
+            SkipNextInstruction(state);
+    }
+
+    private void ExecuteSbis(AvrCpuState state, Instruction instruction)
+    {
+        int ioAddr = instruction.Rd;
+        int dataAddr = ioAddr + 0x20;
+        int bit = instruction.Immediate;
+        if ((state.DataMemory[dataAddr] & (1 << bit)) != 0)
+            SkipNextInstruction(state);
+    }
+
     private void ExecuteCpse(AvrCpuState state, Instruction instruction)
     {
         byte rd = state.Registers[instruction.Rd];
         byte rr = state.Registers[instruction.Rr];
         if (rd == rr)
+            SkipNextInstruction(state);
+    }
+    private static void SkipNextInstruction(AvrCpuState state)
+    {
+        uint nextPc = state.ProgramCounter + 1;
+        if (state.ProgramMemory != null && nextPc < (uint)state.ProgramMemory.WordCapacity)
+        {
+            state.ProgramCounter += (uint)InstructionDecoder.InstructionWordCount(state.ProgramMemory[(int)nextPc]);
+        }
+        else
+        {
             state.ProgramCounter++;
+        }
     }
 
     private void ExecutePush(AvrCpuState state, Instruction instruction)

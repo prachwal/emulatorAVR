@@ -675,7 +675,7 @@ public class InstructionDecoderTests
     }
 
     [TestMethod]
-    public void Lds2WordOpcode_DecodesR16()
+    public void Lds2WordOpcode_DecodesR0()
     {
         var instruction = _decoder.Decode(0x9000, 0x0100);
         instruction.Kind.Should().Be(InstructionKind.Lds);
@@ -684,12 +684,21 @@ public class InstructionDecoderTests
     }
 
     [TestMethod]
-    public void Sts2WordOpcode_DecodesR16()
+    public void SbicOpcode_DecodesPortbBit5()
     {
-        var instruction = _decoder.Decode(0x9200, 0x0100);
-        instruction.Kind.Should().Be(InstructionKind.Sts);
-        instruction.Rd.Should().Be(0);
-        instruction.Offset.Should().Be(0x0100);
+        var instruction = _decoder.Decode(0x992D);
+        instruction.Kind.Should().Be(InstructionKind.Sbic);
+        instruction.Rd.Should().Be(5);
+        instruction.Immediate.Should().Be(5);
+    }
+
+    [TestMethod]
+    public void SbisOpcode_DecodesPortbBit5()
+    {
+        var instruction = _decoder.Decode(0x9B2D);
+        instruction.Kind.Should().Be(InstructionKind.Sbis);
+        instruction.Rd.Should().Be(5);
+        instruction.Immediate.Should().Be(5);
     }
 
     [TestMethod]
