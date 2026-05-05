@@ -238,6 +238,22 @@ public class InstructionDecoder
             return new Instruction(opcode, InstructionKind.Sbiw, wordRegisterPair: wordPair, immediate: k);
         }
 
+        // SBRC 1111 110r rrrr 0bbb
+        if ((opcode & 0xFC08) == 0xF800)
+        {
+            int rr = (opcode >> 5) & 0x1F;
+            int bit = opcode & 0x07;
+            return new Instruction(opcode, InstructionKind.Sbrc, rd: rr, immediate: (byte)bit);
+        }
+
+        // SBRS 1111 111r rrrr 0bbb
+        if ((opcode & 0xFC08) == 0xFC00)
+        {
+            int rr = (opcode >> 5) & 0x1F;
+            int bit = opcode & 0x07;
+            return new Instruction(opcode, InstructionKind.Sbrs, rd: rr, immediate: (byte)bit);
+        }
+
         // RJMP 1100 kkkk kkkk kkkk
         if ((opcode & 0xF000) == 0xC000)
         {

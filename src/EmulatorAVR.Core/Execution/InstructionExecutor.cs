@@ -170,6 +170,15 @@ public class InstructionExecutor
                 ExecuteBranchIfClear(state, instruction);
                 break;
 
+            // Group F — skip instructions
+            case InstructionKind.Sbrc:
+                ExecuteSbrc(state, instruction);
+                break;
+
+            case InstructionKind.Sbrs:
+                ExecuteSbrs(state, instruction);
+                break;
+
             default:
                 return ExecutionResult.Unsupported;
         }
@@ -598,5 +607,21 @@ public class InstructionExecutor
             uint currentPc = state.ProgramCounter;
             state.ProgramCounter = (uint)((int)currentPc + instruction.Offset);
         }
+    }
+
+    private void ExecuteSbrc(AvrCpuState state, Instruction instruction)
+    {
+        byte reg = state.Registers[instruction.Rd];
+        int bit = instruction.Immediate;
+        if ((reg & (1 << bit)) == 0)
+            state.ProgramCounter++;
+    }
+
+    private void ExecuteSbrs(AvrCpuState state, Instruction instruction)
+    {
+        byte reg = state.Registers[instruction.Rd];
+        int bit = instruction.Immediate;
+        if ((reg & (1 << bit)) != 0)
+            state.ProgramCounter++;
     }
 }

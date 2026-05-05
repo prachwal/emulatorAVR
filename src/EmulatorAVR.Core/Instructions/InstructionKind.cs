@@ -66,5 +66,8 @@ public enum InstructionKind
     Brvs,
     Brvc,
     Brts,
-    Brtc
+    Brtc,
+    // Group F — skip instructions
+    Sbrc,
+    Sbrs
 }

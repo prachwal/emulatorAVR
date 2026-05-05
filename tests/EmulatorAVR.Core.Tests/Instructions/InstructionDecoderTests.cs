@@ -425,4 +425,22 @@ public class InstructionDecoderTests
         instruction.Kind.Should().Be(InstructionKind.Brcc);
         instruction.Rd.Should().Be(0);
     }
+
+    [TestMethod]
+    public void SbrcOpcode_DecodesR16Bit3()
+    {
+        var instruction = _decoder.Decode(0xFA03);
+        instruction.Kind.Should().Be(InstructionKind.Sbrc);
+        instruction.Rd.Should().Be(16);
+        instruction.Immediate.Should().Be(3);
+    }
+
+    [TestMethod]
+    public void SbrsOpcode_DecodesR16Bit3()
+    {
+        var instruction = _decoder.Decode(0xFE03);
+        instruction.Kind.Should().Be(InstructionKind.Sbrs);
+        instruction.Rd.Should().Be(16);
+        instruction.Immediate.Should().Be(3);
+    }
 }

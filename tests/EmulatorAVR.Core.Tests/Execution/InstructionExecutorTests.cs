@@ -567,4 +567,48 @@ public class InstructionExecutorTests
         _executor.Execute(state, instruction);
         state.ProgramCounter.Should().Be(11u);
     }
+
+    [TestMethod]
+    public void Sbrc_SkipsWhenRegisterBitClear()
+    {
+        var state = CreateState();
+        state.ProgramCounter = 10;
+        state.Registers[16] = 0x00;
+        var instruction = _decoder.Decode(0xFA03);
+        _executor.Execute(state, instruction);
+        state.ProgramCounter.Should().Be(12u);
+    }
+
+    [TestMethod]
+    public void Sbrc_DoesNotSkipWhenRegisterBitSet()
+    {
+        var state = CreateState();
+        state.ProgramCounter = 10;
+        state.Registers[16] = 0x08;
+        var instruction = _decoder.Decode(0xFA03);
+        _executor.Execute(state, instruction);
+        state.ProgramCounter.Should().Be(11u);
+    }
+
+    [TestMethod]
+    public void Sbrs_SkipsWhenRegisterBitSet()
+    {
+        var state = CreateState();
+        state.ProgramCounter = 10;
+        state.Registers[16] = 0x08;
+        var instruction = _decoder.Decode(0xFE03);
+        _executor.Execute(state, instruction);
+        state.ProgramCounter.Should().Be(12u);
+    }
+
+    [TestMethod]
+    public void Sbrs_DoesNotSkipWhenRegisterBitClear()
+    {
+        var state = CreateState();
+        state.ProgramCounter = 10;
+        state.Registers[16] = 0x00;
+        var instruction = _decoder.Decode(0xFE03);
+        _executor.Execute(state, instruction);
+        state.ProgramCounter.Should().Be(11u);
+    }
 }
