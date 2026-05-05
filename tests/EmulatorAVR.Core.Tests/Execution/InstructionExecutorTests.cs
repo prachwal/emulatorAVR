@@ -503,4 +503,68 @@ public class InstructionExecutorTests
         _executor.Execute(state, instruction);
         state.Registers[16].Should().Be(0x0F);
     }
+
+    [TestMethod]
+    public void Rjmp_JumpsForward()
+    {
+        var state = CreateState();
+        state.ProgramCounter = 10;
+        var instruction = _decoder.Decode(0xC005);
+        _executor.Execute(state, instruction);
+        state.ProgramCounter.Should().Be(16u);
+    }
+
+    [TestMethod]
+    public void Rjmp_JumpsBackward()
+    {
+        var state = CreateState();
+        state.ProgramCounter = 10;
+        var instruction = _decoder.Decode(0xCFFF);
+        _executor.Execute(state, instruction);
+        state.ProgramCounter.Should().Be(10u);
+    }
+
+    [TestMethod]
+    public void Breq_BranchesWhenZeroFlagSet()
+    {
+        var state = CreateState();
+        state.ProgramCounter = 10;
+        state.SREG.Z = true;
+        var instruction = _decoder.Decode(0xF009);
+        _executor.Execute(state, instruction);
+        state.ProgramCounter.Should().Be(12u);
+    }
+
+    [TestMethod]
+    public void Breq_DoesNotBranchWhenZeroFlagClear()
+    {
+        var state = CreateState();
+        state.ProgramCounter = 10;
+        state.SREG.Z = false;
+        var instruction = _decoder.Decode(0xF009);
+        _executor.Execute(state, instruction);
+        state.ProgramCounter.Should().Be(11u);
+    }
+
+    [TestMethod]
+    public void Brne_BranchesWhenZeroFlagClear()
+    {
+        var state = CreateState();
+        state.ProgramCounter = 10;
+        state.SREG.Z = false;
+        var instruction = _decoder.Decode(0xF409);
+        _executor.Execute(state, instruction);
+        state.ProgramCounter.Should().Be(12u);
+    }
+
+    [TestMethod]
+    public void Brne_DoesNotBranchWhenZeroFlagSet()
+    {
+        var state = CreateState();
+        state.ProgramCounter = 10;
+        state.SREG.Z = true;
+        var instruction = _decoder.Decode(0xF409);
+        _executor.Execute(state, instruction);
+        state.ProgramCounter.Should().Be(11u);
+    }
 }

@@ -367,4 +367,62 @@ public class InstructionDecoderTests
         instruction.Kind.Should().Be(InstructionKind.Swap);
         instruction.Rd.Should().Be(16);
     }
+
+    [TestMethod]
+    public void RjmpOpcode_DecodesWithOffset()
+    {
+        var instruction = _decoder.Decode(0xC000);
+        instruction.Kind.Should().Be(InstructionKind.Rjmp);
+        instruction.Offset.Should().Be(0);
+    }
+
+    [TestMethod]
+    public void RjmpOpcode_DecodesForwardOffset()
+    {
+        var instruction = _decoder.Decode(0xC003);
+        instruction.Kind.Should().Be(InstructionKind.Rjmp);
+        instruction.Offset.Should().Be(3);
+    }
+
+    [TestMethod]
+    public void RjmpOpcode_DecodesBackwardOffset()
+    {
+        var instruction = _decoder.Decode(0xCFFF);
+        instruction.Kind.Should().Be(InstructionKind.Rjmp);
+        instruction.Offset.Should().Be(-1);
+    }
+
+    [TestMethod]
+    public void BreqOpcode_DecodesAsBreq()
+    {
+        var instruction = _decoder.Decode(0xF009);
+        instruction.Kind.Should().Be(InstructionKind.Breq);
+        instruction.Rd.Should().Be(1);
+        instruction.Offset.Should().Be(1);
+    }
+
+    [TestMethod]
+    public void BrneOpcode_DecodesAsBrne()
+    {
+        var instruction = _decoder.Decode(0xF409);
+        instruction.Kind.Should().Be(InstructionKind.Brne);
+        instruction.Rd.Should().Be(1);
+        instruction.Offset.Should().Be(1);
+    }
+
+    [TestMethod]
+    public void BrcsOpcode_DecodesAsBrcs()
+    {
+        var instruction = _decoder.Decode(0xF000);
+        instruction.Kind.Should().Be(InstructionKind.Brcs);
+        instruction.Rd.Should().Be(0);
+    }
+
+    [TestMethod]
+    public void BrccOpcode_DecodesAsBrcc()
+    {
+        var instruction = _decoder.Decode(0xF400);
+        instruction.Kind.Should().Be(InstructionKind.Brcc);
+        instruction.Rd.Should().Be(0);
+    }
 }

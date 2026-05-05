@@ -141,6 +141,35 @@ public class InstructionExecutor
                 ExecuteSwap(state, instruction);
                 break;
 
+            // Group E — branches and control flow
+            case InstructionKind.Rjmp:
+                ExecuteRjmp(state, instruction);
+                break;
+
+            case InstructionKind.Brbs:
+            case InstructionKind.Breq:
+            case InstructionKind.Brcs:
+            case InstructionKind.Brmi:
+            case InstructionKind.Brvs:
+            case InstructionKind.Brlt:
+            case InstructionKind.Brhs:
+            case InstructionKind.Brts:
+            case InstructionKind.Brie:
+                ExecuteBranchIfSet(state, instruction);
+                break;
+
+            case InstructionKind.Brbc:
+            case InstructionKind.Brne:
+            case InstructionKind.Brcc:
+            case InstructionKind.Brpl:
+            case InstructionKind.Brvc:
+            case InstructionKind.Brge:
+            case InstructionKind.Brhc:
+            case InstructionKind.Brtc:
+            case InstructionKind.Brid:
+                ExecuteBranchIfClear(state, instruction);
+                break;
+
             default:
                 return ExecutionResult.Unsupported;
         }
@@ -545,5 +574,29 @@ public class InstructionExecutor
         byte result = (byte)((rd << 4) | (rd >> 4));
 
         state.Registers[instruction.Rd] = result;
+    }
+
+    private void ExecuteRjmp(AvrCpuState state, Instruction instruction)
+    {
+        uint currentPc = state.ProgramCounter;
+        state.ProgramCounter = (uint)((int)currentPc + instruction.Offset);
+    }
+
+    private void ExecuteBranchIfSet(AvrCpuState state, Instruction instruction)
+    {
+        if (StatusRegisterMath.GetSregBit(state.SREG, instruction.Rd))
+        {
+            uint currentPc = state.ProgramCounter;
+            state.ProgramCounter = (uint)((int)currentPc + instruction.Offset);
+        }
+    }
+
+    private void ExecuteBranchIfClear(AvrCpuState state, Instruction instruction)
+    {
+        if (!StatusRegisterMath.GetSregBit(state.SREG, instruction.Rd))
+        {
+            uint currentPc = state.ProgramCounter;
+            state.ProgramCounter = (uint)((int)currentPc + instruction.Offset);
+        }
     }
 }

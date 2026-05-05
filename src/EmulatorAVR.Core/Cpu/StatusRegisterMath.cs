@@ -57,4 +57,9 @@ public static class StatusRegisterMath
         registers[pairBase] = (byte)(value & 0xFF);
         registers[pairBase + 1] = (byte)((value >> 8) & 0xFF);
     }
+
+    public static bool GetSregBit(StatusRegister sreg, int bit)
+    {
+        return (sreg.Value & (1 << bit)) != 0;
+    }
 }

@@ -238,6 +238,60 @@ public class InstructionDecoder
             return new Instruction(opcode, InstructionKind.Sbiw, wordRegisterPair: wordPair, immediate: k);
         }
 
+        // RJMP 1100 kkkk kkkk kkkk
+        if ((opcode & 0xF000) == 0xC000)
+        {
+            int k = opcode & 0x0FFF;
+            if ((k & 0x0800) != 0) k |= unchecked((int)0xFFFFF000);
+            return new Instruction(opcode, InstructionKind.Rjmp, offset: k);
+        }
+
+        // BRBS 1111 00kk kkkk ksss / branch aliases
+        if ((opcode & 0xFC00) == 0xF000)
+        {
+            int bit = opcode & 0x07;
+            int k = (opcode >> 3) & 0x7F;
+            if ((k & 0x40) != 0) k |= unchecked((int)0xFFFFFF80);
+
+            InstructionKind kind = bit switch
+            {
+                0 => InstructionKind.Brcs,
+                1 => InstructionKind.Breq,
+                2 => InstructionKind.Brmi,
+                3 => InstructionKind.Brvs,
+                4 => InstructionKind.Brlt,
+                5 => InstructionKind.Brhs,
+                6 => InstructionKind.Brts,
+                7 => InstructionKind.Brie,
+                _ => InstructionKind.Brbs
+            };
+
+            return new Instruction(opcode, kind, rd: bit, offset: k);
+        }
+
+        // BRBC 1111 01kk kkkk ksss / branch aliases
+        if ((opcode & 0xFC00) == 0xF400)
+        {
+            int bit = opcode & 0x07;
+            int k = (opcode >> 3) & 0x7F;
+            if ((k & 0x40) != 0) k |= unchecked((int)0xFFFFFF80);
+
+            InstructionKind kind = bit switch
+            {
+                0 => InstructionKind.Brcc,
+                1 => InstructionKind.Brne,
+                2 => InstructionKind.Brpl,
+                3 => InstructionKind.Brvc,
+                4 => InstructionKind.Brge,
+                5 => InstructionKind.Brhc,
+                6 => InstructionKind.Brtc,
+                7 => InstructionKind.Brid,
+                _ => InstructionKind.Brbc
+            };
+
+            return new Instruction(opcode, kind, rd: bit, offset: k);
+        }
+
         return new Instruction(opcode, InstructionKind.Unsupported);
     }
 }

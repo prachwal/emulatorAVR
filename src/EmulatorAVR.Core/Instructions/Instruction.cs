@@ -8,8 +8,9 @@ public class Instruction
     public int Rr { get; }
     public byte Immediate { get; }
     public int WordRegisterPair { get; }
+    public int Offset { get; }
 
-    public Instruction(ushort opcode, InstructionKind kind, int rd = -1, int rr = -1, byte immediate = 0, int wordRegisterPair = -1)
+    public Instruction(ushort opcode, InstructionKind kind, int rd = -1, int rr = -1, byte immediate = 0, int wordRegisterPair = -1, int offset = 0)
     {
         Opcode = opcode;
         Kind = kind;
@@ -17,5 +18,6 @@ public class Instruction
         Rr = rr;
         Immediate = immediate;
         WordRegisterPair = wordRegisterPair;
+        Offset = offset;
     }
 }
