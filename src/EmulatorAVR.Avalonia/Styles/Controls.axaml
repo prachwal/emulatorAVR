@@ -107,4 +107,68 @@
     <Setter Property="FontSize" Value="{StaticResource ValueSize}" />
     <Setter Property="FontWeight" Value="Bold" />
   </Style>
+
+  <!-- Card value text (PC / cycle count / SREG) -->
+  <Style Selector="TextBlock.cardValue">
+    <Setter Property="Foreground" Value="{StaticResource ValueText}" />
+    <Setter Property="FontSize" Value="20" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="FontFamily" Value="Consolas, Courier New, monospace" />
+  </Style>
+
+  <!-- Small cell for register items -->
+  <Style Selector="Border.registerCell">
+    <Setter Property="Background" Value="{StaticResource CardBorder}" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="8,4" />
+    <Setter Property="Margin" Value="0,0,6,4" />
+  </Style>
+
+  <!-- Small cell for port items -->
+  <Style Selector="Border.portCell">
+    <Setter Property="Background" Value="{StaticResource CardBorder}" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="8,4" />
+    <Setter Property="Margin" Value="0,0,6,4" />
+  </Style>
+
+  <!-- Status text (italic muted description lines) -->
+  <Style Selector="TextBlock.statusText">
+    <Setter Property="Foreground" Value="{StaticResource MutedText}" />
+    <Setter Property="FontStyle" Value="Italic" />
+    <Setter Property="FontSize" Value="11" />
+  </Style>
+
+  <!-- Flag label text (inside active/inactive chips) -->
+  <Style Selector="TextBlock.flagLabel">
+    <Setter Property="FontSize" Value="13" />
+  </Style>
+
+  <!-- Register name label -->
+  <Style Selector="TextBlock.registerLabel">
+    <Setter Property="Foreground" Value="{StaticResource SecondaryText}" />
+    <Setter Property="FontSize" Value="{StaticResource LabelSize}" />
+    <Setter Property="FontWeight" Value="{StaticResource LabelWeight}" />
+    <Setter Property="Width" Value="24" />
+  </Style>
+
+  <!-- Port name label -->
+  <Style Selector="TextBlock.portLabel">
+    <Setter Property="Foreground" Value="{StaticResource SecondaryText}" />
+    <Setter Property="FontSize" Value="{StaticResource LabelSize}" />
+    <Setter Property="FontWeight" Value="{StaticResource LabelWeight}" />
+    <Setter Property="Width" Value="48" />
+  </Style>
+
+  <!-- Muted address text -->
+  <Style Selector="TextBlock.addressText">
+    <Setter Property="Foreground" Value="{StaticResource MutedText}" />
+    <Setter Property="FontSize" Value="11" />
+  </Style>
+
+  <!-- Muted bit label text -->
+  <Style Selector="TextBlock.bitLabel">
+    <Setter Property="Foreground" Value="{StaticResource MutedText}" />
+    <Setter Property="FontSize" Value="11" />
+  </Style>
 </Styles>

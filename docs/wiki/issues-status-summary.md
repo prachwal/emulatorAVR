@@ -336,3 +336,14 @@ Recommended first instructions to consider only after checking fixture needs:
 - `BRNE/BREQ`
 
 Do not implement a broad instruction set in one issue.
+
+## UI refinement issues #15–#18 (Phase 07–10)
+
+All four UI refinement phases are now merged:
+
+- **#15 / Phase 07**: MVVM shell, display models, style resources, dashboard layout foundation
+- **#16 / Phase 08**: refined CPU summary cards, SREG flag strip with active/inactive states, register grid with consistent two-digit hex formatting
+- **#17 / Phase 09**: port register panel (PINB/DDRB/PORTB, PINC/DDRC/PORTC, PIND/DDRD/PORTD with data memory addresses), Arduino digital pin map (D0..D13 mapped to PORTD/PORTB)
+- **#18 / Phase 10**: visual polish (consistent spacing, card styles, typography), responsive layout (MinWidth, scrollable), accessibility basics (ToolTip, text-based labels), documentation updates
+
+The Avalonia viewer now displays CPU summary, SREG flags, registers, port registers, and pin mappings from static/demo data. No emulator logic, live execution, or CLI changes were introduced.
