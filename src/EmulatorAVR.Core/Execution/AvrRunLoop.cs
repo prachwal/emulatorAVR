@@ -18,6 +18,7 @@ public class AvrRunLoop
 
         var state = new AvrCpuState();
         var (programMemory, startWordAddress, loadedWordCount) = LoadFirmware(options.Firmware);
+        state.ProgramMemory = programMemory;
         state.ProgramCounter = (uint)startWordAddress;
 
         var traces = new List<TraceFrame>();

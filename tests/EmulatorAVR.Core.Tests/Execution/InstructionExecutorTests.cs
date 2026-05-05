@@ -854,4 +854,30 @@ public class InstructionExecutorTests
         _executor.Execute(state, ret);
         state.ProgramCounter.Should().Be(0x000Bu);
     }
+
+    [TestMethod]
+    public void Lpm_LoadsProgramByteFromZ()
+    {
+        var state = CreateState();
+        state.ProgramMemory = new global::EmulatorAVR.Core.Memory.ProgramMemory(1);
+        state.ProgramMemory[0] = 0xAABB;
+        state.Registers[30] = 0x00;
+        state.Registers[31] = 0x00;
+        var instruction = _decoder.Decode(0x95C8);
+        _executor.Execute(state, instruction);
+        state.Registers[0].Should().Be(0xBB);
+    }
+
+    [TestMethod]
+    public void Lpm_LoadsHighByteFromZ1()
+    {
+        var state = CreateState();
+        state.ProgramMemory = new global::EmulatorAVR.Core.Memory.ProgramMemory(1);
+        state.ProgramMemory[0] = 0xAABB;
+        state.Registers[30] = 0x01;
+        state.Registers[31] = 0x00;
+        var instruction = _decoder.Decode(0x95C8);
+        _executor.Execute(state, instruction);
+        state.Registers[0].Should().Be(0xAA);
+    }
 }

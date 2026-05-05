@@ -91,6 +91,8 @@ public enum InstructionKind
     // Group I — stack operations
     Push,
     Pop,
+    // Group J — program memory access
+    Lpm,
     // Group K — multiply
     Mul,
     Muls,

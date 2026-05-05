@@ -9,6 +9,7 @@ public class AvrCpuState
     public uint ProgramCounter { get; set; }
     public ulong CycleCount { get; private set; }
     public DataMemory DataMemory { get; }
+    public ProgramMemory? ProgramMemory { get; set; }
 
     public AvrCpuState()
     {

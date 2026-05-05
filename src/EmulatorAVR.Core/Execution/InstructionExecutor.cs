@@ -247,6 +247,10 @@ public class InstructionExecutor
                 ExecuteRet(state, instruction);
                 break;
 
+            case InstructionKind.Lpm:
+                ExecuteLpm(state, instruction);
+                break;
+
             case InstructionKind.Ijmp:
                 ExecuteIjmp(state, instruction);
                 break;
@@ -863,6 +867,22 @@ public class InstructionExecutor
         sp = (sp + 1) & 0xFFFF;
         state.DataMemory[0x5D] = (byte)(sp & 0xFF);
         state.DataMemory[0x5E] = (byte)((sp >> 8) & 0xFF);
+    }
+
+    private void ExecuteLpm(AvrCpuState state, Instruction instruction)
+    {
+        int z = (state.Registers[31] << 8) | state.Registers[30];
+        int wordAddr = z >> 1;
+        byte value = 0;
+        if (state.ProgramMemory != null && wordAddr >= 0 && wordAddr < state.ProgramMemory.WordCapacity)
+        {
+            ushort word = state.ProgramMemory[wordAddr];
+            value = (z & 1) == 0 ? (byte)(word & 0xFF) : (byte)((word >> 8) & 0xFF);
+        }
+        if (instruction.Rd >= 0)
+            state.Registers[instruction.Rd] = value;
+        else
+            state.Registers[0] = value;
     }
 
     private void ExecuteMul(AvrCpuState state, Instruction instruction)

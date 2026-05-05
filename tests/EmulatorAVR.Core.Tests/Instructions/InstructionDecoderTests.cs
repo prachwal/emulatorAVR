@@ -616,4 +616,20 @@ public class InstructionDecoderTests
         instruction.Kind.Should().Be(InstructionKind.Rcall);
         instruction.Offset.Should().Be(5);
     }
+
+    [TestMethod]
+    public void LpmOpcode_DecodesAsLpm()
+    {
+        var instruction = _decoder.Decode(0x95C8);
+        instruction.Kind.Should().Be(InstructionKind.Lpm);
+        instruction.Rd.Should().Be(-1);
+    }
+
+    [TestMethod]
+    public void LpmRdOpcode_DecodesR16()
+    {
+        var instruction = _decoder.Decode(0x9005);
+        instruction.Kind.Should().Be(InstructionKind.Lpm);
+        instruction.Rd.Should().Be(0);
+    }
 }

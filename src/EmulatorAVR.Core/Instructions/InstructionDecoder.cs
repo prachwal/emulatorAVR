@@ -45,6 +45,17 @@ public class InstructionDecoder
             return new Instruction(opcode, kind, rd: rd, immediate: k);
         }
 
+        // LPM 1001 0101 1100 1000 (implicit R0)
+        if (opcode == 0x95C8)
+            return new Instruction(opcode, InstructionKind.Lpm);
+
+        // LPM Rd, Z+ 1001 000d dddd 0101
+        if ((opcode & 0xFE0F) == 0x9005)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.Lpm, rd: rd);
+        }
+
         // MUL 1001 11rd dddd rrrr
         if ((opcode & 0xFC00) == 0x9C00)
         {
