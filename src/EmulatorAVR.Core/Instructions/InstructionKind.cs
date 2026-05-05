@@ -30,5 +30,12 @@ public enum InstructionKind
     Com,
     Tst,
     Clr,
-    Ser
+    Ser,
+    // Group D — shifts, rotates, swap
+    Lsl,
+    Lsr,
+    Rol,
+    Ror,
+    Asr,
+    Swap
 }

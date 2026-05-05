@@ -317,4 +317,54 @@ public class InstructionDecoderTests
         instruction.Rd.Should().Be(31);
         instruction.Immediate.Should().Be(0xFF);
     }
+
+    [TestMethod]
+    public void LslOpcode_DecodesAsLslForAddWithRdEqRr()
+    {
+        var instruction = _decoder.Decode(0x0C11);
+        instruction.Kind.Should().Be(InstructionKind.Lsl);
+        instruction.Rd.Should().Be(1);
+        instruction.Rr.Should().Be(1);
+    }
+
+    [TestMethod]
+    public void RolOpcode_DecodesAsRolForAdcWithRdEqRr()
+    {
+        var instruction = _decoder.Decode(0x1C11);
+        instruction.Kind.Should().Be(InstructionKind.Rol);
+        instruction.Rd.Should().Be(1);
+        instruction.Rr.Should().Be(1);
+    }
+
+    [TestMethod]
+    public void LsrOpcode_DecodesR16()
+    {
+        var instruction = _decoder.Decode(0x9506);
+        instruction.Kind.Should().Be(InstructionKind.Lsr);
+        instruction.Rd.Should().Be(16);
+    }
+
+    [TestMethod]
+    public void RorOpcode_DecodesR16()
+    {
+        var instruction = _decoder.Decode(0x9507);
+        instruction.Kind.Should().Be(InstructionKind.Ror);
+        instruction.Rd.Should().Be(16);
+    }
+
+    [TestMethod]
+    public void AsrOpcode_DecodesR16()
+    {
+        var instruction = _decoder.Decode(0x9505);
+        instruction.Kind.Should().Be(InstructionKind.Asr);
+        instruction.Rd.Should().Be(16);
+    }
+
+    [TestMethod]
+    public void SwapOpcode_DecodesR16()
+    {
+        var instruction = _decoder.Decode(0x9502);
+        instruction.Kind.Should().Be(InstructionKind.Swap);
+        instruction.Rd.Should().Be(16);
+    }
 }

@@ -448,4 +448,59 @@ public class InstructionExecutorTests
         _executor.Execute(state, instruction);
         state.Registers[31].Should().Be(0xFF);
     }
+
+    [TestMethod]
+    public void Lsl_ShiftsLeft()
+    {
+        var state = CreateState();
+        state.Registers[1] = 0x0F;
+        var instruction = _decoder.Decode(0x0C11);
+        _executor.Execute(state, instruction);
+        instruction.Kind.Should().Be(InstructionKind.Lsl);
+        state.Registers[1].Should().Be(0x1E);
+    }
+
+    [TestMethod]
+    public void Lsr_ShiftsRight()
+    {
+        var state = CreateState();
+        state.Registers[16] = 0x0F;
+        var instruction = _decoder.Decode(0x9506);
+        _executor.Execute(state, instruction);
+        state.Registers[16].Should().Be(0x07);
+        state.SREG.C.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void Ror_RotatesRightThroughCarry()
+    {
+        var state = CreateState();
+        state.Registers[16] = 0x01;
+        state.SREG.C = true;
+        var instruction = _decoder.Decode(0x9507);
+        _executor.Execute(state, instruction);
+        state.Registers[16].Should().Be(0x80);
+        state.SREG.C.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void Asr_ArithmeticShiftRightPreservesSign()
+    {
+        var state = CreateState();
+        state.Registers[16] = 0xF0;
+        var instruction = _decoder.Decode(0x9505);
+        _executor.Execute(state, instruction);
+        state.Registers[16].Should().Be(0xF8);
+        state.SREG.N.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void Swap_SwapsNibbles()
+    {
+        var state = CreateState();
+        state.Registers[16] = 0xF0;
+        var instruction = _decoder.Decode(0x9502);
+        _executor.Execute(state, instruction);
+        state.Registers[16].Should().Be(0x0F);
+    }
 }

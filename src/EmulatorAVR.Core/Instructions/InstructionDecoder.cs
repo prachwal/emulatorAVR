@@ -51,20 +51,22 @@ public class InstructionDecoder
             return new Instruction(opcode, InstructionKind.Or, rd: rd, rr: rr);
         }
 
-        // ADD 0000 11rd dddd rrrr
+        // ADD 0000 11rd dddd rrrr / LSL when Rr == Rd
         if ((opcode & 0xFC00) == 0x0C00)
         {
             int rd = ((opcode >> 4) & 0x1F);
             int rr = (opcode & 0x0F) | ((opcode >> 5) & 0x10);
-            return new Instruction(opcode, InstructionKind.Add, rd: rd, rr: rr);
+            var kind = rd == rr ? InstructionKind.Lsl : InstructionKind.Add;
+            return new Instruction(opcode, kind, rd: rd, rr: rr);
         }
 
-        // ADC 0001 11rd dddd rrrr
+        // ADC 0001 11rd dddd rrrr / ROL when Rr == Rd
         if ((opcode & 0xFC00) == 0x1C00)
         {
             int rd = ((opcode >> 4) & 0x1F);
             int rr = (opcode & 0x0F) | ((opcode >> 5) & 0x10);
-            return new Instruction(opcode, InstructionKind.Adc, rd: rd, rr: rr);
+            var kind = rd == rr ? InstructionKind.Rol : InstructionKind.Adc;
+            return new Instruction(opcode, kind, rd: rd, rr: rr);
         }
 
         // SUB 0001 10rd dddd rrrr
@@ -170,6 +172,34 @@ public class InstructionDecoder
         {
             int rd = (opcode >> 4) & 0x1F;
             return new Instruction(opcode, InstructionKind.Neg, rd: rd);
+        }
+
+        // SWAP 1001 010d dddd 0010
+        if ((opcode & 0xFE0F) == 0x9402)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.Swap, rd: rd);
+        }
+
+        // ASR 1001 010d dddd 0101
+        if ((opcode & 0xFE0F) == 0x9405)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.Asr, rd: rd);
+        }
+
+        // LSR 1001 010d dddd 0110
+        if ((opcode & 0xFE0F) == 0x9406)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.Lsr, rd: rd);
+        }
+
+        // ROR 1001 010d dddd 0111
+        if ((opcode & 0xFE0F) == 0x9407)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.Ror, rd: rd);
         }
 
         // ADIW 1001 0110 KKdd KKKK

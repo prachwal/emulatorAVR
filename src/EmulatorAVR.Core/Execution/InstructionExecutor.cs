@@ -116,6 +116,31 @@ public class InstructionExecutor
                 ExecuteSer(state, instruction);
                 break;
 
+            // Group D — shifts, rotates, swap
+            case InstructionKind.Lsl:
+                ExecuteAdd(state, instruction);
+                break;
+
+            case InstructionKind.Lsr:
+                ExecuteLsr(state, instruction);
+                break;
+
+            case InstructionKind.Rol:
+                ExecuteAdc(state, instruction);
+                break;
+
+            case InstructionKind.Ror:
+                ExecuteRor(state, instruction);
+                break;
+
+            case InstructionKind.Asr:
+                ExecuteAsr(state, instruction);
+                break;
+
+            case InstructionKind.Swap:
+                ExecuteSwap(state, instruction);
+                break;
+
             default:
                 return ExecutionResult.Unsupported;
         }
@@ -469,5 +494,56 @@ public class InstructionExecutor
     private void ExecuteSer(AvrCpuState state, Instruction instruction)
     {
         state.Registers[instruction.Rd] = 0xFF;
+    }
+
+    private void ExecuteLsr(AvrCpuState state, Instruction instruction)
+    {
+        byte rd = state.Registers[instruction.Rd];
+        byte result = (byte)(rd >> 1);
+
+        state.SREG.C = (rd & 0x01) != 0;
+        state.SREG.N = false;
+        state.SREG.V = state.SREG.N ^ state.SREG.C;
+        state.SREG.S = state.SREG.N ^ state.SREG.V;
+        state.SREG.Z = StatusRegisterMath.Zero(result);
+
+        state.Registers[instruction.Rd] = result;
+    }
+
+    private void ExecuteRor(AvrCpuState state, Instruction instruction)
+    {
+        byte rd = state.Registers[instruction.Rd];
+        int carryIn = state.SREG.C ? 0x80 : 0;
+        byte result = (byte)((rd >> 1) | carryIn);
+
+        state.SREG.C = (rd & 0x01) != 0;
+        state.SREG.N = StatusRegisterMath.Negative(result);
+        state.SREG.V = state.SREG.N ^ state.SREG.C;
+        state.SREG.S = state.SREG.N ^ state.SREG.V;
+        state.SREG.Z = StatusRegisterMath.Zero(result);
+
+        state.Registers[instruction.Rd] = result;
+    }
+
+    private void ExecuteAsr(AvrCpuState state, Instruction instruction)
+    {
+        byte rd = state.Registers[instruction.Rd];
+        byte result = (byte)((rd >> 1) | (rd & 0x80));
+
+        state.SREG.C = (rd & 0x01) != 0;
+        state.SREG.N = StatusRegisterMath.Negative(result);
+        state.SREG.V = state.SREG.N ^ state.SREG.C;
+        state.SREG.S = state.SREG.N ^ state.SREG.V;
+        state.SREG.Z = StatusRegisterMath.Zero(result);
+
+        state.Registers[instruction.Rd] = result;
+    }
+
+    private void ExecuteSwap(AvrCpuState state, Instruction instruction)
+    {
+        byte rd = state.Registers[instruction.Rd];
+        byte result = (byte)((rd << 4) | (rd >> 4));
+
+        state.Registers[instruction.Rd] = result;
     }
 }
