@@ -507,4 +507,20 @@ public class InstructionDecoderTests
         instruction.Rd.Should().Be(5);
         instruction.Immediate.Should().Be(5);
     }
+
+    [TestMethod]
+    public void PushOpcode_DecodesR16()
+    {
+        var instruction = _decoder.Decode(0x930F);
+        instruction.Kind.Should().Be(InstructionKind.Push);
+        instruction.Rd.Should().Be(16);
+    }
+
+    [TestMethod]
+    public void PopOpcode_DecodesR16()
+    {
+        var instruction = _decoder.Decode(0x910F);
+        instruction.Kind.Should().Be(InstructionKind.Pop);
+        instruction.Rd.Should().Be(16);
+    }
 }

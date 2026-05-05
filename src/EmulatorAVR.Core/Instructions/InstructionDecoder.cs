@@ -146,6 +146,20 @@ public class InstructionDecoder
             return new Instruction(opcode, InstructionKind.Cpi, rd: rd, immediate: k);
         }
 
+        // POP 1001 000d dddd 1111
+        if ((opcode & 0xFE0F) == 0x900F)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.Pop, rd: rd);
+        }
+
+        // PUSH 1001 001r rrrr 1111
+        if ((opcode & 0xFE0F) == 0x920F)
+        {
+            int rr = (opcode >> 4) & 0x1F;
+            return new Instruction(opcode, InstructionKind.Push, rd: rr);
+        }
+
         // COM 1001 010d dddd 0000
         if ((opcode & 0xFE0F) == 0x9400)
         {

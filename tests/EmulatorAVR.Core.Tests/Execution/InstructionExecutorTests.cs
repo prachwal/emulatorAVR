@@ -691,4 +691,47 @@ public class InstructionExecutorTests
         _executor.Execute(state, instruction);
         (state.DataMemory[0x25] & 0x20).Should().Be(0);
     }
+
+    [TestMethod]
+    public void Push_PushesRegisterOntoStack()
+    {
+        var state = CreateState();
+        state.Registers[16] = 0xAB;
+        state.DataMemory[0x5D] = 0xFF;
+        state.DataMemory[0x5E] = 0x08;
+        var instruction = _decoder.Decode(0x930F);
+        _executor.Execute(state, instruction);
+        state.DataMemory[0x08FE].Should().Be(0xAB);
+        state.DataMemory[0x5D].Should().Be(0xFE);
+        state.DataMemory[0x5E].Should().Be(0x08);
+    }
+
+    [TestMethod]
+    public void Pop_PopsRegisterFromStack()
+    {
+        var state = CreateState();
+        state.DataMemory[0x5D] = 0xFE;
+        state.DataMemory[0x5E] = 0x08;
+        state.DataMemory[0x08FE] = 0xCD;
+        var instruction = _decoder.Decode(0x910F);
+        _executor.Execute(state, instruction);
+        state.Registers[16].Should().Be(0xCD);
+        state.DataMemory[0x5D].Should().Be(0xFF);
+        state.DataMemory[0x5E].Should().Be(0x08);
+    }
+
+    [TestMethod]
+    public void PushPop_RoundtripPreservesValue()
+    {
+        var state = CreateState();
+        state.Registers[16] = 0x42;
+        state.DataMemory[0x5D] = 0xFF;
+        state.DataMemory[0x5E] = 0x08;
+        var push = _decoder.Decode(0x930F);
+        var pop = _decoder.Decode(0x910F);
+        _executor.Execute(state, push);
+        state.Registers[16] = 0x00;
+        _executor.Execute(state, pop);
+        state.Registers[16].Should().Be(0x42);
+    }
 }

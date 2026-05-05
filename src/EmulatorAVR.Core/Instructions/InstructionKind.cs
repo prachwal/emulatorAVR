@@ -86,5 +86,8 @@ public enum InstructionKind
     Ses, Cls,
     Seh, Clh,
     Set, Clt,
-    Sei, Cli
+    Sei, Cli,
+    // Group I — stack operations
+    Push,
+    Pop
 }

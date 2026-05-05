@@ -225,6 +225,15 @@ public class InstructionExecutor
                 ExecuteCbi(state, instruction);
                 break;
 
+            // Group I — stack operations
+            case InstructionKind.Push:
+                ExecutePush(state, instruction);
+                break;
+
+            case InstructionKind.Pop:
+                ExecutePop(state, instruction);
+                break;
+
             default:
                 return ExecutionResult.Unsupported;
         }
@@ -725,5 +734,30 @@ public class InstructionExecutor
         int dataAddr = ioAddr + 0x20;
         int bit = instruction.Immediate;
         state.DataMemory[dataAddr] &= (byte)~(1 << bit);
+    }
+
+    private void ExecutePush(AvrCpuState state, Instruction instruction)
+    {
+        byte reg = state.Registers[instruction.Rd];
+        int spl = state.DataMemory[0x5D];
+        int sph = state.DataMemory[0x5E];
+        int sp = (sph << 8) | spl;
+        sp = (sp - 1) & 0xFFFF;
+        if (sp >= 0x0100)
+            state.DataMemory[sp] = reg;
+        state.DataMemory[0x5D] = (byte)(sp & 0xFF);
+        state.DataMemory[0x5E] = (byte)((sp >> 8) & 0xFF);
+    }
+
+    private void ExecutePop(AvrCpuState state, Instruction instruction)
+    {
+        int spl = state.DataMemory[0x5D];
+        int sph = state.DataMemory[0x5E];
+        int sp = (sph << 8) | spl;
+        byte value = sp >= 0x0100 ? state.DataMemory[sp] : (byte)0;
+        state.Registers[instruction.Rd] = value;
+        sp = (sp + 1) & 0xFFFF;
+        state.DataMemory[0x5D] = (byte)(sp & 0xFF);
+        state.DataMemory[0x5E] = (byte)((sp >> 8) & 0xFF);
     }
 }
