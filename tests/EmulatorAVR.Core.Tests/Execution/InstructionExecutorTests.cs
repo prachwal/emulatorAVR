@@ -812,4 +812,31 @@ public class InstructionExecutorTests
         _executor.Execute(state, instruction);
         state.SREG.Z.Should().BeTrue();
     }
+
+    [TestMethod]
+    public void Ijmp_JumpsToZRegister()
+    {
+        var state = CreateState();
+        state.Registers[30] = 0x42;
+        state.Registers[31] = 0x01;
+        var instruction = _decoder.Decode(0x9409);
+        _executor.Execute(state, instruction);
+        state.ProgramCounter.Should().Be(0x0142u);
+    }
+
+    [TestMethod]
+    public void Ret_RoundtripThroughStack()
+    {
+        var state = CreateState();
+        state.DataMemory[0x5D] = 0xFF;
+        state.DataMemory[0x5E] = 0x08;
+        state.Registers[30] = 0x10;
+        state.Registers[31] = 0x00;
+        state.ProgramCounter = 10;
+        var icall = _decoder.Decode(0x9509);
+        _executor.Execute(state, icall);
+        var ret = _decoder.Decode(0x9508);
+        _executor.Execute(state, ret);
+        state.ProgramCounter.Should().Be(0x000Bu);
+    }
 }

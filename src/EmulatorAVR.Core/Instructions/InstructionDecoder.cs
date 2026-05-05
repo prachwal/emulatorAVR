@@ -19,6 +19,22 @@ public class InstructionDecoder
         if (opcode == 0x9578)
             return new Instruction(opcode, InstructionKind.Break);
 
+        // IJMP 1001 0100 0000 1001
+        if (opcode == 0x9409)
+            return new Instruction(opcode, InstructionKind.Ijmp);
+
+        // ICALL 1001 0101 0000 1001
+        if (opcode == 0x9509)
+            return new Instruction(opcode, InstructionKind.Icall);
+
+        // RET 1001 0101 0000 1000
+        if (opcode == 0x9508)
+            return new Instruction(opcode, InstructionKind.Ret);
+
+        // RETI 1001 0101 0001 1000
+        if (opcode == 0x9518)
+            return new Instruction(opcode, InstructionKind.Reti);
+
         // MUL 1001 11rd dddd rrrr
         if ((opcode & 0xF000) == 0xE000)
         {

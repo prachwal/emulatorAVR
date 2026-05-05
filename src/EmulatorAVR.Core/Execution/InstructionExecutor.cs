@@ -238,6 +238,19 @@ public class InstructionExecutor
                 ExecutePop(state, instruction);
                 break;
 
+            case InstructionKind.Ret:
+            case InstructionKind.Reti:
+                ExecuteRet(state, instruction);
+                break;
+
+            case InstructionKind.Ijmp:
+                ExecuteIjmp(state, instruction);
+                break;
+
+            case InstructionKind.Icall:
+                ExecuteIcall(state, instruction);
+                break;
+
             // Group K — multiply
             case InstructionKind.Mul:
                 ExecuteMul(state, instruction);
@@ -770,6 +783,50 @@ public class InstructionExecutor
             state.DataMemory[sp] = reg;
         state.DataMemory[0x5D] = (byte)(sp & 0xFF);
         state.DataMemory[0x5E] = (byte)((sp >> 8) & 0xFF);
+    }
+
+    private static int ReadSp(AvrCpuState state)
+    {
+        return (state.DataMemory[0x5E] << 8) | state.DataMemory[0x5D];
+    }
+
+    private static void WriteSp(AvrCpuState state, int sp)
+    {
+        state.DataMemory[0x5D] = (byte)(sp & 0xFF);
+        state.DataMemory[0x5E] = (byte)((sp >> 8) & 0xFF);
+    }
+
+    private void ExecuteRet(AvrCpuState state, Instruction instruction)
+    {
+        int sp = ReadSp(state);
+        byte raLow = sp >= 0x0100 ? state.DataMemory[sp] : (byte)0;
+        sp = (sp + 1) & 0xFFFF;
+        byte raHigh = sp >= 0x0100 ? state.DataMemory[sp] : (byte)0;
+        sp = (sp + 1) & 0xFFFF;
+        WriteSp(state, sp);
+        uint ra = (uint)((raHigh << 8) | raLow);
+        state.ProgramCounter = ra - 1;
+        if (instruction.Kind == InstructionKind.Reti)
+            state.SREG.I = true;
+    }
+
+    private void ExecuteIjmp(AvrCpuState state, Instruction instruction)
+    {
+        uint z = (uint)((state.Registers[31] << 8) | state.Registers[30]);
+        state.ProgramCounter = z - 1;
+    }
+
+    private void ExecuteIcall(AvrCpuState state, Instruction instruction)
+    {
+        uint ra = state.ProgramCounter + 1;
+        int sp = ReadSp(state);
+        sp = (sp - 1) & 0xFFFF;
+        if (sp >= 0x0100) state.DataMemory[sp] = (byte)((ra >> 8) & 0xFF);
+        sp = (sp - 1) & 0xFFFF;
+        if (sp >= 0x0100) state.DataMemory[sp] = (byte)(ra & 0xFF);
+        WriteSp(state, sp);
+        uint z = (uint)((state.Registers[31] << 8) | state.Registers[30]);
+        state.ProgramCounter = z - 1;
     }
 
     private void ExecutePop(AvrCpuState state, Instruction instruction)

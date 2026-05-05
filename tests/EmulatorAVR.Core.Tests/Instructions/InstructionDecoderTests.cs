@@ -562,4 +562,32 @@ public class InstructionDecoderTests
         instruction.Rd.Should().Be(16);
         instruction.Rr.Should().Be(17);
     }
+
+    [TestMethod]
+    public void RetOpcode_DecodesAsRet()
+    {
+        var instruction = _decoder.Decode(0x9508);
+        instruction.Kind.Should().Be(InstructionKind.Ret);
+    }
+
+    [TestMethod]
+    public void RetiOpcode_DecodesAsReti()
+    {
+        var instruction = _decoder.Decode(0x9518);
+        instruction.Kind.Should().Be(InstructionKind.Reti);
+    }
+
+    [TestMethod]
+    public void IjmpOpcode_DecodesAsIjmp()
+    {
+        var instruction = _decoder.Decode(0x9409);
+        instruction.Kind.Should().Be(InstructionKind.Ijmp);
+    }
+
+    [TestMethod]
+    public void IcallOpcode_DecodesAsIcall()
+    {
+        var instruction = _decoder.Decode(0x9509);
+        instruction.Kind.Should().Be(InstructionKind.Icall);
+    }
 }
