@@ -443,4 +443,68 @@ public class InstructionDecoderTests
         instruction.Rd.Should().Be(16);
         instruction.Immediate.Should().Be(3);
     }
+
+    [TestMethod]
+    public void SecOpcode_DecodesAsSec()
+    {
+        var instruction = _decoder.Decode(0x9408);
+        instruction.Kind.Should().Be(InstructionKind.Sec);
+    }
+
+    [TestMethod]
+    public void ClcOpcode_DecodesAsClc()
+    {
+        var instruction = _decoder.Decode(0x9488);
+        instruction.Kind.Should().Be(InstructionKind.Clc);
+    }
+
+    [TestMethod]
+    public void SeiOpcode_DecodesAsSei()
+    {
+        var instruction = _decoder.Decode(0x9478);
+        instruction.Kind.Should().Be(InstructionKind.Sei);
+    }
+
+    [TestMethod]
+    public void CliOpcode_DecodesAsCli()
+    {
+        var instruction = _decoder.Decode(0x94F8);
+        instruction.Kind.Should().Be(InstructionKind.Cli);
+    }
+
+    [TestMethod]
+    public void OutOpcode_DecodesR16ToPortD()
+    {
+        var instruction = _decoder.Decode(0xB90B);
+        instruction.Kind.Should().Be(InstructionKind.Out);
+        instruction.Rd.Should().Be(16);
+        instruction.Immediate.Should().Be(0x2B);
+    }
+
+    [TestMethod]
+    public void InOpcode_DecodesPortDToR16()
+    {
+        var instruction = _decoder.Decode(0xB10B);
+        instruction.Kind.Should().Be(InstructionKind.In);
+        instruction.Rd.Should().Be(16);
+        instruction.Immediate.Should().Be(0x2B);
+    }
+
+    [TestMethod]
+    public void SbiOpcode_DecodesAddressAndBit()
+    {
+        var instruction = _decoder.Decode(0x9A2D);
+        instruction.Kind.Should().Be(InstructionKind.Sbi);
+        instruction.Rd.Should().Be(5);
+        instruction.Immediate.Should().Be(5);
+    }
+
+    [TestMethod]
+    public void CbiOpcode_DecodesAddressAndBit()
+    {
+        var instruction = _decoder.Decode(0x982D);
+        instruction.Kind.Should().Be(InstructionKind.Cbi);
+        instruction.Rd.Should().Be(5);
+        instruction.Immediate.Should().Be(5);
+    }
 }

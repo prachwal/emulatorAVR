@@ -69,5 +69,22 @@ public enum InstructionKind
     Brtc,
     // Group F — skip instructions
     Sbrc,
-    Sbrs
+    Sbrs,
+    // Group G — I/O and bit operations
+    In,
+    Out,
+    Sbi,
+    Cbi,
+    Bst,
+    Bld,
+    Bset,
+    Bclr,
+    Sec, Clc,
+    Sez, Clz,
+    Sen, Cln,
+    Sev, Clv,
+    Ses, Cls,
+    Seh, Clh,
+    Set, Clt,
+    Sei, Cli
 }

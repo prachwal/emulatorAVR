@@ -611,4 +611,84 @@ public class InstructionExecutorTests
         _executor.Execute(state, instruction);
         state.ProgramCounter.Should().Be(11u);
     }
+
+    [TestMethod]
+    public void Sec_SetsCarryFlag()
+    {
+        var state = CreateState();
+        state.SREG.C = false;
+        var instruction = _decoder.Decode(0x9408);
+        _executor.Execute(state, instruction);
+        state.SREG.C.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void Clc_ClearsCarryFlag()
+    {
+        var state = CreateState();
+        state.SREG.C = true;
+        var instruction = _decoder.Decode(0x9488);
+        _executor.Execute(state, instruction);
+        state.SREG.C.Should().BeFalse();
+    }
+
+    [TestMethod]
+    public void Sei_SetsInterruptFlag()
+    {
+        var state = CreateState();
+        state.SREG.I = false;
+        var instruction = _decoder.Decode(0x9478);
+        _executor.Execute(state, instruction);
+        state.SREG.I.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void Cli_ClearsInterruptFlag()
+    {
+        var state = CreateState();
+        state.SREG.I = true;
+        var instruction = _decoder.Decode(0x94F8);
+        _executor.Execute(state, instruction);
+        state.SREG.I.Should().BeFalse();
+    }
+
+    [TestMethod]
+    public void Out_WritesRegisterToDataMemory()
+    {
+        var state = CreateState();
+        state.Registers[16] = 0x55;
+        var instruction = _decoder.Decode(0xB90B);
+        _executor.Execute(state, instruction);
+        state.DataMemory[0x2B].Should().Be(0x55);
+    }
+
+    [TestMethod]
+    public void In_ReadsDataMemoryToRegister()
+    {
+        var state = CreateState();
+        state.DataMemory[0x2B] = 0xAA;
+        var instruction = _decoder.Decode(0xB10B);
+        _executor.Execute(state, instruction);
+        state.Registers[16].Should().Be(0xAA);
+    }
+
+    [TestMethod]
+    public void Sbi_SetsBitInIoRegister()
+    {
+        var state = CreateState();
+        state.DataMemory[0x25] = 0x00;
+        var instruction = _decoder.Decode(0x9A2D);
+        _executor.Execute(state, instruction);
+        (state.DataMemory[0x25] & 0x20).Should().Be(0x20);
+    }
+
+    [TestMethod]
+    public void Cbi_ClearsBitInIoRegister()
+    {
+        var state = CreateState();
+        state.DataMemory[0x25] = 0xFF;
+        var instruction = _decoder.Decode(0x982D);
+        _executor.Execute(state, instruction);
+        (state.DataMemory[0x25] & 0x20).Should().Be(0);
+    }
 }

@@ -179,6 +179,52 @@ public class InstructionExecutor
                 ExecuteSbrs(state, instruction);
                 break;
 
+            // Group G — I/O and bit operations
+            case InstructionKind.Bst:
+            case InstructionKind.Bld:
+                // BST/BLD deferred — encoding collision with SBRC/SBRS
+                break;
+
+            case InstructionKind.Sec:
+            case InstructionKind.Sez:
+            case InstructionKind.Sen:
+            case InstructionKind.Sev:
+            case InstructionKind.Ses:
+            case InstructionKind.Seh:
+            case InstructionKind.Set:
+            case InstructionKind.Sei:
+            case InstructionKind.Bset:
+                ExecuteBset(state, instruction);
+                break;
+
+            case InstructionKind.Clc:
+            case InstructionKind.Clz:
+            case InstructionKind.Cln:
+            case InstructionKind.Clv:
+            case InstructionKind.Cls:
+            case InstructionKind.Clh:
+            case InstructionKind.Clt:
+            case InstructionKind.Cli:
+            case InstructionKind.Bclr:
+                ExecuteBclr(state, instruction);
+                break;
+
+            case InstructionKind.In:
+                ExecuteIn(state, instruction);
+                break;
+
+            case InstructionKind.Out:
+                ExecuteOut(state, instruction);
+                break;
+
+            case InstructionKind.Sbi:
+                ExecuteSbi(state, instruction);
+                break;
+
+            case InstructionKind.Cbi:
+                ExecuteCbi(state, instruction);
+                break;
+
             default:
                 return ExecutionResult.Unsupported;
         }
@@ -623,5 +669,61 @@ public class InstructionExecutor
         int bit = instruction.Immediate;
         if ((reg & (1 << bit)) != 0)
             state.ProgramCounter++;
+    }
+
+    private void ExecuteBst(AvrCpuState state, Instruction instruction)
+    {
+        byte reg = state.Registers[instruction.Rd];
+        int bit = instruction.Immediate;
+        state.SREG.T = ((reg >> bit) & 0x01) != 0;
+    }
+
+    private void ExecuteBld(AvrCpuState state, Instruction instruction)
+    {
+        int bit = instruction.Immediate;
+        if (state.SREG.T)
+            state.Registers[instruction.Rd] |= (byte)(1 << bit);
+        else
+            state.Registers[instruction.Rd] &= (byte)~(1 << bit);
+    }
+
+    private void ExecuteBset(AvrCpuState state, Instruction instruction)
+    {
+        int bit = instruction.Rd;
+        state.SREG.Value |= (byte)(1 << bit);
+    }
+
+    private void ExecuteBclr(AvrCpuState state, Instruction instruction)
+    {
+        int bit = instruction.Rd;
+        state.SREG.Value &= (byte)~(1 << bit);
+    }
+
+    private void ExecuteIn(AvrCpuState state, Instruction instruction)
+    {
+        int dataAddr = instruction.Immediate;
+        state.Registers[instruction.Rd] = state.DataMemory[dataAddr];
+    }
+
+    private void ExecuteOut(AvrCpuState state, Instruction instruction)
+    {
+        int dataAddr = instruction.Immediate;
+        state.DataMemory[dataAddr] = state.Registers[instruction.Rd];
+    }
+
+    private void ExecuteSbi(AvrCpuState state, Instruction instruction)
+    {
+        int ioAddr = instruction.Rd;
+        int dataAddr = ioAddr + 0x20;
+        int bit = instruction.Immediate;
+        state.DataMemory[dataAddr] |= (byte)(1 << bit);
+    }
+
+    private void ExecuteCbi(AvrCpuState state, Instruction instruction)
+    {
+        int ioAddr = instruction.Rd;
+        int dataAddr = ioAddr + 0x20;
+        int bit = instruction.Immediate;
+        state.DataMemory[dataAddr] &= (byte)~(1 << bit);
     }
 }

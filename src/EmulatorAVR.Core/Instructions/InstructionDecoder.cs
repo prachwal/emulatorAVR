@@ -238,6 +238,78 @@ public class InstructionDecoder
             return new Instruction(opcode, InstructionKind.Sbiw, wordRegisterPair: wordPair, immediate: k);
         }
 
+        // BSET 1001 0100 0sss 1000 / flag aliases
+        if ((opcode & 0xFF8F) == 0x9408)
+        {
+            int s = (opcode >> 4) & 0x07;
+            InstructionKind kind = s switch
+            {
+                0 => InstructionKind.Sec,
+                1 => InstructionKind.Sez,
+                2 => InstructionKind.Sen,
+                3 => InstructionKind.Sev,
+                4 => InstructionKind.Ses,
+                5 => InstructionKind.Seh,
+                6 => InstructionKind.Set,
+                7 => InstructionKind.Sei,
+                _ => InstructionKind.Bset
+            };
+            return new Instruction(opcode, kind, rd: s);
+        }
+
+        // BCLR 1001 0100 1sss 1000 / flag aliases
+        if ((opcode & 0xFF8F) == 0x9488)
+        {
+            int s = (opcode >> 4) & 0x07;
+            InstructionKind kind = s switch
+            {
+                0 => InstructionKind.Clc,
+                1 => InstructionKind.Clz,
+                2 => InstructionKind.Cln,
+                3 => InstructionKind.Clv,
+                4 => InstructionKind.Cls,
+                5 => InstructionKind.Clh,
+                6 => InstructionKind.Clt,
+                7 => InstructionKind.Cli,
+                _ => InstructionKind.Bclr
+            };
+            return new Instruction(opcode, kind, rd: s);
+        }
+
+        // IN 1011 0AAd dddd AAAA
+        if ((opcode & 0xF800) == 0xB000)
+        {
+            int rd = ((opcode >> 4) & 0x1F);
+            int addr = ((opcode >> 5) & 0x30) | (opcode & 0x0F);
+            int dataAddr = addr + 0x20;
+            return new Instruction(opcode, InstructionKind.In, rd: rd, immediate: (byte)dataAddr);
+        }
+
+        // OUT 1011 1AAr rrrr AAAA
+        if ((opcode & 0xF800) == 0xB800)
+        {
+            int rr = ((opcode >> 4) & 0x1F);
+            int addr = ((opcode >> 5) & 0x30) | (opcode & 0x0F);
+            int dataAddr = addr + 0x20;
+            return new Instruction(opcode, InstructionKind.Out, rd: rr, immediate: (byte)dataAddr);
+        }
+
+        // SBI 1001 1010 AAAA Abbb
+        if ((opcode & 0xFE00) == 0x9A00)
+        {
+            int addr = (opcode >> 3) & 0x1F;
+            int bit = opcode & 0x07;
+            return new Instruction(opcode, InstructionKind.Sbi, rd: addr, immediate: (byte)bit);
+        }
+
+        // CBI 1001 1000 AAAA Abbb
+        if ((opcode & 0xFE00) == 0x9800)
+        {
+            int addr = (opcode >> 3) & 0x1F;
+            int bit = opcode & 0x07;
+            return new Instruction(opcode, InstructionKind.Cbi, rd: addr, immediate: (byte)bit);
+        }
+
         // SBRC 1111 110r rrrr 0bbb
         if ((opcode & 0xFC08) == 0xF800)
         {
