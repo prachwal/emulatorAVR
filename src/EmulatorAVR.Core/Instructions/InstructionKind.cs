@@ -53,8 +53,6 @@ public enum InstructionKind
     Brne,
     Brcs,
     Brcc,
-    Brsh,
-    Brlo,
     Brmi,
     Brpl,
     Brge,

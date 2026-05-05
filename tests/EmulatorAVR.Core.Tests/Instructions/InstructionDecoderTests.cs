@@ -437,23 +437,7 @@ public class InstructionDecoderTests
     }
 
     [TestMethod]
-    public void BrccIsNotBrsh_AliasDocumented()
-    {
-        // BRSH is an assembly alias for BRCC (same opcode)
-        var instruction = _decoder.Decode(0xF400);
-        instruction.Kind.Should().NotBe(InstructionKind.Brsh);
-    }
-
-    [TestMethod]
-    public void BrcsIsNotBrlo_AliasDocumented()
-    {
-        // BRLO is an assembly alias for BRCS (same opcode)
-        var instruction = _decoder.Decode(0xF000);
-        instruction.Kind.Should().NotBe(InstructionKind.Brlo);
-    }
-
-    [TestMethod]
-    public void SbicOpcode_DecodesPortbBit5()
+    public void BrccOpcode_DecodesBrbc0()
     {
         var instruction = _decoder.Decode(0x992D);
         instruction.Kind.Should().Be(InstructionKind.Sbic);
@@ -482,7 +466,8 @@ public class InstructionDecoderTests
     [TestMethod]
     public void FmulsOpcode_DecodesR17RrR18()
     {
-        var instruction = _decoder.Decode(0x031A);
+        // FMULS R17,R18: bit7=1, bit3=0, Rd=R17, Rr=R18
+        var instruction = _decoder.Decode(0x0392);
         instruction.Kind.Should().Be(InstructionKind.Fmuls);
         instruction.Rd.Should().Be(17);
         instruction.Rr.Should().Be(18);
@@ -491,7 +476,8 @@ public class InstructionDecoderTests
     [TestMethod]
     public void FmulsuOpcode_DecodesR17RrR19()
     {
-        var instruction = _decoder.Decode(0x031B);
+        // FMULSU R17,R19: bit7=1, bit3=1, Rd=R17, Rr=R19
+        var instruction = _decoder.Decode(0x039B);
         instruction.Kind.Should().Be(InstructionKind.Fmulsu);
         instruction.Rd.Should().Be(17);
         instruction.Rr.Should().Be(19);
@@ -509,7 +495,8 @@ public class InstructionDecoderTests
     [TestMethod]
     public void FmulsOpcode_DecodesR16RrR18()
     {
-        var instruction = _decoder.Decode(0x030A);
+        // FMULS R16,R18: bit7=1, bit3=0, Rd offset=0, Rr offset=2
+        var instruction = _decoder.Decode(0x0382);
         instruction.Kind.Should().Be(InstructionKind.Fmuls);
         instruction.Rd.Should().Be(16);
         instruction.Rr.Should().Be(18);

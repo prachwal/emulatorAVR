@@ -68,8 +68,8 @@ Status categories:
 | BRNE | Alias | ✓ | ✓ | BRBC 1 (Z clear) |
 | BRCS | Alias | ✓ | ✓ | BRBS 0 (C set) |
 | BRCC | Alias | ✓ | ✓ | BRBC 0 (C clear) |
-| BRSH | Alias | — | — | Same as BRCC (BRBC 0) |
-| BRLO | Alias | — | — | Same as BRCS (BRBS 0) |
+| BRSH | Alias | ✓ | ✓ | Assembler aliases for BRCC (BRBC 0). Not separately decoded — BRCC returned. |
+| BRLO | Alias | ✓ | ✓ | Assembler aliases for BRCS (BRBS 0). Not separately decoded — BRCS returned. |
 | BRMI | Alias | ✓ | ✓ | BRBS 2 (N set) |
 | BRPL | Alias | ✓ | ✓ | BRBC 2 (N clear) |
 | BRGE | Alias | ✓ | ✓ | BRBC 4 (S clear) |
@@ -181,9 +181,9 @@ Status categories:
 | MUL | Implemented | ✓ | ✓ | Unsigned 8×8 → R1:R0 |
 | MULS | Implemented | ✓ | ✓ | Signed, R16-R23 × R16-R23 |
 | MULSU | Implemented | ✓ | ✓ | Signed × unsigned |
-| FMUL | Implemented | ✓ | ✓ | Fractional, (Rd×Rr)<<1 |
-| FMULS | Implemented | ✓ | ✓ | Signed fractional |
-| FMULSU | Implemented | ✓ | ✓ | Signed × unsigned fractional |
+| FMUL | Implemented | ✓ | ✓ | Fractional, (Rd×Rr)<<1. Encoding: 0000 0011 0ddd 1rrr (bit7=0, bit3=1). |
+| FMULS | Implemented | ✓ | ✓ | Signed fractional. Encoding: 0000 0011 1ddd 0rrr (bit7=1, bit3=0). |
+| FMULSU | Implemented | ✓ | ✓ | Signed × unsigned fractional. Encoding: 0000 0011 1ddd 1rrr (bit7=1, bit3=1). |
 
 ## MCU Control
 

@@ -300,10 +300,12 @@ public class InstructionExecutor
                 break;
 
             case InstructionKind.Elpm:
+                // ELPM on ATmega328P: RAMPZ=0 always, same as LPM
                 ExecuteLpm(state, instruction);
                 break;
 
             case InstructionKind.Spm:
+                // SPM: no-op (flash read-only in emulator)
                 break;
 
             case InstructionKind.LdX:
