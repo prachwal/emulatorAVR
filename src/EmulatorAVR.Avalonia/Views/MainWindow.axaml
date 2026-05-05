@@ -90,7 +90,7 @@
       <Border Classes="card">
         <StackPanel Spacing="8">
           <TextBlock Text="Port Registers" Classes="sectionHeader" />
-          <TextBlock Text="{Binding PortPlaceholderText}" Foreground="{StaticResource MutedText}" FontStyle="Italic" FontSize="12" />
+          <TextBlock Text="{Binding PortStatusText}" Foreground="{StaticResource MutedText}" FontStyle="Italic" FontSize="11" />
           <ItemsControl ItemsSource="{Binding Ports}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
@@ -104,6 +104,32 @@
                     <TextBlock Text="{Binding Name}" Classes="label" Width="48" />
                     <TextBlock Text="{Binding ValueText}" Classes="monoValue" />
                     <TextBlock Text="{Binding AddressText, StringFormat='({0})'}" Foreground="{StaticResource MutedText}" FontSize="11" />
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+
+      <!-- Arduino Digital Pin Map -->
+      <Border Classes="card">
+        <StackPanel Spacing="8">
+          <TextBlock Text="Arduino Digital Pin Map" Classes="sectionHeader" />
+          <TextBlock Text="D0..D13 — static/demo mapping, no live execution" Foreground="{StaticResource MutedText}" FontStyle="Italic" FontSize="11" />
+          <ItemsControl ItemsSource="{Binding Pins}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Border Classes="pinMappingCard" Margin="0,0,6,4">
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <TextBlock Text="{Binding PinLabel}" Classes="pinLabel" />
+                    <TextBlock Text="{Binding PortName}" Classes="label" />
+                    <TextBlock Text="{Binding BitLabel}" Foreground="{StaticResource MutedText}" FontSize="11" />
                   </StackPanel>
                 </Border>
               </DataTemplate>
