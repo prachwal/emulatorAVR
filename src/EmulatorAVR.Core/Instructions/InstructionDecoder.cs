@@ -205,6 +205,42 @@ public class InstructionDecoder
             return new Instruction(opcode, InstructionKind.StZPlus, rd: rr);
         }
 
+        // LDD Y+q 10q0 qq0d dddd 1qqq — check after LD Y variants
+        if ((opcode & 0xD208) == 0x8008)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            int q = ((opcode & 0x2000) != 0 ? 32 : 0) | ((opcode & 0x0800) != 0 ? 16 : 0)
+                  | ((opcode & 0x0400) != 0 ? 8 : 0) | (opcode & 0x07);
+            return new Instruction(opcode, InstructionKind.LddY, rd: rd, offset: q);
+        }
+
+        // STD Y+q 10q0 qq1r rrrr 1qqq
+        if ((opcode & 0xD208) == 0x8208)
+        {
+            int rr = (opcode >> 4) & 0x1F;
+            int q = ((opcode & 0x2000) != 0 ? 32 : 0) | ((opcode & 0x0800) != 0 ? 16 : 0)
+                  | ((opcode & 0x0400) != 0 ? 8 : 0) | (opcode & 0x07);
+            return new Instruction(opcode, InstructionKind.StdY, rd: rr, offset: q);
+        }
+
+        // LDD Z+q 10q0 qq0d dddd 0qqq — check after LD Z variants
+        if ((opcode & 0xD208) == 0x8000)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            int q = ((opcode & 0x2000) != 0 ? 32 : 0) | ((opcode & 0x0800) != 0 ? 16 : 0)
+                  | ((opcode & 0x0400) != 0 ? 8 : 0) | (opcode & 0x07);
+            return new Instruction(opcode, InstructionKind.LddZ, rd: rd, offset: q);
+        }
+
+        // STD Z+q 10q0 qq1r rrrr 0qqq
+        if ((opcode & 0xD208) == 0x8200)
+        {
+            int rr = (opcode >> 4) & 0x1F;
+            int q = ((opcode & 0x2000) != 0 ? 32 : 0) | ((opcode & 0x0800) != 0 ? 16 : 0)
+                  | ((opcode & 0x0400) != 0 ? 8 : 0) | (opcode & 0x07);
+            return new Instruction(opcode, InstructionKind.StdZ, rd: rr, offset: q);
+        }
+
         // ST -Z, Rr 1000 001r rrrr 0010
         if ((opcode & 0xFE0F) == 0x8202)
         {

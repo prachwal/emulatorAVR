@@ -127,4 +127,9 @@ public enum InstructionKind
     // 2-word load/store direct
     Lds,
     Sts,
+    // LDD/STD with displacement
+    LddY,
+    LddZ,
+    StdY,
+    StdZ,
 }

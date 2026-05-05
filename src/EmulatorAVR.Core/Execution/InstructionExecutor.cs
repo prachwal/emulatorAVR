@@ -259,6 +259,22 @@ public class InstructionExecutor
                 ExecuteSts(state, instruction);
                 break;
 
+            case InstructionKind.LddY:
+                ExecuteLdd(state, instruction, 28);
+                break;
+
+            case InstructionKind.StdY:
+                ExecuteStd(state, instruction, 28);
+                break;
+
+            case InstructionKind.LddZ:
+                ExecuteLdd(state, instruction, 30);
+                break;
+
+            case InstructionKind.StdZ:
+                ExecuteStd(state, instruction, 30);
+                break;
+
             case InstructionKind.Jmp:
                 ExecuteJmp(state, instruction);
                 break;
@@ -1011,6 +1027,20 @@ public class InstructionExecutor
     {
         int addr = instruction.Offset;
         state.Registers[instruction.Rd] = state.DataMemory[addr];
+    }
+
+    private void ExecuteLdd(AvrCpuState state, Instruction instruction, int lowReg)
+    {
+        int addr = (state.Registers[lowReg + 1] << 8) | state.Registers[lowReg];
+        addr += instruction.Offset;
+        state.Registers[instruction.Rd] = state.DataMemory[addr];
+    }
+
+    private void ExecuteStd(AvrCpuState state, Instruction instruction, int lowReg)
+    {
+        int addr = (state.Registers[lowReg + 1] << 8) | state.Registers[lowReg];
+        addr += instruction.Offset;
+        state.DataMemory[addr] = state.Registers[instruction.Rd];
     }
 
     private void ExecuteSts(AvrCpuState state, Instruction instruction)

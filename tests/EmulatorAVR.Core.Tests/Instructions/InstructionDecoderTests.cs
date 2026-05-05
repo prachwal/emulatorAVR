@@ -659,6 +659,22 @@ public class InstructionDecoderTests
     }
 
     [TestMethod]
+    public void LddYOpcode_DecodesWithDisplacement()
+    {
+        var instruction = _decoder.Decode(0xAC0F);
+        instruction.Kind.Should().Be(InstructionKind.LddY);
+        instruction.Offset.Should().Be(63);
+    }
+
+    [TestMethod]
+    public void StdZOpcode_DecodesWithDisplacement()
+    {
+        var instruction = _decoder.Decode(0xA206);
+        instruction.Kind.Should().Be(InstructionKind.StdZ);
+        instruction.Offset.Should().Be(38);
+    }
+
+    [TestMethod]
     public void Lds2WordOpcode_DecodesR16()
     {
         var instruction = _decoder.Decode(0x9000, 0x0100);
