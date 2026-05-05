@@ -1007,4 +1007,29 @@ public class InstructionExecutorTests
         state.SREG.I.Should().BeTrue();
         state.ProgramCounter.Should().Be(0x0020u);
     }
+
+    [TestMethod]
+    public void Bst_StoresRegisterBitToT()
+    {
+        var state = CreateState();
+        state.Registers[5] = 0x20;
+        var instruction = _decoder.Decode(0xFA55);
+        instruction.Kind.Should().Be(InstructionKind.Bst);
+        _executor.Execute(state, instruction);
+        state.SREG.T.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void Elpm_LoadsProgramByteFromZ()
+    {
+        var state = CreateState();
+        state.ProgramMemory = new global::EmulatorAVR.Core.Memory.ProgramMemory(1);
+        state.ProgramMemory[0] = 0xAABB;
+        state.Registers[30] = 0x00;
+        state.Registers[31] = 0x00;
+        var instruction = _decoder.Decode(0x95D8);
+        instruction.Kind.Should().Be(InstructionKind.Elpm);
+        _executor.Execute(state, instruction);
+        state.Registers[0].Should().Be(0xBB);
+    }
 }

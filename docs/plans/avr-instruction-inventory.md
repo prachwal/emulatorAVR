@@ -106,8 +106,8 @@ Status categories:
 
 | Mnemonic | Status | Decode test | Exec test | Notes |
 |----------|--------|-------------|-----------|-------|
-| BST | Deferred | ✗ | ✗ | Encoding collision: opcode 0xFA00 overlaps with SBRC R16+ (both use bit-9=1). SBRC takes priority. Decoder test BstEncoding_DecodesAsSbrc_ProvingCollision proves opcode returns Sbrc, not Bst. |
-| BLD | Deferred | ✗ | ✗ | Encoding collision: opcode 0xF800 overlaps with SBRC R0+ (both use bit-9=0). SBRC takes priority. Decoder test BldEncoding_DecodesAsSbrc_ProvingCollision proves opcode returns Sbrc, not Bld. |
+| BST | Implemented | ✓ | ✓ | Store register bit to T flag. Bit 9=1 distinguishes from SBRC (bit 9=0). Checked before SBRC in decoder. |
+| BLD | Deferred | ✗ | ✗ | Collision: BLD and SBRC both have bit9=0, register at bits 8-4. Same opcode. SBRC prioritized. |
 | BSET | Implemented | ✓ | ✓ | Set SREG bit |
 | BCLR | Implemented | ✓ | ✓ | Clear SREG bit |
 | SEC | Alias | ✓ | ✓ | BSET 0 |
@@ -164,8 +164,8 @@ Status categories:
 |----------|--------|-------------|-----------|-------|
 | LPM | Implemented | ✓ | ✓ | R0 = flash[Z] |
 | LPM Rd, Z+ | Implemented | ✓ | ✓ | Rd = flash[Z], Z++ |
-| ELPM | Implemented | ✓ | — | Same as LPM (RAMPZ=0 always on ATmega328P) |
-| SPM | Implemented | ✓ | — | Stub (flash read-only in emulator) |
+| ELPM | Implemented (stub) | ✓ | ✓ | Same as LPM (RAMPZ=0 always on ATmega328P). Decoder test: ElpmOpcode_Decodes. Executor test: Elpm_LoadsProgramByteFromZ. |
+| SPM | Implemented (stub) | ✓ | — | No-op: flash read-only in emulator. Opcode decodes, no side effects. |
 
 ## Stack Operations
 

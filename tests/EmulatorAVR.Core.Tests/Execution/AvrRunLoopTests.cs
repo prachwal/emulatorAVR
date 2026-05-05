@@ -152,6 +152,13 @@ public class AvrRunLoopTests
         result.State!.DataMemory[0x24].Should().Be(0x20);
         // After SBI then CBI, PORTB bit 5 is set (SBI was last at cycle 15)
         result.State.DataMemory[0x25].Should().Be(0x20);
+
+        // Run again with 20 cycles to prove PORTB5 toggles (CBI at cycle 20)
+        var options2 = new RunOptions("atmega328p", 20, false, false, firmware);
+        var result2 = loop.Run(options2);
+        result2.State!.DataMemory[0x25].Should().Be(0x00);
+        // The two results differ, proving bit 5 toggles
+        result.State.DataMemory[0x25].Should().NotBe(result2.State.DataMemory[0x25]);
     }
 
     [TestMethod]
