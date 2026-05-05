@@ -238,6 +238,17 @@ public class InstructionExecutor
                 ExecutePop(state, instruction);
                 break;
 
+            // Group K — multiply
+            case InstructionKind.Mul:
+                ExecuteMul(state, instruction);
+                break;
+
+            // Group L — MCU control
+            case InstructionKind.Sleep:
+            case InstructionKind.Wdr:
+            case InstructionKind.Break:
+                break;
+
             default:
                 return ExecutionResult.Unsupported;
         }
@@ -771,5 +782,16 @@ public class InstructionExecutor
         sp = (sp + 1) & 0xFFFF;
         state.DataMemory[0x5D] = (byte)(sp & 0xFF);
         state.DataMemory[0x5E] = (byte)((sp >> 8) & 0xFF);
+    }
+
+    private void ExecuteMul(AvrCpuState state, Instruction instruction)
+    {
+        byte rd = state.Registers[instruction.Rd];
+        byte rr = state.Registers[instruction.Rr];
+        int result = rd * rr;
+        state.Registers[0] = (byte)(result & 0xFF);
+        state.Registers[1] = (byte)((result >> 8) & 0xFF);
+        state.SREG.C = (result & 0x8000) != 0;
+        state.SREG.Z = (result & 0xFFFF) == 0;
     }
 }

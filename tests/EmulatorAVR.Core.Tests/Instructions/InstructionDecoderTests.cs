@@ -532,4 +532,34 @@ public class InstructionDecoderTests
         instruction.Rd.Should().Be(1);
         instruction.Rr.Should().Be(2);
     }
+
+    [TestMethod]
+    public void SleepOpcode_DecodesAsSleep()
+    {
+        var instruction = _decoder.Decode(0x9588);
+        instruction.Kind.Should().Be(InstructionKind.Sleep);
+    }
+
+    [TestMethod]
+    public void WdrOpcode_DecodesAsWdr()
+    {
+        var instruction = _decoder.Decode(0x95A8);
+        instruction.Kind.Should().Be(InstructionKind.Wdr);
+    }
+
+    [TestMethod]
+    public void BreakOpcode_DecodesAsBreak()
+    {
+        var instruction = _decoder.Decode(0x9578);
+        instruction.Kind.Should().Be(InstructionKind.Break);
+    }
+
+    [TestMethod]
+    public void MulOpcode_DecodesR16R17()
+    {
+        var instruction = _decoder.Decode(0x9F01);
+        instruction.Kind.Should().Be(InstructionKind.Mul);
+        instruction.Rd.Should().Be(16);
+        instruction.Rr.Should().Be(17);
+    }
 }

@@ -758,4 +758,58 @@ public class InstructionExecutorTests
         _executor.Execute(state, instruction);
         state.ProgramCounter.Should().Be(11u);
     }
+
+    [TestMethod]
+    public void Sleep_DoesNotChangeState()
+    {
+        var state = CreateState();
+        state.ProgramCounter = 10;
+        var instruction = _decoder.Decode(0x9588);
+        _executor.Execute(state, instruction);
+        state.ProgramCounter.Should().Be(11u);
+    }
+
+    [TestMethod]
+    public void Wdr_DoesNotChangeState()
+    {
+        var state = CreateState();
+        state.ProgramCounter = 10;
+        var instruction = _decoder.Decode(0x95A8);
+        _executor.Execute(state, instruction);
+        state.ProgramCounter.Should().Be(11u);
+    }
+
+    [TestMethod]
+    public void Mul_MultipliesTwoRegisters()
+    {
+        var state = CreateState();
+        state.Registers[16] = 0x0A;
+        state.Registers[17] = 0x03;
+        var instruction = _decoder.Decode(0x9F01);
+        _executor.Execute(state, instruction);
+        state.Registers[0].Should().Be(0x1E);
+        state.Registers[1].Should().Be(0x00);
+    }
+
+    [TestMethod]
+    public void Mul_SetsCarryFlagForLargeResult()
+    {
+        var state = CreateState();
+        state.Registers[16] = 0xFF;
+        state.Registers[17] = 0xFF;
+        var instruction = _decoder.Decode(0x9F01);
+        _executor.Execute(state, instruction);
+        state.SREG.C.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void Mul_SetsZeroFlagForResultZero()
+    {
+        var state = CreateState();
+        state.Registers[16] = 0x00;
+        state.Registers[17] = 0xFF;
+        var instruction = _decoder.Decode(0x9F01);
+        _executor.Execute(state, instruction);
+        state.SREG.Z.Should().BeTrue();
+    }
 }

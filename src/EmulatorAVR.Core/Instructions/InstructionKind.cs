@@ -90,5 +90,11 @@ public enum InstructionKind
     Sei, Cli,
     // Group I — stack operations
     Push,
-    Pop
+    Pop,
+    // Group K — multiply
+    Mul,
+    // Group L — MCU control
+    Sleep,
+    Wdr,
+    Break
 }

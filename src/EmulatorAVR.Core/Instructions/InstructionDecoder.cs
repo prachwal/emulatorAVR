@@ -7,7 +7,19 @@ public class InstructionDecoder
         if (opcode == 0x0000)
             return new Instruction(opcode, InstructionKind.Nop);
 
-        // LDI 1110 KKKK dddd KKKK / SER when K=0xFF
+        // SLEEP 1001 0101 1000 1000
+        if (opcode == 0x9588)
+            return new Instruction(opcode, InstructionKind.Sleep);
+
+        // WDR 1001 0101 1010 1000
+        if (opcode == 0x95A8)
+            return new Instruction(opcode, InstructionKind.Wdr);
+
+        // BREAK 1001 0101 0110 1000
+        if (opcode == 0x9578)
+            return new Instruction(opcode, InstructionKind.Break);
+
+        // MUL 1001 11rd dddd rrrr
         if ((opcode & 0xF000) == 0xE000)
         {
             int d = (opcode >> 4) & 0x0F;
@@ -15,6 +27,14 @@ public class InstructionDecoder
             byte k = (byte)(((opcode >> 4) & 0xF0) | (opcode & 0x0F));
             var kind = k == 0xFF ? InstructionKind.Ser : InstructionKind.Ldi;
             return new Instruction(opcode, kind, rd: rd, immediate: k);
+        }
+
+        // MUL 1001 11rd dddd rrrr
+        if ((opcode & 0xFC00) == 0x9C00)
+        {
+            int rd = ((opcode >> 4) & 0x1F);
+            int rr = (opcode & 0x0F) | ((opcode >> 5) & 0x10);
+            return new Instruction(opcode, InstructionKind.Mul, rd: rd, rr: rr);
         }
 
         // MOV 0010 11rd dddd rrrr
