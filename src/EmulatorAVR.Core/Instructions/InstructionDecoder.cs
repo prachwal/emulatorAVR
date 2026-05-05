@@ -408,6 +408,14 @@ public class InstructionDecoder
             return new Instruction(opcode, InstructionKind.Rjmp, offset: k);
         }
 
+        // RCALL 1101 kkkk kkkk kkkk
+        if ((opcode & 0xF000) == 0xD000)
+        {
+            int k = opcode & 0x0FFF;
+            if ((k & 0x0800) != 0) k |= unchecked((int)0xFFFFF000);
+            return new Instruction(opcode, InstructionKind.Rcall, offset: k);
+        }
+
         // BRBS 1111 00kk kkkk ksss / branch aliases
         if ((opcode & 0xFC00) == 0xF000)
         {

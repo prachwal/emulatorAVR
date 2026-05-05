@@ -146,6 +146,10 @@ public class InstructionExecutor
                 ExecuteRjmp(state, instruction);
                 break;
 
+            case InstructionKind.Rcall:
+                ExecuteRcall(state, instruction);
+                break;
+
             case InstructionKind.Brbs:
             case InstructionKind.Breq:
             case InstructionKind.Brcs:
@@ -822,6 +826,18 @@ public class InstructionExecutor
     {
         uint z = (uint)((state.Registers[31] << 8) | state.Registers[30]);
         state.ProgramCounter = z - 1;
+    }
+
+    private void ExecuteRcall(AvrCpuState state, Instruction instruction)
+    {
+        uint ra = state.ProgramCounter + 1;
+        int sp = ReadSp(state);
+        sp = (sp - 1) & 0xFFFF;
+        if (sp >= 0x0100) state.DataMemory[sp] = (byte)((ra >> 8) & 0xFF);
+        sp = (sp - 1) & 0xFFFF;
+        if (sp >= 0x0100) state.DataMemory[sp] = (byte)(ra & 0xFF);
+        WriteSp(state, sp);
+        state.ProgramCounter = (uint)((int)state.ProgramCounter + instruction.Offset);
     }
 
     private void ExecuteIcall(AvrCpuState state, Instruction instruction)

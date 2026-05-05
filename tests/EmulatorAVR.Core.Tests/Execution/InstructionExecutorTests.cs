@@ -839,4 +839,19 @@ public class InstructionExecutorTests
         _executor.Execute(state, ret);
         state.ProgramCounter.Should().Be(0x000Bu);
     }
+
+    [TestMethod]
+    public void Rcall_CallsAndReturns()
+    {
+        var state = CreateState();
+        state.DataMemory[0x5D] = 0xFF;
+        state.DataMemory[0x5E] = 0x08;
+        state.ProgramCounter = 10;
+        var rcall = _decoder.Decode(0xD005);
+        _executor.Execute(state, rcall);
+        state.ProgramCounter.Should().Be(0x0010u);
+        var ret = _decoder.Decode(0x9508);
+        _executor.Execute(state, ret);
+        state.ProgramCounter.Should().Be(0x000Bu);
+    }
 }

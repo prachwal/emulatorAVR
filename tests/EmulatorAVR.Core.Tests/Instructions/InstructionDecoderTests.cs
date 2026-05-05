@@ -608,4 +608,12 @@ public class InstructionDecoderTests
         instruction.Rd.Should().Be(16);
         instruction.Rr.Should().Be(17);
     }
+
+    [TestMethod]
+    public void RcallOpcode_DecodesWithOffset()
+    {
+        var instruction = _decoder.Decode(0xD005);
+        instruction.Kind.Should().Be(InstructionKind.Rcall);
+        instruction.Offset.Should().Be(5);
+    }
 }
