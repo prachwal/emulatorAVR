@@ -35,6 +35,7 @@
     <Setter Property="Foreground" Value="{StaticResource ValueText}" />
     <Setter Property="FontSize" Value="{StaticResource CardValueSize}" />
     <Setter Property="FontWeight" Value="{StaticResource CardValueWeight}" />
+    <Setter Property="FontFamily" Value="Consolas, Courier New, monospace" />
   </Style>
 
   <!-- Active flag chip -->
@@ -106,14 +107,6 @@
     <Setter Property="Foreground" Value="{StaticResource SectionAccent}" />
     <Setter Property="FontSize" Value="{StaticResource ValueSize}" />
     <Setter Property="FontWeight" Value="Bold" />
-  </Style>
-
-  <!-- Card value text (PC / cycle count / SREG) -->
-  <Style Selector="TextBlock.cardValue">
-    <Setter Property="Foreground" Value="{StaticResource ValueText}" />
-    <Setter Property="FontSize" Value="20" />
-    <Setter Property="FontWeight" Value="Bold" />
-    <Setter Property="FontFamily" Value="Consolas, Courier New, monospace" />
   </Style>
 
   <!-- Small cell for register items -->
