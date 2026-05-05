@@ -8,6 +8,13 @@ namespace EmulatorAVR.Core.Execution;
 
 public class AvrRunLoop
 {
+    private static readonly (string name, int addr)[] PortAddresses = new[]
+    {
+        ("PINB", 0x23), ("DDRB", 0x24), ("PORTB", 0x25),
+        ("PINC", 0x26), ("DDRC", 0x27), ("PORTC", 0x28),
+        ("PIND", 0x29), ("DDRD", 0x2A), ("PORTD", 0x2B),
+    };
+
     private readonly InstructionDecoder _decoder = new();
     private readonly InstructionExecutor _executor = new();
 
@@ -18,10 +25,12 @@ public class AvrRunLoop
 
         var state = new AvrCpuState();
         var (programMemory, startWordAddress, loadedWordCount) = LoadFirmware(options.Firmware);
+        state.ProgramMemory = programMemory;
         state.ProgramCounter = (uint)startWordAddress;
 
         var traces = new List<TraceFrame>();
         var previousRegisterSnapshot = state.Registers.Snapshot();
+        byte[] previousPortSnapshot = options.TracePorts ? SnapshotPorts(state) : Array.Empty<byte>();
 
         while (true)
         {
@@ -32,16 +41,19 @@ public class AvrRunLoop
                 return new RunResult(StopReason.ProgramEnd, state.ProgramCounter, state.CycleCount, traces, state: state);
 
             ushort opcode;
+            ushort nextOpcode = 0;
             try
             {
                 opcode = programMemory[(int)state.ProgramCounter];
+                if (state.ProgramCounter + 1 < (uint)(startWordAddress + loadedWordCount))
+                    nextOpcode = programMemory[(int)state.ProgramCounter + 1];
             }
             catch (ArgumentOutOfRangeException)
             {
                 return new RunResult(StopReason.ProgramEnd, state.ProgramCounter, state.CycleCount, traces, state: state);
             }
 
-            var instruction = _decoder.Decode(opcode);
+            var instruction = _decoder.Decode(opcode, nextOpcode);
 
             if (instruction.Kind == InstructionKind.Unsupported)
                 return new RunResult(StopReason.UnsupportedInstruction, state.ProgramCounter, state.CycleCount, traces, state: state);
@@ -69,6 +81,22 @@ public class AvrRunLoop
 
                 var changedPorts = new List<PortTraceEntry>();
 
+                if (recordPortTrace)
+                {
+                    var currentPortSnapshot = SnapshotPorts(state);
+                    for (int i = 0; i < PortAddresses.Length; i++)
+                    {
+                        if (previousPortSnapshot[i] != currentPortSnapshot[i])
+                        {
+                            changedPorts.Add(new PortTraceEntry(
+                                PortAddresses[i].name,
+                                previousPortSnapshot[i],
+                                currentPortSnapshot[i]));
+                        }
+                    }
+                    previousPortSnapshot = currentPortSnapshot;
+                }
+
                 var frame = new TraceFrame(
                     state.CycleCount,
                     state.ProgramCounter,
@@ -82,6 +110,14 @@ public class AvrRunLoop
                     previousRegisterSnapshot = currentSnapshot;
             }
         }
+    }
+
+    private static byte[] SnapshotPorts(AvrCpuState state)
+    {
+        var result = new byte[PortAddresses.Length];
+        for (int i = 0; i < PortAddresses.Length; i++)
+            result[i] = state.DataMemory[PortAddresses[i].addr];
+        return result;
     }
 
     private static (ProgramMemory memory, int startWordAddress, int loadedWordCount) LoadFirmware(FirmwareImage firmware)
