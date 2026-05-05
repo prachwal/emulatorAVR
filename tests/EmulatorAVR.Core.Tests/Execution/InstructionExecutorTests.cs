@@ -574,7 +574,7 @@ public class InstructionExecutorTests
         var state = CreateState();
         state.ProgramCounter = 10;
         state.Registers[16] = 0x00;
-        var instruction = _decoder.Decode(0xFA03);
+        var instruction = _decoder.Decode(0xF903);
         _executor.Execute(state, instruction);
         state.ProgramCounter.Should().Be(12u);
     }
@@ -585,7 +585,7 @@ public class InstructionExecutorTests
         var state = CreateState();
         state.ProgramCounter = 10;
         state.Registers[16] = 0x08;
-        var instruction = _decoder.Decode(0xFA03);
+        var instruction = _decoder.Decode(0xF903);
         _executor.Execute(state, instruction);
         state.ProgramCounter.Should().Be(11u);
     }
@@ -596,7 +596,7 @@ public class InstructionExecutorTests
         var state = CreateState();
         state.ProgramCounter = 10;
         state.Registers[16] = 0x08;
-        var instruction = _decoder.Decode(0xFE03);
+        var instruction = _decoder.Decode(0xFD03);
         _executor.Execute(state, instruction);
         state.ProgramCounter.Should().Be(12u);
     }
@@ -607,7 +607,7 @@ public class InstructionExecutorTests
         var state = CreateState();
         state.ProgramCounter = 10;
         state.Registers[16] = 0x00;
-        var instruction = _decoder.Decode(0xFE03);
+        var instruction = _decoder.Decode(0xFD03);
         _executor.Execute(state, instruction);
         state.ProgramCounter.Should().Be(11u);
     }
@@ -954,7 +954,7 @@ public class InstructionExecutorTests
         state.ProgramMemory[11] = 0x940E; // CALL (2-word) at nextPc
         state.Registers[16] = 0x00;
         state.ProgramCounter = 10;
-        var instruction = _decoder.Decode(0xFA03);
+        var instruction = _decoder.Decode(0xF903);
         instruction.Kind.Should().Be(InstructionKind.Sbrc);
         // Verify WordCount for CALL
         int wordCount = InstructionDecoder.InstructionWordCount(state.ProgramMemory[11]);

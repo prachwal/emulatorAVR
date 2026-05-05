@@ -293,14 +293,14 @@ public class InstructionDecoder
             return new Instruction(opcode, InstructionKind.Fmul, rd: rd, rr: 16);
         }
 
-        // FMULS 0000 0011 0ddd 1010 (signed)
+        // FMULS 0000 0011 0ddd 1010 (signed, Rr=R16)
         if ((opcode & 0xFF8F) == 0x030A)
         {
             int rd = ((opcode >> 4) & 0x07) + 16;
             return new Instruction(opcode, InstructionKind.Fmuls, rd: rd, rr: 16);
         }
 
-        // FMULSU 0000 0011 0ddd 1011 (signed × unsigned)
+        // FMULSU 0000 0011 0ddd 1011 (signed × unsigned, Rr=R16)
         if ((opcode & 0xFF8F) == 0x030B)
         {
             int rd = ((opcode >> 4) & 0x07) + 16;
@@ -646,10 +646,18 @@ public class InstructionDecoder
             return new Instruction(opcode, InstructionKind.Sbis, rd: addr, immediate: (byte)bit);
         }
 
-        // SBRC 1111 110r rrrr 0bbb
+        // BST 1111 101d dddd 0bbb (bit 9 = 1 — no collision with SBRC bit 9 = 0)
+        if ((opcode & 0xFE00) == 0xFA00)
+        {
+            int rd = (opcode >> 4) & 0x1F;
+            int bit = opcode & 0x07;
+            return new Instruction(opcode, InstructionKind.Bst, rd: rd, immediate: (byte)bit);
+        }
+
+        // SBRC 1111 110r rrrr 0bbb (register at bits 8-4, bit 9 = 0)
         if ((opcode & 0xFC08) == 0xF800)
         {
-            int rr = (opcode >> 5) & 0x1F;
+            int rr = (opcode >> 4) & 0x1F;
             int bit = opcode & 0x07;
             return new Instruction(opcode, InstructionKind.Sbrc, rd: rr, immediate: (byte)bit);
         }
@@ -657,7 +665,7 @@ public class InstructionDecoder
         // SBRS 1111 111r rrrr 0bbb
         if ((opcode & 0xFC08) == 0xFC00)
         {
-            int rr = (opcode >> 5) & 0x1F;
+            int rr = (opcode >> 4) & 0x1F;
             int bit = opcode & 0x07;
             return new Instruction(opcode, InstructionKind.Sbrs, rd: rr, immediate: (byte)bit);
         }

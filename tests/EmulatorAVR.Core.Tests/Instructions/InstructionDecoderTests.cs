@@ -443,13 +443,12 @@ public class InstructionDecoderTests
     }
 
     [TestMethod]
-    public void BstEncoding_DecodesAsSbrc_ProvingCollision()
+    public void BstOpcode_DecodesR0Bit0()
     {
-        // BST R0,b0 has opcode 0xFA00. SBRC R16,b0 also has opcode 0xFA00.
-        // SBRC is prioritized in the decoder (checked first).
+        // BST R0,b0: bit 9=1 distinguishes from SBRC (bit 9=0). Checked first in decoder.
         var instruction = _decoder.Decode(0xFA00);
-        instruction.Kind.Should().Be(InstructionKind.Sbrc);
-        instruction.Rd.Should().Be(16);
+        instruction.Kind.Should().Be(InstructionKind.Bst);
+        instruction.Rd.Should().Be(0);
         instruction.Immediate.Should().Be(0);
     }
 
