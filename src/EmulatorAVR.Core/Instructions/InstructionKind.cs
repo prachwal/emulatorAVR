@@ -6,5 +6,19 @@ public enum InstructionKind
     Nop,
     Ldi,
     Mov,
-    Add
+    Add,
+    // Group B — arithmetic and compare
+    Adc,
+    Adiw,
+    Sub,
+    Subi,
+    Sbc,
+    Sbci,
+    Sbiw,
+    Cp,
+    Cpc,
+    Cpi,
+    Inc,
+    Dec,
+    Neg
 }

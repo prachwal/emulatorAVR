@@ -153,4 +153,200 @@ public class InstructionExecutorTests
         state.CycleCount.Should().Be(cyclesBefore);
         state.SREG.Value.Should().Be(sregBefore);
     }
+
+    [TestMethod]
+    public void Adc_AddsWithCarry()
+    {
+        var state = CreateState();
+        state.Registers[1] = 0x01;
+        state.Registers[2] = 0x01;
+        state.SREG.C = true;
+        var instruction = _decoder.Decode(0x1C12);
+        _executor.Execute(state, instruction);
+        state.Registers[1].Should().Be(0x03);
+        state.ProgramCounter.Should().Be(1u);
+        state.CycleCount.Should().Be(1u);
+    }
+
+    [TestMethod]
+    public void Sub_SubtractsAndSetsFlags()
+    {
+        var state = CreateState();
+        state.Registers[1] = 0x05;
+        state.Registers[2] = 0x03;
+        var instruction = _decoder.Decode(0x1812);
+        _executor.Execute(state, instruction);
+        state.Registers[1].Should().Be(0x02);
+        state.SREG.Z.Should().BeFalse();
+        state.SREG.C.Should().BeFalse();
+    }
+
+    [TestMethod]
+    public void Sub_SetsCarryOnBorrow()
+    {
+        var state = CreateState();
+        state.Registers[1] = 0x01;
+        state.Registers[2] = 0x02;
+        var instruction = _decoder.Decode(0x1812);
+        _executor.Execute(state, instruction);
+        state.Registers[1].Should().Be(0xFF);
+        state.SREG.C.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void Subi_SubtractsImmediate()
+    {
+        var state = CreateState();
+        state.Registers[16] = 0x05;
+        var instruction = _decoder.Decode(0x5003);
+        _executor.Execute(state, instruction);
+        state.Registers[16].Should().Be(0x02);
+    }
+
+    [TestMethod]
+    public void Cp_DoesNotMutateRegisters()
+    {
+        var state = CreateState();
+        state.Registers[1] = 0x05;
+        state.Registers[2] = 0x03;
+        var instruction = _decoder.Decode(0x1412);
+        _executor.Execute(state, instruction);
+        state.Registers[1].Should().Be(0x05);
+        state.Registers[2].Should().Be(0x03);
+        state.SREG.C.Should().BeFalse();
+    }
+
+    [TestMethod]
+    public void Cp_DetectsEquality()
+    {
+        var state = CreateState();
+        state.Registers[1] = 0x05;
+        state.Registers[2] = 0x05;
+        var instruction = _decoder.Decode(0x1412);
+        _executor.Execute(state, instruction);
+        state.SREG.Z.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void Cpi_ComparesWithImmediate()
+    {
+        var state = CreateState();
+        state.Registers[16] = 0x03;
+        var instruction = _decoder.Decode(0x3404);
+        _executor.Execute(state, instruction);
+        state.SREG.Z.Should().BeFalse();
+        state.Registers[16].Should().Be(0x03);
+    }
+
+    [TestMethod]
+    public void Inc_IncrementsRegister()
+    {
+        var state = CreateState();
+        state.Registers[16] = 0x05;
+        var instruction = _decoder.Decode(0x9503);
+        _executor.Execute(state, instruction);
+        state.Registers[16].Should().Be(0x06);
+    }
+
+    [TestMethod]
+    public void Dec_DecrementsRegister()
+    {
+        var state = CreateState();
+        state.Registers[16] = 0x05;
+        var instruction = _decoder.Decode(0x950A);
+        _executor.Execute(state, instruction);
+        state.Registers[16].Should().Be(0x04);
+    }
+
+    [TestMethod]
+    public void Dec_SetsZeroFlag()
+    {
+        var state = CreateState();
+        state.Registers[16] = 0x01;
+        var instruction = _decoder.Decode(0x950A);
+        _executor.Execute(state, instruction);
+        state.Registers[16].Should().Be(0x00);
+        state.SREG.Z.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void Neg_NegatesRegister()
+    {
+        var state = CreateState();
+        state.Registers[16] = 0x01;
+        var instruction = _decoder.Decode(0x9501);
+        _executor.Execute(state, instruction);
+        state.Registers[16].Should().Be(0xFF);
+    }
+
+    [TestMethod]
+    public void Neg_NegatesZeroToZero()
+    {
+        var state = CreateState();
+        state.Registers[16] = 0x00;
+        var instruction = _decoder.Decode(0x9501);
+        _executor.Execute(state, instruction);
+        state.Registers[16].Should().Be(0x00);
+        state.SREG.Z.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void Adiw_AddsImmediateToWordPair()
+    {
+        var state = CreateState();
+        state.Registers[24] = 0x01;
+        state.Registers[25] = 0x00;
+        var instruction = _decoder.Decode(0x9602);
+        _executor.Execute(state, instruction);
+        state.Registers[24].Should().Be(0x03);
+        state.Registers[25].Should().Be(0x00);
+    }
+
+    [TestMethod]
+    public void Sbiw_SubtractsImmediateFromWordPair()
+    {
+        var state = CreateState();
+        state.Registers[24] = 0xFE;
+        state.Registers[25] = 0x01;
+        var instruction = _decoder.Decode(0x9702);
+        _executor.Execute(state, instruction);
+        state.Registers[24].Should().Be(0xFC);
+        state.Registers[25].Should().Be(0x01);
+    }
+
+    [TestMethod]
+    public void Sbc_SubtractsWithCarryBorrow()
+    {
+        var state = CreateState();
+        state.Registers[1] = 0x05;
+        state.Registers[2] = 0x02;
+        state.SREG.C = true;
+        var instruction = _decoder.Decode(0x0812);
+        _executor.Execute(state, instruction);
+        state.Registers[1].Should().Be(0x02);
+    }
+
+    [TestMethod]
+    public void Sbci_SubtractsImmediateWithCarryBorrow()
+    {
+        var state = CreateState();
+        state.Registers[16] = 0x05;
+        state.SREG.C = true;
+        var instruction = _decoder.Decode(0x4002);
+        _executor.Execute(state, instruction);
+        state.Registers[16].Should().Be(0x02);
+    }
+
+    [TestMethod]
+    public void Cpc_CompareWithCarryDoesNotMutate()
+    {
+        var state = CreateState();
+        state.Registers[1] = 0x05;
+        state.Registers[2] = 0x02;
+        state.SREG.C = true;
+        var instruction = _decoder.Decode(0x0412);
+        _executor.Execute(state, instruction);
+        state.Registers[1].Should().Be(0x05);
+        state.Registers[2].Should().Be(0x02);
+    }
 }
